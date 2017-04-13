@@ -1,14 +1,16 @@
-var SerialPort = require("serialport")
-var portName = '/dev/ttyACM0'
-var payload = {}
+import SerialPort from 'serialport'
 
-var port = new SerialPort(portName , function(err){
-	if(err) return console.log(err)
+const portName = '/dev/ttyACM0'
+let payload = {}
 
-	port.on('data', function(data){
-		console.log('data: '+data)
-		payload.measure = data.toString()
-		payload.date = new Date()
-		console.log(payload)
-	})
+const port = new SerialPort(portName,{
+	baudrate: 9600,
+	parser: SerialPort.parsers.readline('\n')
+});
+
+port.on('data', (data) => {
+	//console.log(data.toString());
+	let measure = 0
+	measure = parseFloat(data.toString());
+	console.log(measure);
 })
