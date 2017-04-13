@@ -1,0 +1,28 @@
+{
+  "name": "neosolar",
+  "version": "0.3.0",
+  "description": "Proyecto NeoSolar",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krouw/NeoSolar.git"
+  },
+  "keywords": [
+    "iot",
+    "node",
+    "nodejs",
+    "npm",
+    "solar",
+    "utem",
+    "pird"
+  ],
+  "author": "krouw & roinflames",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/krouw/NeoSolar/issues"
+  },
+  "homepage": "https://github.com/krouw/NeoSolar#readme"
+}
