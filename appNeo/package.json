@@ -7,7 +7,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "native-base": "^2.0.12",
     "react": "15.4.2",
     "react-mixin": "^2.0.2",
     "react-native": "0.42.0",
@@ -31,5 +30,8 @@
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "main": "index.js",
+  "author": "krouw",
+  "license": "MIT"
 }

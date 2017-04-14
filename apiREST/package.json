@@ -1,6 +1,6 @@
 {
   "name": "neosolar-api",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "APi rest",
   "main": "index.js",
   "scripts": {
@@ -8,10 +8,7 @@
     "server": "nodemon --watch ./ --exec babel-node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/krouw/ApiRESTNeoSolar.git"
-  },
+  "repository": "git+https://github.com/krouw/ApiRESTNeoSolar.git",
   "author": "krouw and roinflames",
   "license": "ISC",
   "bugs": {

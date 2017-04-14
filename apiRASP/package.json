@@ -1,6 +1,6 @@
 {
   "name": "apirasp",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "iot raspberry pi 3 node nodejs npm",
   "main": "index.js",
   "scripts": {
