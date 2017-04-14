@@ -1,17 +1,14 @@
 import { StyleSheet } from 'react-native'
 
 export const styles = StyleSheet.create({
-    container: {
-      marginBottom: 16,
+    signigForm: {
+      width: '100%',
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
-    text:{
-      height: 37,
-      width: 320,
-    },
-    errInput:{
-      top: -6,
-      paddingLeft: 5,
-      paddingRight: 16,
+    signinError: {
+      padding: 16,
     },
     test :{
      borderStyle: 'solid',

@@ -1,23 +1,13 @@
 import { StyleSheet } from 'react-native'
 
 export const signinStyles = StyleSheet.create({
-  signinHeader: {
-    flex: 2,
+  signinContent: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 20,
   },
-  signinContent: {
-    flex: 7,
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  signinGoogle: {
+  signinGoogle:{
     width: 260,
-  },
-  signigForm: {
-    width: 300,
-  },
-  signinError: {
-    padding: 16,
   },
 });

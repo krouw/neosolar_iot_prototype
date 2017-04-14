@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
+import { Actions } from 'react-native-router-flux'
 
 import { styles } from '../../styles'
 import { tutorialStyles } from './tutorialStyles'
@@ -7,13 +8,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import ActionButton from 'react-native-action-button';
 
-const Tutorial = ({route, navigator}) => {
+const Tutorial = () => {
   const myicon = <Icon name="arrow-forward"
     color="white"
     size={24} />
-  const onNavigatorPush = (e) => {
-      navigator.push({name: 'signin'});
-  }
   return (
     <View style={styles.container}>
       <View style={tutorialStyles.tutorialContainer}>
@@ -34,11 +32,11 @@ const Tutorial = ({route, navigator}) => {
           degrees={0}
           icon={myicon}
           buttonColor="rgba(231,76,60,1)"
-          onPress={(e) => onNavigatorPush(e)}
+          onPress={() => Actions.signin()}
         />
       </View>
     </View>
   );
 }
 
-export default Tutorial;
+export default Tutorial

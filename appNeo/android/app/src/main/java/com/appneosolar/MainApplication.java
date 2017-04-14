@@ -3,6 +3,8 @@ package com.appneosolar;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
 import com.cboy.rn.splashscreen.SplashScreenReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
@@ -25,6 +27,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNGoogleSigninPackage(),
+            new ReactMaterialKitPackage(),
             new SplashScreenReactPackage(),
             new VectorIconsPackage()
       );
