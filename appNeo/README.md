@@ -1,0 +1,3 @@
+Aplicación NeoSolar
+
+React Native!
