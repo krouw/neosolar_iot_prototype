@@ -17,6 +17,7 @@ class TextField extends Component {
       label,
       duration,
       borderColor,
+      dense,
       ...props,
     } = this.props;
     return (
@@ -40,15 +41,18 @@ class TextField extends Component {
               {...props} />
           <FloatingLabel
             ref='label'
-            label={'prueba'}
+            label={label}
+            dense={dense}
             labelColor={'gray'}
-            highlightColor={'blue'}
-            isFocused={active} />
+            duration={duration}
+            highlightColor={ touched && error ? 'red' : 'blue' }
+            isFocused={ active ? true : active }
+            hasValue={value ? true : false } />
           <Underline
             ref="underline"
             duration={duration}
             borderColor={'gray'}
-            highlightColor={'blue'} />
+            highlightColor={ touched && error ? 'red' : 'blue' } />
         </View>
         <View style={styles.wrapperErr}>
           {touched && (error && <Text style={styles.textErr}>{error}</Text>)}
@@ -57,19 +61,40 @@ class TextField extends Component {
   }
 }
 
+TextField.propTypes = {
+  duration: PropTypes.number,
+  label: PropTypes.string,
+  input: PropTypes.object,
+  meta: PropTypes.object,
+  isPassword: PropTypes.bool,
+  dense: PropTypes.bool,
+  highlightColor: PropTypes.string,
+  labelColor: PropTypes.string,
+  borderColor: PropTypes.string,
+  textColor: PropTypes.string,
+};
+
+TextField.defaultProps = {
+  duration: 200,
+  labelColor: '#9E9E9E',
+  borderColor: 'red',
+  textColor: '#424242',
+  dense: false,
+  underlineColorAndroid: 'rgba(0,0,0,0)',
+};
+
 const styles = StyleSheet.create({
     container: {
       marginBottom: 16,
     },
     wrapperInput:{
       height: 72,
-      paddingTop: 38,
-      paddingBottom: 7,
+      paddingTop: 30,
       position: 'relative',
     },
     textInput:{
       width: 300,
-      height: 34,
+      height: 40,
       fontSize: 16,
       lineHeight: 34,
     },
@@ -80,28 +105,7 @@ const styles = StyleSheet.create({
       paddingRight: 16,
       color: 'red',
     },
-    test :{
-     borderStyle: 'solid',
-     borderColor: 'red',
-     borderWidth: 1,
-    },
 });
-
-TextField.propTypes = {
-  input: PropTypes.object,
-  meta: PropTypes.object,
-  isPassword: PropTypes.bool,
-  label: PropTypes.string,
-};
-
-TextField.defaultProps = {
-  duration: 200,
-  labelColor: '#9E9E9E',
-  borderColor: 'red',
-  textColor: '#000',
-  dense: false,
-  underlineColorAndroid: 'rgba(0,0,0,0)',
-};
 
 
 export default TextField

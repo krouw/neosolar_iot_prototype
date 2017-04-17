@@ -48,7 +48,7 @@ export default class Underline extends Component {
         <Animated.View
           style={[{
             width: this.state.lineLength,
-            height: 2,
+            height: 1,
             backgroundColor: highlightColor
           }]}>
         </Animated.View>
@@ -65,7 +65,7 @@ Underline.propTypes = {
 
 const styles = StyleSheet.create({
   underlineWrapper: {
-    height: 2,
+    height: 1,
     alignItems: 'center',
   },
 });
