@@ -7,6 +7,41 @@ import isEmpty from 'lodash/isEmpty';
 import User from '../models/user';
 import { mongo } from '../config/config';
 
+function validateInput(data){
+    let errors = {};
+
+    if(isEmpty(data)){
+       return {
+         errors: 'No se ha enviado ningun campo',
+         isValid: false,
+       }
+    }
+
+    //validator.email sin un string devuelve err server
+    if(isEmpty(data.email)){
+      errors.email = 'Campo Requerido'
+    }
+    else{
+      if(!validator.isEmail(data.email)){
+        errors.email = 'Email inválido'
+      }
+    }
+
+
+    return User.findOne({ 'email' : data.email })
+      .then( user => {
+        if(user){
+          if(user.email === data.email){
+            errors.email = 'Este email está siendo utilizado por un usuario'
+          }
+        }
+        return {
+          errors,
+          isValid: isEmpty(errors)
+        }
+      })
+}
+
 class AuthController {
 
   signin(req, res) {
@@ -53,6 +88,19 @@ class AuthController {
     else {
       res.send({ success: false, message: 'Ingrese un correo válido.'});
     }
+  }
+
+  existEmail(req, res){
+    //Example validate
+    validateInput(req.body)
+      .then(({ errors, isValid}) => {
+        if(isValid){
+          res.status(200).json({email:'Email valido'});
+        }
+        else{
+          res.status(400).json(errors)
+        }
+      })
   }
 
   google(req, res){
