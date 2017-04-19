@@ -8,7 +8,6 @@ import Device from '../models/device';
 class UserController {
 
   getAll(req, res) {
-    console.log('userId: '+req.user.id);
     User.find({})
       .then( users => {
         return res.json(users)
@@ -22,7 +21,6 @@ class UserController {
   }
 
   getById(req, res) {
-    console.log(req.params);
     User.findById({_id: req.params.idUser})
       .then( user => {
         return res.json(user)
