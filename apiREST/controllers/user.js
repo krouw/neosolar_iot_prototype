@@ -34,7 +34,6 @@ class UserController {
   }
 
   create(req, res) {
-    console.log(req.body.email);
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
         res.status(422).json({

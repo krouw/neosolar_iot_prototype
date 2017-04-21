@@ -9,7 +9,7 @@ const routes = [{
   path: '/api/auth',
   file: authRoute
 },{
-  path: '/api/user/:idUser/device/:idDevice/measurement',
+  path: '/api/device',
   file: deviceRoute
 }
 ];

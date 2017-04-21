@@ -81,9 +81,10 @@ getByIdMsm(req, res) {
       });
     }
     else {
-      console.log(req.params.idMeasurement);
+
       Measurement.findById({_id: req.params.idMeasurement})
-      .then( device => {
+      .then( measurement => {
+        measurement.idDevice = req.params.idDevice;
         measurement.intensity = req.body.intensity;
         measurement.voltage = req.body.voltage;
 
@@ -91,7 +92,7 @@ getByIdMsm(req, res) {
           if (err)
             res.send(err);
         })
-        return res.json('Dispositivo actualizado con éxito' )
+        return res.json('Dispositivo actualizado con éxito: ' + measurement )
       })
       .catch( err => {
         return res.status(500).json({
@@ -110,14 +111,13 @@ getByIdMsm(req, res) {
       });
     }
     else {
-      console.log(req.params.idMeasurement);
       Measurement.findByIdAndRemove({_id: req.params.idMeasurement})
-        .then( device => {
-          if (device==null) {
-            return res.json('Dispositivo no encontrado.')
+        .then( measurement => {
+          if (measurement==null) {
+            return res.json('Medición no encontrada.')
           }
           else {
-            return res.json('Dispositivo eliminado.')
+            return res.json('Medición eliminada:' + measurement)
           }
 
         })
@@ -125,7 +125,7 @@ getByIdMsm(req, res) {
         .catch( err => {
           return res.status(500).json({
             success: false,
-            message: 'No existe dispositivo. Lo sentimos, Hubo un problema en responder tu solicitud.',
+            message: 'No existe medición. Lo sentimos, Hubo un problema en responder tu solicitud.',
           });
         })
       }
