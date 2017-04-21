@@ -6,7 +6,7 @@ import Measurement from '../models/measurement';
 
 class MeasurementController {
 
-  getAllMeasurement(req, res) {
+  getAllMsm(req, res) {
     console.log(JSON.stringify(req.params));
     Measurement.find({})
       .then( measurements => {
@@ -20,7 +20,7 @@ class MeasurementController {
       })
   }
 
-getByIdMeasurement(req, res) {
+getByIdMsm(req, res) {
   console.log(req.params);
   Measurement.findById({_id: req.params.idMeasurement})
     .then( measurement => {
@@ -34,7 +34,7 @@ getByIdMeasurement(req, res) {
     })
   }
 
-  createMeasurement(req, res) {
+  createMsm(req, res) {
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
         res.status(422).json({

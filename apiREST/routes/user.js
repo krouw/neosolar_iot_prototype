@@ -23,7 +23,7 @@ router.delete('/:idUser', (req, res) => user.delete(req, res));
 
 router.get('/:idUser/device', (req, res) => user.getAllDev(req, res));
 router.get('/:idUser/device/:idDevice', (req, res) => user.getByIdDev(req, res));
-router.post('/:idUser/device', (req, res) => user.new(req, res));
+router.post('/:idUser/device', (req, res) => user.createDev(req, res));
 router.put('/:idUser/device/:idDevice', (req, res) => user.updateDev(req, res));
 router.delete('/:idUser/device/:idDevice', (req, res) => user.deleteDev(req, res));
 

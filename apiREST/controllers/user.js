@@ -77,7 +77,7 @@ class UserController {
       });
     }
     else {
-      User.findById({_id: req.params.id})
+      User.findById({_id: req.params.idUser})
       .then( user => {
         user.email = req.body.email;
         user.password = req.body.password;
@@ -105,7 +105,7 @@ class UserController {
       });
     }
     else {
-      User.findByIdAndRemove({_id: req.params.id})
+      User.findByIdAndRemove({_id: req.params.idUser})
         .then( user => {
           console.log(user);
           if (user==null) {
@@ -155,7 +155,7 @@ class UserController {
         })
     }
 
-    new(req, res) {
+    createDev(req, res) {
       //console.log(req.params.id)
       if (validator.isEmail(req.body.email+'')) {
         if(!req.body.email || !req.body.password) {
@@ -180,7 +180,7 @@ class UserController {
               console.log(err);
               return res.status(422).json({
                 success: false,
-                message: 'Dispositivo ya existe en el registro.',
+                message: 'Dispositivo no se ha registrado con éxito.',
               });
             })
         }
@@ -201,7 +201,7 @@ class UserController {
         });
       }
       else {
-        Device.findById({_id: req.params.id})
+        Device.findById({_id: req.params.idDevice})
         .then( device => {
           device.email = req.body.email;
           device.password = req.body.password;
@@ -210,7 +210,7 @@ class UserController {
             if (err)
               res.send(err);
           })
-          return res.json('Dispositivo actualizado con éxito' )
+          return res.json('Dispositivo actualizado con éxito: ' +  req.body.email + ', name: ' + req.body.name)
         })
         .catch( err => {
           return res.status(500).json({
@@ -229,13 +229,13 @@ class UserController {
         });
       }
       else {
-        Device.findByIdAndRemove({_id: req.params.id})
+        Device.findByIdAndRemove({_id: req.params.idDevice})
           .then( device => {
             if (device==null) {
               return res.json('Dispositivo no encontrado.')
             }
             else {
-              return res.json('Dispositivo eliminado.')
+              return res.json('Dispositivo eliminado: ' + device.idUser + ', ' + device.name)
             }
 
           })
