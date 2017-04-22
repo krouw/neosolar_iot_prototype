@@ -43,6 +43,8 @@ class UserController {
         });
       }
       else{
+        console.log(req.body);
+        //console.log(req.params);
         User.create({
           email: req.body.email,
           password: req.body.password })
@@ -107,12 +109,11 @@ class UserController {
     else {
       User.findByIdAndRemove({_id: req.params.idUser})
         .then( user => {
-          console.log(user);
           if (user==null) {
             return res.json('Usuario no encontrado.')
           }
           else {
-            return res.json('Usuario eliminado.')
+            return res.json('Usuario eliminado: ' + user)
           }
 
         })
@@ -127,7 +128,6 @@ class UserController {
     }
 
   getAllDev(req, res) {
-    console.log(req.params);
     //'id' : mail
     Device.find({ idUser: req.params.idUser })
       .then( devices => {

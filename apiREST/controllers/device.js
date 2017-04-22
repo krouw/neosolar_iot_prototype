@@ -33,7 +33,7 @@ class DeviceController {
         });
       })
   }
-  //post
+  //post TODO
   createDev(req, res) {
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
@@ -43,13 +43,11 @@ class DeviceController {
         });
       }
       else{
-        console.log(req.body);
+        //console.log(req.body);
         //console.log(req.params);
         Device.create({
-          //required
-          idDevice: req.body.name,
-          name: req.body.name,
-          //not required
+          name: 'name',
+          idUser: 'idUser',
           email: req.body.email,
           password: req.body.password })
           .then( device => {
@@ -58,12 +56,11 @@ class DeviceController {
               message: 'Dispositivo registrado con éxito.',
               device: device,
             });
-
           })
           .catch( err => {
             return res.status(422).json({
               success: false,
-              message: 'El dispositivo ya está creado.',
+              message: 'El dispositivo ya está registrado: ' + JSON.stringify(req.body) ,
             });
           })
       }
@@ -75,7 +72,7 @@ class DeviceController {
       });
     }
   }
-
+  //put TODO
   updateDev(req, res) {
     if(!req.body.email || !req.body.password) {
       res.status(422).json({
@@ -119,7 +116,7 @@ class DeviceController {
       Device.findByIdAndRemove({_id: req.params.idDevice})
         .then( device => {
           if (device==null) {
-            return res.json('Dispositivo no encontrado.')
+            return res.json('Dispositivo no encontrado: ' + req.params.idDevice)
           }
           else {
             return res.json('Dispositivo eliminado: ' + device)

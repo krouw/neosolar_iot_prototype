@@ -31,7 +31,6 @@ DeviceSchema.method('toJSON', function() {
   delete device.salt;
   delete device.hash;
   delete device.__v;
-  delete device.password;
   return device;
 });
 
