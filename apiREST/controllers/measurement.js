@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import Measurement from '../models/measurement';
 
 class MeasurementController {
-
+  //get
   getAllMsm(req, res) {
     console.log(JSON.stringify(req.params));
     Measurement.find({})
@@ -19,7 +19,7 @@ class MeasurementController {
         });
       })
   }
-
+  //get
   getByIdMsm(req, res) {
     console.log(req.params);
     Measurement.findById({_id: req.params.idMeasurement})
@@ -33,7 +33,7 @@ class MeasurementController {
         });
       })
   }
-
+  //post
   createMsm(req, res) {
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
@@ -74,7 +74,7 @@ class MeasurementController {
       });
     }
   }
-
+  //put
   updateMsm(req, res) {
     if(!req.body.email || !req.body.password) {
       res.status(422).json({
@@ -83,12 +83,11 @@ class MeasurementController {
       });
     }
     else {
-
+      console.log(req.params);
       Measurement.findById({_id: req.params.idMeasurement})
       .then( measurement => {
         measurement.idDevice = req.params.idDevice;
-        measuremen
-        t.intensity = req.body.intensity;
+        measurement.intensity = req.body.intensity;
         measurement.voltage = req.body.voltage;
 
         measurement.save((err) => {
