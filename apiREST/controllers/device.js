@@ -20,20 +20,20 @@ class DeviceController {
       })
   }
 
-getByIdDev(req, res) {
-  Device.findById({_id: req.params.idDevice})
-    .then( device => {
-      console.log(device);
-      return res.json(device)
-    })
-    .catch( err => {
-      return res.status(500).json({
-        success: false,
-        message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-      });
-    })
+  getByIdDev(req, res) {
+    Device.findById({_id: req.params.idDevice})
+      .then( device => {
+        console.log(device);
+        return res.json(device)
+      })
+      .catch( err => {
+        return res.status(500).json({
+          success: false,
+          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
+        });
+      })
   }
-
+  //post
   createDev(req, res) {
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
@@ -44,8 +44,12 @@ getByIdDev(req, res) {
       }
       else{
         console.log(req.body);
+        //console.log(req.params);
         Device.create({
-          idDevice: req.body.id,
+          //required
+          idDevice: req.body.name,
+          name: req.body.name,
+          //not required
           email: req.body.email,
           password: req.body.password })
           .then( device => {
@@ -54,6 +58,7 @@ getByIdDev(req, res) {
               message: 'Dispositivo registrado con éxito.',
               device: device,
             });
+
           })
           .catch( err => {
             return res.status(422).json({
@@ -79,13 +84,13 @@ getByIdDev(req, res) {
       });
     }
     else {
-      console.log(req.params.idDevice);
+      console.log(req.params);
       Device.findById({_id: req.params.idDevice})
       .then( device => {
         console.log(req.body);
-        device._id = req.body.id;
+        device._id = req.params.idDevice;
         //provisional
-        device.name = req.body.name;
+        device.name = req.params.name;
 
         device.save((err) => {
           if (err)

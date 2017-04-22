@@ -20,18 +20,18 @@ class MeasurementController {
       })
   }
 
-getByIdMsm(req, res) {
-  console.log(req.params);
-  Measurement.findById({_id: req.params.idMeasurement})
-    .then( measurement => {
-      return res.json(measurement)
-    })
-    .catch( err => {
-      return res.status(500).json({
-        success: false,
-        message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-      });
-    })
+  getByIdMsm(req, res) {
+    console.log(req.params);
+    Measurement.findById({_id: req.params.idMeasurement})
+      .then( measurement => {
+        return res.json(measurement)
+      })
+      .catch( err => {
+        return res.status(500).json({
+          success: false,
+          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
+        });
+      })
   }
 
   createMsm(req, res) {
@@ -42,11 +42,13 @@ getByIdMsm(req, res) {
           message: 'Por favor ingrese email y contraseña.'
         });
       }
-      else{
-        console.log(req.body);
-        console.log(req.params);
+      else {
+        //console.log(req.body);
+        //console.log(req.params);
         Measurement.create({
+          //required
           idDevice: req.body.name,
+          //not required
           voltage: req.body.voltage,
           intensity: req.body.intensity
           })
@@ -54,7 +56,7 @@ getByIdMsm(req, res) {
             return res.status(201).json({
               success: true,
               message: 'Medición registrada con éxito.',
-              measurement: measurement,
+              measurement: measurement
             });
           })
           .catch( err => {
@@ -85,7 +87,8 @@ getByIdMsm(req, res) {
       Measurement.findById({_id: req.params.idMeasurement})
       .then( measurement => {
         measurement.idDevice = req.params.idDevice;
-        measurement.intensity = req.body.intensity;
+        measuremen
+        t.intensity = req.body.intensity;
         measurement.voltage = req.body.voltage;
 
         measurement.save((err) => {

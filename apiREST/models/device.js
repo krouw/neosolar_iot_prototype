@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
 const DeviceSchema = new mongoose.Schema({
-  idDevice: {
+  idUser: {
     type: String,
     required:true,
   },
