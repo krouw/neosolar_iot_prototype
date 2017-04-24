@@ -18,13 +18,19 @@ class TextField extends Component {
       duration,
       borderColor,
       dense,
+      textColor,
+      textFocusColor,
       ...props,
     } = this.props;
     return (
       <View style={[styles.container]}>
-        <View style={[styles.wrapperInput]}>
+        <View style={[dense ? styles.denseWrapper : styles.wrapperInput]}>
           <TextInput
-              style={[styles.textInput]}
+              style={[ dense ? styles.denseTextInput : styles.textInput, {
+                color: textColor
+              } : {}, (active && textFocusColor) ? {
+                color: textFocusColor
+              } : {},]}
               onChangeText={onChange}
               onFocus={(event) => {
                 this.refs.label.floatLabel();
@@ -72,10 +78,11 @@ TextField.propTypes = {
   labelColor: PropTypes.string,
   borderColor: PropTypes.string,
   textColor: PropTypes.string,
+  textFocusColor: PropTypes.string,
 };
 
 TextField.defaultProps = {
-  duration: 200,
+  duration: 300,
   labelColor: '#9E9E9E',
   borderColor: 'red',
   textColor: '#424242',
@@ -92,11 +99,25 @@ const styles = StyleSheet.create({
       paddingTop: 30,
       position: 'relative',
     },
+    denseWrapper: {
+      height: 60,
+      paddingTop: 28,
+      paddingBottom: 4,
+      position: 'relative'
+    },
     textInput:{
       width: 300,
       height: 40,
       fontSize: 16,
       lineHeight: 34,
+    },
+    denseTextInput: {
+      width: 300,
+     fontSize: 13,
+     height: 27,
+     lineHeight: 24,
+     paddingBottom: 3,
+     textAlignVertical: 'top'
     },
     wrapperErr:{
       height: 16,

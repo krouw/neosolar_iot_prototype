@@ -48,6 +48,7 @@ const SigninForm = ({
       <Field
         name='email'
         label='Email'
+        dense={true}
         component={TextField} />
       <Field
         name='password'
