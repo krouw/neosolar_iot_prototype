@@ -1,12 +1,9 @@
 import React from 'react'
-import { View, Text , TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text , StyleSheet, ActivityIndicator } from 'react-native'
 import { reduxForm, Field } from 'redux-form'
 import TextField from '../../components/TextField/TextField'
 import { MKButton } from 'react-native-material-kit'
 import axios from 'axios'
-
-//Styles
-import { styles } from './styles'
 
 const validate = values => {
   const errors = {}
@@ -50,22 +47,24 @@ const SignupForm = ({
   }
   const ColoredRaisedButton = MKButton.coloredButton()
     .withBackgroundColor(ButtonColor)
-    .withStyle({width:260,height: 50, alignItems:'center', justifyContent:'center',})
+    .withStyle(styles.submitButton)
     .build();
 
   return (
-    <View style={[styles.signigForm, styles.test]}>
-      <Text style={{fontSize:24}}>Registrate</Text>
-      {error && <Text style={styles.signinError}>
+    <View style={[styles.signigForm]}>
+      <Text style={styles.title}>Regístrate</Text>
+      {error && <Text style={styles.error}>
         {error}
       </Text>}
       <Field
         name='email'
         label='Email'
+        dense={true}
         component={TextField} />
       <Field
         name='password'
         label='Password'
+        dense={true}
         isPassword={true}
         component={TextField} />
       <ColoredRaisedButton
@@ -76,14 +75,33 @@ const SignupForm = ({
             size={32} /> :
             <Text style={{color: 'white', fontWeight: 'normal', fontSize: 24,}}>{ submitSucceeded ? 'Cuenta Creada!' : 'Crear Cuenta'}</Text> }
       </ColoredRaisedButton>
-      <TouchableOpacity
-        style={{marginTop:32,}}
-        onPress={(e) => onSwitch(false)}>
-          <Text>Volver</Text>
-      </TouchableOpacity>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+    signigForm: {
+      width: '100%',
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
+    title:{
+      fontSize: 20,
+      fontWeight: "400",
+      paddingTop: 16,
+    },
+    submitButton:{
+      width:'100%',
+      height: 50,
+      marginTop: 32,
+      alignItems:'center',
+      justifyContent:'center'
+    },
+    error: {
+      padding: 16,
+    },
+});
 
 export default reduxForm({
   form: 'signup',

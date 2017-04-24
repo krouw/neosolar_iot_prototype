@@ -1,10 +1,8 @@
 import React from 'react'
-import { View, Text , TouchableHighlight, ActivityIndicator } from 'react-native'
+import { View, Text , StyleSheet, ActivityIndicator } from 'react-native'
 import { MKButton } from 'react-native-material-kit'
 import { reduxForm, Field } from 'redux-form'
 import TextField from '../../components/TextField/TextField'
-
-import { styles } from './styles'
 
 const validate = values => {
   const errors = {}
@@ -21,7 +19,6 @@ const validate = values => {
 
 const SigninForm = ({
   SigninServer,
-  onSwitch,
   handleSubmit,
   submitting,
   error,
@@ -36,13 +33,13 @@ const SigninForm = ({
 
   const ColoredRaisedButton = MKButton.coloredButton()
     .withBackgroundColor(ButtonColor)
-    .withStyle({width:260,height: 50,alignItems:'center', justifyContent:'center',})
+    .withStyle(styles.submitButton)
     .build();
 
   return (
     <View style={[styles.signigForm]}>
-      <Text style={{fontSize:24}}>Ingresa tus Datos</Text>
-      {error && <Text style={styles.signinError}>
+      <Text style={[styles.title]}>Identifícate</Text>
+      {error && <Text style={styles.error}>
         {error}
       </Text>}
       <Field
@@ -53,9 +50,10 @@ const SigninForm = ({
       <Field
         name='password'
         label='Password'
+        dense={true}
         isPassword={true}
         component={TextField} />
-        <Text style={{marginBottom: 32,}}>Recordar Contraseña</Text>
+        <Text style={styles.rememberPassword}>Recordar Contraseña</Text>
       <ColoredRaisedButton
         onPress={handleSubmit(SigninServer)}>
         { submitting ?
@@ -64,15 +62,41 @@ const SigninForm = ({
             size={32} /> :
             <Text style={{color: 'white', fontWeight: 'normal', fontSize: 24,}}>{ submitSucceeded ? 'Sesión Iniciada' : 'Iniciar Sesión'}</Text> }
       </ColoredRaisedButton>
-      <TouchableHighlight
-        style={{marginTop:32,}}
-        onPress={(e) => onSwitch(true)}
-        activeOpacity={6}>
-          <Text>Crea tu Cuenta</Text>
-      </TouchableHighlight>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+    signigForm: {
+      width: '100%',
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
+    title:{
+      fontSize: 20,
+      fontWeight: "400",
+      paddingTop: 16,
+    },
+    submitButton:{
+      width:'100%',
+      height: 50,
+      alignItems:'center',
+      justifyContent:'center'
+    },
+    rememberPassword:{
+      marginTop: 16,
+      marginBottom: 24
+    },
+    error: {
+      padding: 16,
+    },
+    test :{
+     borderStyle: 'solid',
+     borderColor: 'red',
+     borderWidth: 1,
+    },
+});
 
 export default reduxForm({
   form: 'signin',

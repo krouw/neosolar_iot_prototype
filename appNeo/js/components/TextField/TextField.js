@@ -23,7 +23,7 @@ class TextField extends Component {
       ...props,
     } = this.props;
     return (
-      <View style={[styles.container]}>
+      <View>
         <View style={[dense ? styles.denseWrapper : styles.wrapperInput]}>
           <TextInput
               style={[ dense ? styles.denseTextInput : styles.textInput, {
@@ -91,9 +91,6 @@ TextField.defaultProps = {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      marginBottom: 16,
-    },
     wrapperInput:{
       height: 72,
       paddingTop: 30,
@@ -106,18 +103,18 @@ const styles = StyleSheet.create({
       position: 'relative'
     },
     textInput:{
-      width: 300,
+      width: '90%',
       height: 40,
       fontSize: 16,
       lineHeight: 34,
     },
     denseTextInput: {
-      width: 300,
-     fontSize: 13,
-     height: 27,
-     lineHeight: 24,
-     paddingBottom: 3,
-     textAlignVertical: 'top'
+      width: '90%',
+      fontSize: 13,
+      height: 27,
+      lineHeight: 24,
+      paddingBottom: 3,
+      textAlignVertical: 'top'
     },
     wrapperErr:{
       height: 16,
