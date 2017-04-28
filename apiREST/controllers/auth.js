@@ -5,6 +5,7 @@ import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
 
 import User from '../models/user';
+import Device from '../models/device';
 import { mongo } from '../config/config';
 
 function validateInput(data){
@@ -125,6 +126,30 @@ class AuthController {
     });
     res.redirect("/api");
 */
+  }
+
+  device(req, res) {
+    console.log(req.body.email);
+    User.findOne({
+      email: req.body.email
+    }, (err, user) => {
+      if (err) throw (err);
+
+      if(!user) {
+        res.send({ success: false, message: 'Fallo en la autenticación. Usuario no registrado.'});
+      } else {
+        user.comparePassword(req.body.password, (err, isMatch) => {
+          if (isMatch && !err) {
+            var token = jwt.sign(user, mongo.secret, {
+              expiresIn: 10000 //segundos
+            });
+            res.json({ success: true, token: 'JWT '+ token, user: user.email});
+          } else {
+            res.send({ success: false, message: 'Fallo en la autenticación. La clave no coincide.'});
+          }
+        });
+      }
+    });
   }
 }
 

@@ -21,6 +21,9 @@ const DeviceSchema = new mongoose.Schema({
   },
   state: {
     type: String,
+  },
+  token: {
+    type: String,
   }
 },{ timestamps: true });
 
