@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.16.1",
+    "cheerio": "^0.22.0",
     "node-gyp": "^3.6.0",
     "serialport": "^4.0.7"
   },
