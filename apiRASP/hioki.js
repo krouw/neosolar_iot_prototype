@@ -1,8 +1,7 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
 
-
-	setInterval(() => {
+	export const hioki = setInterval(() => {
 		axios.get('http://192.168.0.50/REALDATA.HTM')
 		.then( res => {
 			const $ = cheerio.load(res.data)
