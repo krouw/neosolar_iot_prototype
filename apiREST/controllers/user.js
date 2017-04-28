@@ -126,12 +126,28 @@ class UserController {
         })
       }
     }
-
+/*
   getAllDev(req, res) {
     //'id' : mail
     Device.find({ idUser: req.params.idUser })
       .then( devices => {
         return res.json(devices)
+      })
+      .catch( err => {
+        return res.status(500).json({
+          success: false,
+          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
+        });
+      })
+  }
+  */
+  getAllDev(req, res) {
+    //'id' : mail
+    console.log(req.user);
+    Device.find({user: req.user})
+      .then( devices => {
+        User.populate(devices, {path: "user"})
+          res.status(200).json(devices)
       })
       .catch( err => {
         return res.status(500).json({

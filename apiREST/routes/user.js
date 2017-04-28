@@ -7,7 +7,7 @@ const user = new UserController();
 
 //Middleware comprobacion de Rol usuario
 const AuthorizationRole = (req, res, next) => {
-  console.log(req.user);
+  //console.log(req.user);
   next();
 }
 

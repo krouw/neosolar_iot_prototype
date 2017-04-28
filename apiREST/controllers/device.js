@@ -7,7 +7,6 @@ import Device from '../models/device';
 class DeviceController {
 
   getAllDev(req, res) {
-    console.log(JSON.stringify(req.params));
     Device.find({})
       .then( devices => {
         return res.json(devices)
@@ -43,13 +42,14 @@ class DeviceController {
         });
       }
       else{
+        let id = mongoose.Types.ObjectId();
         //console.log(req.body);
         //console.log(req.params);
         Device.create({
-          name: 'name',
-          idUser: 'idUser',
-          email: req.body.email,
-          password: req.body.password })
+          name: req.body.name,
+          idDevice: id,
+          //autor:
+        })
           .then( device => {
             return res.status(201).json({
               success: true,

@@ -1,8 +1,11 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import User from '../models/user'
+
+const Schema = mongoose.Schema
 
 const DeviceSchema = new mongoose.Schema({
-  idUser: {
+  idDevice: {
     type: String,
     required:true,
   },
@@ -24,7 +27,8 @@ const DeviceSchema = new mongoose.Schema({
   },
   token: {
     type: String,
-  }
+  },
+  user:{ type: Schema.ObjectId, ref: "User"},
 },{ timestamps: true });
 
 //Quita los atributos de las consultas

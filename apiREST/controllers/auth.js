@@ -130,7 +130,7 @@ class AuthController {
 
   device(req, res) {
     console.log(req.body.email);
-    User.findOne({
+    Device.findOne({
       email: req.body.email
     }, (err, user) => {
       if (err) throw (err);
