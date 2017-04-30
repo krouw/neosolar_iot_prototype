@@ -6,10 +6,12 @@ import Tutorial from './Tutorial/Tutorial'
 import Signin from './Signin/Signin'
 import DeviceList from './DeviceList/DeviceList'
 
-import { STORAGE_KEY_TOKEN, GetStorage } from '../util/AsyncStorage'
+import { STORAGE_KEY_TOKEN, GetStorage, InsertStorage } from '../util/AsyncStorage'
 import setAuthorizationToken from '../util/setAuthorizationToken'
 import jwtDecode from 'jwt-decode'
 import { setCurrentUser } from '../actions/auth'
+
+const STORAGE_KEY_TUTORIAL = 'id_tutorial'
 
 async function existsToken(dispatch){
   const token = await GetStorage(STORAGE_KEY_TOKEN);
@@ -20,7 +22,13 @@ async function existsToken(dispatch){
     Actions.main({type: ActionConst.RESET})
   }
   else{
-    console.log('No hay token');
+    const tutorial = await GetStorage(STORAGE_KEY_TUTORIAL);
+    if(tutorial){
+      Actions.signin({type: ActionConst.REPLACE});
+    }
+    else{
+      const persistTutorial = await InsertStorage(STORAGE_KEY_TUTORIAL, 'true');
+    }
   }
 }
 

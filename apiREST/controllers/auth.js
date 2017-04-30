@@ -52,16 +52,16 @@ class AuthController {
       if (err) throw (err);
 
       if(!user) {
-        res.send({ success: false, message: 'Fallo en la autenticación. Usuario no registrado.'});
+        res.status(400).json({ success: false, message: 'Fallo en la autenticación. Usuario no registrado.'});
       } else {
         user.comparePassword(req.body.password, (err, isMatch) => {
           if (isMatch && !err) {
             var token = jwt.sign(user, mongo.secret, {
               expiresIn: 10000 //segundos
             });
-            res.json({ success: true, token: 'JWT '+ token, user: user.email});
+            res.status(201).json({ success: true, token: 'JWT '+ token, user: user.email});
           } else {
-            res.send({ success: false, message: 'Fallo en la autenticación. La clave no coincide.'});
+            res.status(400).json({ success: false, message: 'Fallo en la autenticación. La clave no coincide.'});
           }
         });
       }

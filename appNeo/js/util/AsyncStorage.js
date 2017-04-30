@@ -40,5 +40,6 @@ export async function DeleteStorage(item){
   }
   catch (error) {
     console.log('AsyncStorage error: ' + error.message);
+    return undefined;M
   }
 }

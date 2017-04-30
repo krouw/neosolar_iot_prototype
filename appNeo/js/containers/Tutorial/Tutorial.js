@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { Actions } from 'react-native-router-flux'
 
-import { styles } from '../../styles'
-import { tutorialStyles } from './tutorialStyles'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import ActionButton from 'react-native-action-button';
@@ -14,21 +12,21 @@ const Tutorial = () => {
     size={24} />
   return (
     <View style={styles.container}>
-      <View style={tutorialStyles.tutorialContainer}>
+      <View style={styles.tutorialContainer}>
         <Image
-          style={tutorialStyles.tutorialImage}
+          style={styles.tutorialImage}
           source={{uri: 'https://raw.githubusercontent.com/wiki/facebook/react/react-logo-1000-transparent.png'}}
         />
         <Text
-          style={tutorialStyles.tutorialText}>
-          Conecta tu Datalogger a internet y activa tu Spot en Tiempo Real
+          style={styles.tutorialText}>
+          Conecta tu Datalogger a internet y activa tu Spot Fotovoltaico en Tiempo Real
         </Text>
       </View>
-      <View style={tutorialStyles.tutorialButton}>
+      <View style={styles.Button}>
         <ActionButton
           position="center"
           hideShadow={false}
-          offsetY={113}
+          offsetY={100}
           degrees={0}
           icon={myicon}
           buttonColor="rgba(231,76,60,1)"
@@ -38,5 +36,34 @@ const Tutorial = () => {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: '#F5FCFF',
+  },
+  tutorialContainer: {
+    flex: 3,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  tutorialImage:{
+    width: 250,
+    height: 250,
+    marginTop:16,
+  },
+  tutorialText:{
+    textAlign: 'center',
+    fontSize: 16,
+    lineHeight: 23,
+    paddingLeft: 32,
+    paddingRight: 32,
+  },
+  Button: {
+    flex: 2,
+  },
+});
 
 export default Tutorial
