@@ -10,8 +10,10 @@ import { MKButton } from 'react-native-material-kit'
 import { Logout } from '../../actions/auth'
 import { Actions, ActionConst } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ActionButton from 'react-native-action-button';
 
 import DeviceListItem from '../../components/DeviceListItem/DeviceListItem'
+import SearchBar from '../../components/SearchBar/SearchBar'
 
 const DeviceList = ({ Logout }) => {
   const AccentIconButton = MKButton.accentColoredFlatButton()
@@ -50,28 +52,19 @@ const DeviceList = ({ Logout }) => {
             size={24} />
         </AccentIconButton>
       </View>
-      <View style={[styles.searchBar]}>
-        <View style={styles.searchBg}></View>
-        <View style={[styles.searchInputWrapper]}>
-          <View style={styles.searchInputContent}>
-            <Icon
-              style={styles.searchIcon}
-              name="search"
-              color="gray"
-              size={24} />
-            <TextInput
-              underlineColorAndroid={'rgba(0,0,0,0)'}
-              placeholder={'Buscar Spot Fotovoltaico'}
-              style={[styles.searchInput]} />
-          </View>
-        </View>
-      </View>
+      <SearchBar />
       <View style={[styles.content]}>
         <ListView
           style={styles.deviceList}
           dataSource={data.dataSource}
           renderRow={(rowData) => <DeviceListItem data={rowData} />}
           renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator}></View> }
+        />
+        <ActionButton
+          position="right"
+          degrees={0}
+          buttonColor="rgba(231,76,60,1)"
+          onPress={() => console.log('FAB')}
         />
       </View>
     </View>
@@ -94,42 +87,6 @@ const styles = StyleSheet.create({
   title:{
     fontSize: 20,
     fontWeight: "500",
-  },
-  searchBar: {
-    height: 50,
-    overflow: 'visible',
-    marginBottom: 4,
-  },
-  searchBg:{
-    backgroundColor: 'gray',
-    height: 50,
-    zIndex: 1,
-  },
-  searchInputWrapper: {
-    marginTop: 16,
-    width: '100%',
-    position: 'absolute',
-    paddingRight: 16,
-    paddingLeft: 16,
-  },
-  searchInputContent:{
-    zIndex: 2,
-    height: 40,
-    elevation: 3,
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  searchInput: {
-    width: '100%',
-    paddingLeft: '20%',
-    paddingRight: 16,
-    zIndex: 3
-  },
-  searchIcon:{
-    zIndex: 1,
-    position: 'absolute',
-    left: 16,
   },
   content:{
     flex: 1,
