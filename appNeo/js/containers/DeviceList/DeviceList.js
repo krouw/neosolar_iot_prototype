@@ -17,12 +17,6 @@ const DeviceList = ({ Logout }) => {
   const AccentIconButton = MKButton.accentColoredFlatButton()
     .build();
 
-  let input;
-
-  const focusInput = () => {
-    input.focus();
-  };
-
   const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
   const data = {
     dataSource: ds.cloneWithRows([
