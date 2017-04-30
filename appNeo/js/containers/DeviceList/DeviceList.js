@@ -4,7 +4,8 @@ import { View,
          Text,
          StyleSheet,
          TextInput,
-         ListView } from 'react-native'
+         ListView,
+         TouchableWithoutFeedback } from 'react-native'
 import { MKButton } from 'react-native-material-kit'
 import { Logout } from '../../actions/auth'
 import { Actions, ActionConst } from 'react-native-router-flux'
@@ -15,6 +16,12 @@ import DeviceListItem from '../../components/DeviceListItem/DeviceListItem'
 const DeviceList = ({ Logout }) => {
   const AccentIconButton = MKButton.accentColoredFlatButton()
     .build();
+
+  let input;
+
+  const focusInput = () => {
+    input.focus();
+  };
 
   const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
   const data = {
@@ -54,6 +61,7 @@ const DeviceList = ({ Logout }) => {
         <View style={[styles.searchInputWrapper]}>
           <View style={styles.searchInputContent}>
             <Icon
+              style={styles.searchIcon}
               name="search"
               color="gray"
               size={24} />
@@ -106,7 +114,6 @@ const styles = StyleSheet.create({
   searchInputWrapper: {
     marginTop: 16,
     width: '100%',
-    marginRight: 16,
     position: 'absolute',
     paddingRight: 16,
     paddingLeft: 16,
@@ -115,15 +122,20 @@ const styles = StyleSheet.create({
     zIndex: 2,
     height: 40,
     elevation: 3,
-    paddingRight: 16,
-    paddingLeft: 16,
     backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
   },
   searchInput: {
-    width: '85%',
-    marginLeft: 24,
+    width: '100%',
+    paddingLeft: '20%',
+    paddingRight: 16,
+    zIndex: 3
+  },
+  searchIcon:{
+    zIndex: 1,
+    position: 'absolute',
+    left: 16,
   },
   content:{
     flex: 1,

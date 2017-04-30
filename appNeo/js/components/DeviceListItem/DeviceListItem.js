@@ -2,14 +2,13 @@ import React from 'react'
 import { View,
          Text,
          StyleSheet,
-         TouchableOpacity } from 'react-native'
+         TouchableNativeFeedback } from 'react-native'
 import IconMd from 'react-native-vector-icons/MaterialIcons';
 import IconIon from 'react-native-vector-icons/Ionicons';
 
 const DeviceListItem = ({data}) => {
   return (
-    <TouchableOpacity
-      onPress={() => console.log('dakjd')}>
+    <TouchableNativeFeedback>
       <View style={[styles.DeviceWrapper]}>
         <IconMd
           style={styles.storage}
@@ -31,7 +30,7 @@ const DeviceListItem = ({data}) => {
             size={30} />
         </View>
       </View>
-    </TouchableOpacity>
+    </TouchableNativeFeedback>
   )
 }
 
