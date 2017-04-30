@@ -1,1 +1,1 @@
-import { acquisition }  from './arduino'
+import acquisition from './hioki'

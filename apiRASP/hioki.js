@@ -3,7 +3,7 @@ import cheerio from 'cheerio'
 
 //Data acquisition Hioki
 
-export const hioki = setInterval(() => {
+const acquisition = setInterval(() => {
 	axios.get('http://192.168.0.50/REALDATA.HTM')
 	.then( res => {
 		const $ = cheerio.load(res.data)
@@ -15,3 +15,5 @@ export const hioki = setInterval(() => {
 		console.log(err)
 	})
 }, 2000)
+
+export default acquisition;
