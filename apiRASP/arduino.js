@@ -12,24 +12,20 @@ const port = new SerialPort(portName,{
 	parser: SerialPort.parsers.readline('\n')
 });
 
-port.on('open', data => {
+const acquisition = port.on('open', data => {
 	axios.post(server + '/auth/device', data)
 		.then( data => {
 			token = data.token
+
+			//Data acquisition Arduino SerialPort
+			port.on('data', (data) => {
+				let measure = 0
+				measure = parseFloat(data.toString());
+			})
 		})
 		.catch( err => {
 			console.log(err);
 		})
 })
 
-port.on('data', (data) => {
-	let measure = 0
-	measure = parseFloat(data.toString());
-	axios.post(  server + '/measurement/', data)
-		.then((value) => {
-			console.log(value);
-		})
-		.catch((err) => {
-			console.log(err);
-		})
-})
+export default acquisition;
