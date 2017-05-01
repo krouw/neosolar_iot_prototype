@@ -39,9 +39,9 @@ const SigninForm = ({
   return (
     <View style={[styles.signigForm]}>
       <Text style={[styles.title]}>Identifícate</Text>
-      {error && <Text style={styles.error}>
-        {error}
-      </Text>}
+      <Text style={styles.error}>
+        {error ? error : null}
+      </Text>
       <Field
         name='email'
         label='Email'
