@@ -6,8 +6,14 @@ import { View,
          TextInput } from 'react-native'
 import { Actions, ActionConst } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { connect } from 'react-redux'
+import { MKButton } from 'react-native-material-kit'
+import { Logout } from '../../actions/auth'
 
-const Profile = () => {
+const Profile = ({ Logout }) => {
+
+  const ColoredRaisedButton = MKButton.coloredButton()
+    .build();
   return (
     <View style={[styles.container]}>
       <View style={[styles.header, styles.test]}>
@@ -18,6 +24,10 @@ const Profile = () => {
             color="gray"
             size={24} />
         </TouchableNativeFeedback>
+        <ColoredRaisedButton
+            onPress={Logout}>
+          <Text>Salir</Text>
+        </ColoredRaisedButton>
       </View>
     </View>
   )
@@ -47,4 +57,10 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Profile;
+function mapDispatchToProps(dispatch){
+  return {
+    Logout: () => dispatch(Logout()),
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Profile);

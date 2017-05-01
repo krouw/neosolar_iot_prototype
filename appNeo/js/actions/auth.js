@@ -50,5 +50,6 @@ export const Logout = () => {
     DeleteStorage(STORAGE_KEY_TOKEN)
     setAuthorizationToken(false)
     dispatch(setCurrentUser({}))
+    Actions.signin({type: ActionConst.RESET});
   }
 }

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { View,
          Text,
          StyleSheet,
@@ -122,10 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapDispatchToProps(dispatch){
-  return {
-    Logout: () => dispatch(Logout()),
-  }
-}
-
-export default connect(null, mapDispatchToProps)(DeviceList);
+export default DeviceList;

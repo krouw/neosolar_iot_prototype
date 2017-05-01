@@ -16,7 +16,7 @@ const DeviceModal = ({ title, visible, onAccept, onDecline }) => {
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       onRequestClose={() => {}}
       transparent >
       <View style={styles.container}>

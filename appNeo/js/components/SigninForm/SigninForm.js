@@ -68,7 +68,6 @@ const SigninForm = ({
 
 const styles = StyleSheet.create({
     signigForm: {
-      width: '100%',
       flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'center',
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
       marginBottom: 24
     },
     error: {
-      padding: 16,
+      paddingTop: 16,
     },
     test :{
      borderStyle: 'solid',
