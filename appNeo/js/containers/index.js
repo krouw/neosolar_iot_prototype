@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { Scene, Router, Actions, ActionConst } from 'react-native-router-flux'
+import { Scene, Router, Actions, ActionConst, Modal } from 'react-native-router-flux'
 import { styles } from '../styles';
 import Tutorial from './Tutorial/Tutorial'
 import Signin from './Signin/Signin'
 import DeviceList from './DeviceList/DeviceList'
+import Profile from './Profile/Profile'
 
 import { STORAGE_KEY_TOKEN, GetStorage, InsertStorage } from '../util/AsyncStorage'
 import setAuthorizationToken from '../util/setAuthorizationToken'
@@ -39,7 +40,13 @@ const NavigatorComponent = ({dispatch}) => {
       <Scene key="tutorial" component={Tutorial} hideNavBar={true} />
       <Scene key="signin" component={Signin} hideNavBar={true} />
       <Scene key="main" hideNavBar={true}>
-        <Scene key="devicelist" component={DeviceList} />
+        <Scene
+          key="devicelist"
+          component={DeviceList} />
+        <Scene
+          key="profile"
+          component={Profile}
+          direction={'vertical'} />
       </Scene>
     </Router>
   );
