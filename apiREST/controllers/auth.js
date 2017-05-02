@@ -108,6 +108,7 @@ class AuthController {
     const token = jwt.sign(req.user, mongo.secret, {
       expiresIn: 10000 //segundos
     });
+
     const data = {
       token: "JWT "+token,
       user: req.user,
@@ -128,14 +129,14 @@ class AuthController {
 */
   }
 // Login para Raspi, valida la peticion de datos en el cliente.
-  device(req, res) {
+  deviceSignin(req, res) {
     User.findOne({
       email: req.body.email
     }, (err, user) => {
       if (err) throw (err);
 
       if(!user) {
-        res.send({ success: false, message: 'Fallo en la autenticación. Usuario no registrado.'});
+        res.status(401).json({ message: 'Fallo en la autenticación. Usuario no registrado.' });
       } else {
         user.comparePassword(req.body.password, (err, isMatch) => {
           if (isMatch && !err) {
@@ -143,11 +144,12 @@ class AuthController {
               expiresIn: 10000 //segundos
             });
             var data = {
-            token: 'JWT ' + token,
-            };
-            res.json({ success: true, data: data});
+              token: 'JWT ' + token,
+              user: req.user,
+            }
+            res.status(201).json({ data: data });
           } else {
-            res.send({ success: false, message: 'Fallo en la autenticación. La clave no coincide.'});
+            res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.' });
           }
         });
       }
