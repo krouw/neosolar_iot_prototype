@@ -6,7 +6,7 @@ import Tutorial from './Tutorial/Tutorial'
 import Signin from './Signin/Signin'
 import DeviceList from './DeviceList/DeviceList'
 import Profile from './Profile/Profile'
-
+import { GoogleSignin } from 'react-native-google-signin'
 import { STORAGE_KEY_TOKEN, GetStorage, InsertStorage } from '../util/AsyncStorage'
 import setAuthorizationToken from '../util/setAuthorizationToken'
 import jwtDecode from 'jwt-decode'

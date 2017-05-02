@@ -10,7 +10,9 @@ import { MKButton } from 'react-native-material-kit'
 import SigninForm from '../../components/SigninForm/SigninForm'
 import SignupForm from '../../components/SignupForm/SignupForm'
 
-import { SigninServer, SignupServer } from '../../actions/auth'
+import { SigninServer,
+         SignupServer,
+         SigninGoogle } from '../../actions/auth'
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin'
 
 const Transition = createTransition();
@@ -44,47 +46,20 @@ class Signin extends Component {
 
     componentDidMount(){
       this._setupGoogleSignin();
+     }
+
+     async _setupGoogleSignin() {
+       try {
+         await GoogleSignin.hasPlayServices({ autoResolve: true });
+         await GoogleSignin.configure({
+           webClientId: '36091147132-oeg0ibuusnbi2camkmkv36svrvp43vb7.apps.googleusercontent.com',
+           offlineAccess: false
+         });
+       }
+       catch(err) {
+         console.log("Play services error", err.code, err.message);
+       }
     }
-
-    async _setupGoogleSignin() {
-      try {
-        await GoogleSignin.hasPlayServices({ autoResolve: true });
-        await GoogleSignin.configure({
-          webClientId: '36091147132-oeg0ibuusnbi2camkmkv36svrvp43vb7.apps.googleusercontent.com',
-          offlineAccess: false
-        });
-
-        const user = await GoogleSignin.currentUserAsync();
-        console.log(user);
-        this.setState({user});
-      }
-      catch(err) {
-        console.log("Play services error", err.code, err.message);
-      }
-    }
-
-    _signOut(){
-      GoogleSignin.signOut()
-      .then(() => {
-        console.log('out');
-      })
-      .catch((err) => {
-
-      });
-    }
-
-    _signIn() {
-      GoogleSignin.signIn()
-      .then((user) => {
-        console.log(user);
-        this.setState({user: user});
-      })
-      .catch((err) => {
-        console.log('WRONG SIGNIN', err);
-      })
-      .done();
-    }
-
 
     render(){
 
@@ -97,7 +72,6 @@ class Signin extends Component {
         .build();
 
       const {height: heightOfDeviceScreen} = Dimensions.get('window');
-
       return (
         <ScrollView
           contentContainerStyle={{minHeight: this.height || heightOfDeviceScreen}}
@@ -107,7 +81,7 @@ class Signin extends Component {
                   style={styles.ButtonGoogle}
                   size={GoogleSigninButton.Size.Wide}
                   color={GoogleSigninButton.Color.Dark}
-                  onPress={() => this._signIn() }/>
+                  onPress={this.props.SigninGoogle} />
                 <SignUpButton>
                   <Text style={styles.SignupButtonText}>
                     { this.state.transition ? 'Iniciar Sesión' : 'Crear una cuenta' }
@@ -134,7 +108,7 @@ Signin.propTypes = {
 
 const styles = StyleSheet.create({
   header: {
-    flex: 4,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingLeft: 32,
@@ -180,6 +154,7 @@ function mapDispatchToProps(dispatch){
   return {
     SigninServer: (userData) => dispatch(SigninServer(userData)),
     SignupServer: (userData) => dispatch(SignupServer(userData)),
+    SigninGoogle: () => dispatch(SigninGoogle()),
   }
 }
 

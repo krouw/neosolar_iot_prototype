@@ -117,6 +117,11 @@ class AuthController {
     res.status(200).json(data);
   }
 
+  googleNative(req, res){
+
+    res.status(200).json({message:'jelo'});
+  }
+
   signout(req, res) {
     req.logout();
     res.redirect('/');
@@ -129,6 +134,7 @@ class AuthController {
     res.redirect("/api");
 */
   }
+
 // Login para Raspi, valida la peticion de datos en el cliente.
   deviceSignin(req, res) {
     User.findOne({

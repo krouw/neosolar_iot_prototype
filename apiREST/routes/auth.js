@@ -12,10 +12,13 @@ router.post('/device/', (req, res) => auth.deviceSignin(req, res));
 router.get('/signout', (req, res) => auth.signout(req, res));
 router.post('/existEmail', (req, res) => auth.existEmail(req, res))
 
+//Social Login Google API
 router.get('/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 router.get('/google/close', passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => { auth.google(req,res)  }
 );
 
+//Socual Login Google Native
+router.post('/googlenative', (req, res) => auth.googleNative(req, res));
 
 export default router;

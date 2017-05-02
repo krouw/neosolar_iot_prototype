@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { SubmissionError, reset } from 'redux-form'
 import { Actions, ActionConst } from 'react-native-router-flux'
+import { GoogleSignin } from 'react-native-google-signin'
 import { SET_CURRENT_USER, api } from './types'
 import { InsertStorage,
          DeleteStorage,
@@ -43,12 +44,37 @@ export const SignupServer = data => {
   }
 }
 
+export const SigninGoogle = () => {
+  return dispatch => {
+    GoogleSignin.signIn()
+    .then( res => {
+      console.log(res);
+      const { email, id, idToken } = res;
+      const data = {
+        email: email,
+        id: id,
+        idToken: idToken,
+      }
+      return axios.post(`${api.uri}/auth/googlenative`, data)
+    })
+    .then( res => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.log('WRONG SIGNIN', err);
+    })
+    .done();
+  }
+}
+
+
 export const Logout = () => {
   return dispatch => {
     dispatch(reset('signin'))
     dispatch(reset('signup'))
     DeleteStorage(STORAGE_KEY_TOKEN)
     setAuthorizationToken(false)
+    GoogleSignin.signOut();
     dispatch(setCurrentUser({}))
     Actions.signin({type: ActionConst.RESET});
   }
