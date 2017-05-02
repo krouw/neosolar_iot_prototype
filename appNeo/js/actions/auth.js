@@ -48,7 +48,6 @@ export const SigninGoogle = () => {
   return dispatch => {
     GoogleSignin.signIn()
     .then( res => {
-      console.log(res);
       const { email, id, idToken } = res;
       const data = {
         email: email,

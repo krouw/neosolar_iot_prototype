@@ -3,20 +3,15 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
+import GoogleAuth from 'google-auth-library'
+import { socialAuth } from '../config/socialAuth'
 
 import User from '../models/user';
 import Device from '../models/device';
 import { mongo } from '../config/config';
 
-function validateInput(data){
+function validateUser(data, db){
     let errors = {};
-
-    if(isEmpty(data)){
-       return {
-         errors: 'No se ha enviado ningun campo',
-         isValid: false,
-       }
-    }
 
     //validator.email sin un string devuelve err server
     if(isEmpty(data.email)){
@@ -27,20 +22,114 @@ function validateInput(data){
         errors.email = 'Email inválido'
       }
     }
-
-
-    return User.findOne({ 'email' : data.email })
-      .then( user => {
-        if(user){
-          if(user.email === data.email){
-            errors.email = 'Este email está siendo utilizado por un usuario'
+    if(db){
+      //Retorno una funcion (Promise) y recibo resultado
+      return User.findOne({ 'email' : data.email })
+        .then( user => {
+          if(user){
+            if(user.email === data.email){
+              errors.email = 'Este email está siendo utilizado por un usuario'
+            }
           }
-        }
-        return {
-          errors,
-          isValid: isEmpty(errors)
-        }
+          return {
+            errors,
+            isValid: isEmpty(errors)
+          }
+        })
+    }
+    else{
+      //Retorno un objeto
+      return {
+        errors,
+        isValid: isEmpty(errors)
+      }
+    }
+}
+
+function validateGoogle(data){
+  let errors = {};
+  const auth = new GoogleAuth;
+  let client = new auth.OAuth2(data.id,'','');
+
+  //validator.email sin un string devuelve err server
+  if(isEmpty(data.email)){
+    errors.email = 'Campo Requerido'
+  }
+  else{
+    if(!validator.isEmail(data.email)){
+      errors.email = 'Email inválido'
+    }
+  }
+
+  if(isEmpty(data.id)){
+    errors.id = 'Campo Requerido'
+  }
+
+  if(isEmpty(data.idToken)){
+    errors.idToken = 'Compo Requerido'
+  }
+
+  return new Promise( (resolve, reject) => {
+    if(!isEmpty(errors)){
+      return resolve({
+        errors: errors,
+        isValid: isEmpty(errors)
       })
+    }
+    else{
+      var auth = new GoogleAuth;
+      var client = new auth.OAuth2(socialAuth.clientID, '', '');
+
+      client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
+        if(err){
+          errors.google = 'Problemas validación con Google'
+          return resolve({
+            errors: errors,
+            isValid: isEmpty(errors)
+          })
+        }
+        const payload = login.getPayload();
+        const userid = {id: payload['sub']};
+
+        User.findOne({ 'google.id' : userid.id })
+          .then( user => {
+            if(user){
+              return resolve({
+                user: user,
+                errors: errors,
+                isValid: isEmpty(errors)
+              })
+            }
+            else{
+              User.create({
+                email: data.email,
+                google: userid,
+                password: data.id })
+                .then( userCreate => {
+                  return resolve({
+                    user: userCreate,
+                    errors: errors,
+                    isValid: isEmpty(errors)
+                  })
+                })
+                .catch( err => {
+                  errors.email = 'Este Email ya está siendo utilizado'
+                   return resolve({
+                     errors: errors,
+                     isValid: isEmpty(errors)
+                   })
+                })
+            }
+          })
+          .catch( err => {
+            return resolve({
+              errors: errors,
+              isValid: isEmpty(errors)
+            })
+          })
+      })
+    }
+  })
 }
 
 class AuthController {
@@ -94,7 +183,7 @@ class AuthController {
 
   existEmail(req, res){
     //Example validate
-    validateInput(req.body)
+    validateUser(req.body, true)
       .then(({ errors, isValid}) => {
         if(isValid){
           res.status(200).json({email:'Email valido'});
@@ -118,8 +207,18 @@ class AuthController {
   }
 
   googleNative(req, res){
-
-    res.status(200).json({message:'jelo'});
+    validateGoogle(req.body)
+      .then(({errors, isValid, user, token}) => {
+        if(isValid){
+          const token = jwt.sign(user, mongo.secret, {
+            expiresIn: 10000 //segundos
+          });
+          return res.status(200).json({user: user, token: `JWT ${token}`});
+        }
+        else{
+          return res.status(400).json(errors)
+        }
+      })
   }
 
   signout(req, res) {
