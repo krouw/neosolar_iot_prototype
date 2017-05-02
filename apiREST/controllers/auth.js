@@ -145,7 +145,7 @@ class AuthController {
             var data = {
             token: 'JWT ' + token,
             };
-            res.json({ success: true, token: 'JWT '+ token, user: user.email, data: data});
+            res.json({ success: true, data: data});
           } else {
             res.send({ success: false, message: 'Fallo en la autenticación. La clave no coincide.'});
           }
