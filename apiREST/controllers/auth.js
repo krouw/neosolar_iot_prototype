@@ -52,16 +52,16 @@ class AuthController {
       if (err) throw (err);
 
       if(!user) {
-        res.status(401).json({ success: false, message: 'Fallo en la autenticación. Usuario no registrado.'});
+        res.status(401).json({ message: 'Fallo en la autenticación. Usuario no registrado.'});
       } else {
         user.comparePassword(req.body.password, (err, isMatch) => {
           if (isMatch && !err) {
             var token = jwt.sign(user, mongo.secret, {
               expiresIn: 10000 //segundos
             });
-            res.status(201).json({ success: true, token: 'JWT '+ token, user: user.email});
+            res.status(201).json({ token: 'JWT '+ token, user: user.email});
           } else {
-            res.status(401).json({ success: false, message: 'Fallo en la autenticación. La clave no coincide.'});
+            res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.'});
           }
         });
       }
@@ -71,7 +71,8 @@ class AuthController {
   signup(req, res) {
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
-      res.json({ success: false, message: 'Porfavor ingrese email y contraseña.'});
+        //modificar los codigos 400
+      res.status(400).json({ message: 'Porfavor ingrese email y contraseña.' });
       } else {
         var newUser = new User({
           email: req.body.email,
@@ -80,14 +81,14 @@ class AuthController {
       //guardar usuario
       newUser.save( (err) => {
         if (err) {
-          return res.json({success: false, message: 'El correo ya existe'});
+          return res.status(400).json({ message: 'El correo ya existe' });
         }
-        res.json({ success: true, message: 'Usuario registrado con éxito.'});
+        res.status(201).json({ message: 'Usuario registrado con éxito.' });
         });
       }
     }
     else {
-      res.send({ success: false, message: 'Ingrese un correo válido.'});
+      res.status(400).json({ message: 'Ingrese un correo válido.' });
     }
   }
 

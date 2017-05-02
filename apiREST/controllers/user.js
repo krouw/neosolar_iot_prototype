@@ -11,72 +11,48 @@ class UserController {
   getAll(req, res) {
     User.find({})
       .then( users => {
-        return res.json(users)
+        return res.status(200).json(users)
       })
       .catch( err => {
-        return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-        });
+        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
   //get
   getById(req, res) {
     User.findById({_id: req.params.idUser})
       .then( user => {
-        return res.json(user)
+        return res.status(200).json(user)
       })
       .catch( err => {
-        return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-        });
+        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
   //post
   create(req, res) {
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
-        res.status(422).json({
-          success: false,
-          message: 'Por favor ingrese email y contraseña.'
-        });
+        res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
       }
       else{
-        console.log(req.body);
-        //console.log(req.params);
         User.create({
           email: req.body.email,
           password: req.body.password })
           .then( user => {
-            return res.status(201).json({
-              success: true,
-              message: 'Usuario registrado con éxito.',
-              user: user,
-            });
+            return res.status(201).json({ message: 'Usuario registrado con éxito.', user: user });
           })
           .catch( err => {
-            return res.status(422).json({
-              success: false,
-              message: 'El correo ya está siendo utilizado.',
-            });
+            return res.status(422).json({ message: 'El correo ya está siendo utilizado.' });
           })
       }
     }
     else{
-      res.status(422).json({
-        success: false,
-        message: 'Por favor ingrese email válido.'
-      });
+      res.status(422).json({ message: 'Por favor ingrese email válido.' });
     }
   }
   //put
   update(req, res) {
     if(!req.body.email || !req.body.password) {
-      res.status(422).json({
-        success: false,
-        message: 'Por favor ingrese email y contraseña.'
-      });
+      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
     }
     else {
       User.findById({_id: req.params.idUser})
@@ -88,41 +64,32 @@ class UserController {
           if (err)
             res.send(err);
         })
-        return res.json('Usuario actualizado con éxito' + user )
+        return res.status(200).json('Usuario actualizado con éxito' + user )
       })
       .catch( err => {
-        return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-        });
+        return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
     }
   }
   //delete
   delete(req, res) {
     if(!req.body.email || !req.body.password) {
-      res.status(422).json({
-        success: false,
-        message: 'Por favor ingrese email y contraseña.'
-      });
+      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
     }
     else {
       User.findByIdAndRemove({_id: req.params.idUser})
         .then( user => {
           if (user==null) {
-            return res.json('Usuario no encontrado.')
+            return res.status(400).json('Usuario no encontrado.')
           }
           else {
-            return res.json('Usuario eliminado: ' + user)
+            return res.status(200).json('Usuario eliminado: ' + user)
           }
 
         })
 
         .catch( err => {
-          return res.status(500).json({
-            success: false,
-            message: 'No existe usuario. Lo sentimos, Hubo un problema en responder tu solicitud.',
-          });
+          return res.status(500).json({ message: 'No existe usuario. Lo sentimos, Hubo un problema en responder tu solicitud.' });
         })
       }
     }
@@ -142,43 +109,30 @@ class UserController {
   }
   */
   getAllDev(req, res) {
-    //'id' : mail
-    console.log(req.user);
     Device.find({user: req.user})
       .then( devices => {
         User.populate(devices, {path: "user"})
           res.status(200).json(devices)
       })
       .catch( err => {
-        return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-        });
+        return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
 
   getByIdDev(req, res) {
-    console.log('dev:'+ req.params);
     Device.findById({_id: req.params.idDevice})
       .then( device => {
-        return res.json(device)
+        return res.status(200).json(device)
       })
       .catch( err => {
-        return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-        });
+        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
 
   createDev(req, res) {
-    //console.log(req.params.id)
     if (validator.isEmail(req.body.email+'')) {
       if(!req.body.email || !req.body.password) {
-        res.status(422).json({
-          success: false,
-          message: 'Por favor ingrese email y contraseña.'
-        });
+        res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
       }
       else{
           Device.create({
@@ -186,35 +140,22 @@ class UserController {
           name : req.body.name,
           })
           .then( device => {
-            return res.status(201).json({
-              success: true,
-              message: 'Dispositivo registrado con éxito.',
-              device: device
-            });
+            return res.status(201).json({  message: 'Dispositivo registrado con éxito.', device: device });
           })
           .catch( err => {
             console.log(err);
-            return res.status(422).json({
-              success: false,
-              message: 'Dispositivo no se ha registrado con éxito.',
-            });
+            return res.status(422).json({  message: 'Dispositivo no se ha registrado con éxito.' });
           })
       }
     }
     else{
-      res.status(422).json({
-        success: false,
-        message: 'Por favor ingrese email válido.'
-      });
+      res.status(422).json({ message: 'Por favor ingrese email válido.' });
     }
   }
 
   updateDev(req, res) {
     if(!req.body.email || !req.body.password) {
-      res.status(422).json({
-        success: false,
-        message: 'Por favor ingrese email y contraseña.'
-      });
+      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
     }
     else {
       Device.findById({_id: req.params.idDevice})
@@ -226,40 +167,31 @@ class UserController {
           if (err)
             res.send(err);
         })
-        return res.json('Dispositivo actualizado con éxito: ' + device )
+        return res.status(200).json('Dispositivo actualizado con éxito: ' + device )
       })
       .catch( err => {
-        return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-        });
+        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
     }
   }
 
   deleteDev(req, res) {
     if(!req.body.email || !req.body.password) {
-      res.status(422).json({
-        success: false,
-        message: 'Por favor ingrese email y contraseña.'
-      });
+      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
     }
     else {
       Device.findByIdAndRemove({_id: req.params.idDevice})
         .then( device => {
           if (device==null) {
-            return res.json('Dispositivo no encontrado.')
+            return res.status(400).json('Dispositivo no encontrado.')
           }
           else {
-            return res.json('Dispositivo eliminado: ' + device.idUser + ', ' + device.name)
+            return res.status(200).json('Dispositivo eliminado: ' + device.idUser + ', ' + device.name)
           }
         })
 
         .catch( err => {
-          return res.status(500).json({
-            success: false,
-            message: 'No existe dispositivo. Lo sentimos, Hubo un problema en responder tu solicitud.',
-          });
+          return res.status(500).json({  message: 'No existe dispositivo. Lo sentimos, Hubo un problema en responder tu solicitud.' });
         })
       }
     }
