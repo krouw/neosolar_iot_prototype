@@ -40,7 +40,7 @@ class MeasurementController {
           intensity: req.body.intensity
           })
           .then( measurement => {
-            return res.status(201).json({ message: 'Medición registrada con éxito.', measurement: measurement );
+            return res.status(201).json({ message: 'Medición registrada con éxito.', measurement: measurement });
           })
           .catch( err => {
             return res.status(422).json({ message: 'La medición no se ha registrado.' });
