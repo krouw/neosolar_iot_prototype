@@ -46,6 +46,41 @@ function validateUser(data, db){
     }
 }
 
+function validateByGoole(errors, data){
+
+  const promise = new Promise( (resolve, reject) => {
+
+    const auth = new GoogleAuth;
+    const client = new auth.OAuth2(socialAuth.clientID, '', '');
+
+    if(!isEmpty(errors)){
+      return resolve({
+        errors,
+        isValid: isEmpty(errors)
+      })
+    }
+    else{
+      client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
+        let errors = {}
+        if(err){
+          errors.google = 'Problema validación con Google'
+          return resolve({
+            errors,
+            isValid: isEmpty(errors)
+          })
+        }
+        const payload = login.getPayload();
+        return resolve({
+          userid: {id: payload['sub']},
+          isValid: isEmpty(errors),
+          errors,
+        });
+      })
+    }
+  })
+  return promise;
+}
+
 function validateGoogle(data){
   let errors = {};
   const auth = new GoogleAuth;
@@ -66,70 +101,48 @@ function validateGoogle(data){
   }
 
   if(isEmpty(data.idToken)){
-    errors.idToken = 'Compo Requerido'
+    errors.idToken = 'Campo Requerido'
   }
 
-  return new Promise( (resolve, reject) => {
-    if(!isEmpty(errors)){
-      return resolve({
-        errors: errors,
-        isValid: isEmpty(errors)
-      })
-    }
-    else{
-      var auth = new GoogleAuth;
-      var client = new auth.OAuth2(socialAuth.clientID, '', '');
-
-      client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
-        if(err){
-          errors.google = 'Problemas validación con Google'
-          return resolve({
-            errors: errors,
-            isValid: isEmpty(errors)
-          })
-        }
-        const payload = login.getPayload();
-        const userid = {id: payload['sub']};
-
-        User.findOne({ 'google.id' : userid.id })
-          .then( user => {
-            if(user){
-              return resolve({
-                user: user,
-                errors: errors,
-                isValid: isEmpty(errors)
-              })
+  return validateByGoole(errors, data)
+          .then( ({ errors, isValid, userid}) => {
+            if(isValid){
+              User.findOne({ 'google.id' : userid.id })
+                .then( user => {
+                  console.log(user);
+                    return {
+                      errors: {},
+                      isValid: true,
+                      user: user,
+                    }
+                })
+                .catch((err) => {
+                  let errors = {}
+                  errors.server = 'Problemas con el servidor'
+                  return {
+                    errors: errors,
+                    isValid: true,
+                    user: user,
+                  }
+                })
             }
             else{
-              User.create({
-                email: data.email,
-                google: userid,
-                password: data.id })
-                .then( userCreate => {
-                  return resolve({
-                    user: userCreate,
-                    errors: errors,
-                    isValid: isEmpty(errors)
-                  })
-                })
-                .catch( err => {
-                  errors.email = 'Este Email ya está siendo utilizado'
-                   return resolve({
-                     errors: errors,
-                     isValid: isEmpty(errors)
-                   })
-                })
+              return {
+                errors: errors,
+                isValid: isEmpty(errors),
+                user: undefined
+              }
             }
           })
-          .catch( err => {
-            return resolve({
+          .catch((err) => {
+            let errors = {}
+            errors.google = 'Problemas validación con Google'
+            return {
               errors: errors,
               isValid: isEmpty(errors)
-            })
+            }
           })
-      })
-    }
-  })
+
 }
 
 class AuthController {
@@ -210,14 +223,17 @@ class AuthController {
     validateGoogle(req.body)
       .then(({errors, isValid, user}) => {
         if(isValid){
-          const token = jwt.sign(user, mongo.secret, {
-            expiresIn: 10000 //segundos
-          });
-          return res.status(200).json({user: user, token: `JWT ${token}`});
+          //const token = jwt.sign(user, mongo.secret, {
+            //expiresIn: 10000 //segundos
+          //});
+          return res.status(200).json({user: user,});
         }
         else{
-          return res.status(400).json(errors)
+          return res.status(400).json({errors: errors, status: 'Error'})
         }
+      })
+      .catch((err) => {
+        console.log('dasd'+err);
       })
   }
 
