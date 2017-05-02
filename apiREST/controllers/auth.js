@@ -208,7 +208,7 @@ class AuthController {
 
   googleNative(req, res){
     validateGoogle(req.body)
-      .then(({errors, isValid, user, token}) => {
+      .then(({errors, isValid, user}) => {
         if(isValid){
           const token = jwt.sign(user, mongo.secret, {
             expiresIn: 10000 //segundos
