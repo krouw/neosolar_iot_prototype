@@ -127,10 +127,9 @@ class AuthController {
     res.redirect("/api");
 */
   }
-
+// Login para Raspi, valida la peticion de datos en el cliente.
   device(req, res) {
-    console.log(req.body.email);
-    Device.findOne({
+    User.findOne({
       email: req.body.email
     }, (err, user) => {
       if (err) throw (err);
@@ -143,7 +142,10 @@ class AuthController {
             var token = jwt.sign(user, mongo.secret, {
               expiresIn: 10000 //segundos
             });
-            res.json({ success: true, token: 'JWT '+ token, user: user.email});
+            var data = {
+            token: 'JWT ' + token,
+            };
+            res.json({ success: true, token: 'JWT '+ token, user: user.email, data: data});
           } else {
             res.send({ success: false, message: 'Fallo en la autenticación. La clave no coincide.'});
           }
