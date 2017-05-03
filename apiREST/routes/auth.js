@@ -18,7 +18,7 @@ router.get('/google/close', passport.authenticate('google', { failureRedirect: '
   (req, res) => { auth.google(req,res)  }
 );
 
-//Socual Login Google Native
+//Social Login Google Native
 router.post('/googlenative', (req, res) => auth.googleNative(req, res));
 
 export default router;
