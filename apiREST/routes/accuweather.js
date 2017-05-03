@@ -9,6 +9,6 @@ const accu = new AccuController();
 router.use(passport.authenticate('jwt', {session: false}));
 //router.use(AuthorizationRole)
 
-router.post('/', (req, res) => accu.getInfo(req, res));
+router.get('/', (req, res) => accu.getInfo(req, res));
 
 export default router;
