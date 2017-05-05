@@ -5,5 +5,5 @@ export const express = {
 
 export const mongo = {
   uri: "mongodb://localhost/apineo",
-  secret: "secret"
+  secret: "elpipeselacome"
 }
