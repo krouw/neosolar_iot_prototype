@@ -63,7 +63,7 @@ function validateByGoole(errors, data){
       client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
         let errors = {}
         if(err){
-          errors.google = 'Problema validación con Google'
+          errors.google = 'Problemas de validación con Google'
           return resolve({
             errors,
             isValid: isEmpty(errors)

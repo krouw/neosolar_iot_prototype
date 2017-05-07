@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { ToastAndroid } from 'react-native'
 import { SubmissionError, reset } from 'redux-form'
 import { Actions, ActionConst } from 'react-native-router-flux'
 import { GoogleSignin } from 'react-native-google-signin'
@@ -54,13 +55,25 @@ export const SigninGoogle = () => {
         id: id,
         idToken: idToken,
       }
-      return axios.post(`${api.uri}/auth/googlenative`, data)
-    })
-    .then( res => {
-      console.log(res.data);
+      axios.post(`${api.uri}/auth/googlenative`, data)
+        .then( res => {
+          const token = res.data.token;
+          InsertStorage(STORAGE_KEY_TOKEN, token)
+          setAuthorizationToken(token)
+          Actions.main({type: ActionConst.RESET})
+          dispatch(setCurrentUser(res.data.user))
+        })
+        .catch((err) => {
+          let errors = err.response.data.errors;
+          if(errors.google){
+            ToastAndroid.show(errors.google, ToastAndroid.LONG);
+          }
+        })
     })
     .catch((err) => {
-      console.log('WRONG SIGNIN', err);
+      if(err){
+        ToastAndroid.show('No se ha podido establecer conexión con Google', ToastAndroid.LONG);
+      }
     })
     .done();
   }

@@ -104,6 +104,7 @@ class Signin extends Component {
 Signin.propTypes = {
     SigninServer: React.PropTypes.func.isRequired,
     SignupServer: React.PropTypes.func.isRequired,
+    SigninGoogle: React.PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({
