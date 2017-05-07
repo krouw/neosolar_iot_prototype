@@ -35,15 +35,15 @@ class TextField extends Component {
                 color: textFocusColor
               } : {},]}
               onChangeText={onChange}
-              onFocus={(event) => {
+              onFocus={(e) => {
                 this.refs.label.floatLabel();
                 this.refs.underline.expandLine();
-                onFocus(event);
+                onFocus(e);
               }}
-              onBlur={(event) => {
+              onBlur={(e) => {
                 !value.length ? this.refs.label.sinkLabel() : null;
                 error ? this.refs.underline.expandLine() : this.refs.underline.shrinkLine() ;
-                onBlur(event);
+                onBlur(e);
               }}
               secureTextEntry={isPassword ? isPassword : false}
               {...restInput}

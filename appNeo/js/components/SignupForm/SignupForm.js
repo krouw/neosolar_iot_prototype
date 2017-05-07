@@ -4,6 +4,7 @@ import { reduxForm, Field } from 'redux-form'
 import TextField from '../../components/TextField/TextField'
 import { MKButton } from 'react-native-material-kit'
 import axios from 'axios'
+import { api } from '../../actions/types'
 
 const validate = values => {
   const errors = {}
@@ -20,14 +21,12 @@ const validate = values => {
 
 const asyncValidate = (values) => {
   const errors = {};
-  return axios.get('http://10.0.2.2:7000/api/auth')
+  console.log(values);
+  return axios.get(`${api.uri}/auth/${values.email}/exists`)
     .then( res => {
-      console.log(res);
-      errors.email = 'el email esta siendo utilizado'
-      return errors
-    })
-    .catch( err => {
-      console.log(err);
+      if(res.data.errors){
+        throw { email: res.data.errors.email }
+      }
     })
 }
 
@@ -36,22 +35,15 @@ const SignupForm = ({
   submitting,
   error,
   handleSubmit,
-  SignupServer,
-  submitSucceeded }) => {
+  SignupServer, }) => {
 
-  if(submitSucceeded){
-    ButtonColor = '#BDB818'
-  }
-  else{
-    ButtonColor = '#EDB818'
-  }
   const ColoredRaisedButton = MKButton.coloredButton()
-    .withBackgroundColor(ButtonColor)
+    .withBackgroundColor('orange')
     .withStyle(styles.submitButton)
     .build();
 
   return (
-    <View style={[styles.signigForm]}>
+    <View style={[styles.signupForm]}>
       <Text style={styles.title}>Regístrate</Text>
       {error && <Text style={styles.error}>
         {error}
@@ -73,14 +65,14 @@ const SignupForm = ({
           <ActivityIndicator
             color="white"
             size={32} /> :
-            <Text style={{color: 'white', fontWeight: 'normal', fontSize: 24,}}>{ submitSucceeded ? 'Cuenta Creada!' : 'Crear Cuenta'}</Text> }
+            <Text style={{color: 'white', fontWeight: 'normal', fontSize: 24,}}>Crear Cuenta</Text> }
       </ColoredRaisedButton>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-    signigForm: {
+    signupForm: {
       width: '100%',
       flex: 1,
       justifyContent: 'flex-start',
@@ -107,5 +99,5 @@ export default reduxForm({
   form: 'signup',
   validate,
   asyncValidate,
-  asyncBlurFields: ['email']
+  asyncBlurFields: ['password'],
 })(SignupForm)

@@ -21,18 +21,10 @@ const SigninForm = ({
   SigninServer,
   handleSubmit,
   submitting,
-  error,
-  submitSucceeded }) => {
-
-  if(submitSucceeded){
-    ButtonColor = '#BDB818'
-  }
-  else{
-    ButtonColor = '#EDB818'
-  }
+  error, }) => {
 
   const ColoredRaisedButton = MKButton.coloredButton()
-    .withBackgroundColor(ButtonColor)
+    .withBackgroundColor('orange')
     .withStyle(styles.submitButton)
     .build();
 
@@ -40,7 +32,7 @@ const SigninForm = ({
     .build();
 
   return (
-    <View style={[styles.signigForm]}>
+    <View style={[styles.signinForm]}>
       <Text style={[styles.title]}>Identifícate</Text>
       <Text style={styles.error}>
         {error ? error : null}
@@ -73,7 +65,7 @@ const SigninForm = ({
 }
 
 const styles = StyleSheet.create({
-    signigForm: {
+    signinForm: {
       flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'center',

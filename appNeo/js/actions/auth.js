@@ -39,8 +39,9 @@ export const SigninServer = data => {
 
 export const SignupServer = data => {
   return dispatch => {
-    return axios.post( api.uri + '/auth/signup', data)
+    return axios.post( `${api.uri}/auth/signup`, data)
       .then( res => {
+
           console.log(res);
       })
       .catch( err => {
@@ -86,8 +87,6 @@ export const SigninGoogle = () => {
 
 export const Logout = () => {
   return dispatch => {
-    dispatch(reset('signin'))
-    dispatch(reset('signup'))
     DeleteStorage(STORAGE_KEY_TOKEN)
     setAuthorizationToken(false)
     GoogleSignin.signOut();
