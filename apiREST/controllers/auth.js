@@ -165,15 +165,16 @@ class AuthController {
 
   existEmail(req, res){
     //Example validate
-    validateUser(req.body, true)
-      .then(({ errors, isValid}) => {
-        if(isValid){
-          res.status(200).json({email:'Email valido'});
-        }
-        else{
-          res.status(400).json(errors)
-        }
-      })
+    if(req.params.email && validator.isEmail(req.params.email)){
+      User.findOne({ 'email' : req.params.email })
+        .then( user => {
+          if(user){
+            return res.status(200).json({errors: {email: 'Este Correo ya está siendo utilizado'}, status: 'Error'});
+          }
+          return res.status(404).json({status: 'OK'});
+        })
+    }
+
   }
 
   google(req, res){
