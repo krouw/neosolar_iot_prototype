@@ -12,7 +12,7 @@ class TextField extends Component {
   render(){
     let {
       input: { value, onChange, onFocus, onBlur, ...restInput },
-      meta: { asyncValidating, touched, error, invalid, active },
+      meta: { asyncValidating, touched, error, invalid, active, visited },
       isPassword,
       label,
       duration,
@@ -22,6 +22,9 @@ class TextField extends Component {
       textFocusColor,
       ...props,
     } = this.props;
+    if(touched && error){
+      this.refs.underline.expandLine()
+    }
     return (
       <View>
         <View style={[dense ? styles.denseWrapper : styles.wrapperInput]}>

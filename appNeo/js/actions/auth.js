@@ -18,18 +18,22 @@ export function setCurrentUser(user){
 
 export const SigninServer = data => {
   return dispatch => {
-    return axios.post( api.uri + '/auth/signin', data)
-    .then( res => {
-      const token = res.data.token;
-      InsertStorage(STORAGE_KEY_TOKEN, token)
-      setAuthorizationToken(token)
-      Actions.main({type: ActionConst.RESET})
-      dispatch(setCurrentUser(res.data.user))
-    })
-    .catch( err => {
-      console.log(err);
-      throw new SubmissionError({ _error: 'Problemas con el email y/o contraseña.' })
-    })
+    return axios.post( `${api.uri}/auth/signin`, data)
+      .then( res => {
+        const token = res.data.token;
+        InsertStorage(STORAGE_KEY_TOKEN, token)
+        setAuthorizationToken(token)
+        Actions.main({type: ActionConst.RESET})
+        dispatch(setCurrentUser(res.data.user))
+      })
+      .catch( err => {
+        if(!err.response){
+          ToastAndroid.show('No se ha podido establecer conexión con el Servidor', ToastAndroid.LONG);
+        }
+        if(err.response){
+          throw new SubmissionError({email: ' ', password: ' ', _error: 'Problemas con el email y/o contraseña.' })
+        }
+      })
   }
 }
 

@@ -36,6 +36,9 @@ const SigninForm = ({
     .withStyle(styles.submitButton)
     .build();
 
+  const ColoredFlatButton = MKButton.coloredFlatButton()
+    .build();
+
   return (
     <View style={[styles.signigForm]}>
       <Text style={[styles.title]}>Identifícate</Text>
@@ -53,14 +56,17 @@ const SigninForm = ({
         dense={true}
         isPassword={true}
         component={TextField} />
-        <Text style={styles.rememberPassword}>Recordar Contraseña</Text>
+      <ColoredFlatButton
+        style={styles.rememberPassword}>
+        <Text style={styles.buttonText}>Recordar Contraseña</Text>
+      </ColoredFlatButton>
       <ColoredRaisedButton
         onPress={handleSubmit(SigninServer)}>
         { submitting ?
           <ActivityIndicator
             color="white"
             size={32} /> :
-            <Text style={{color: 'white', fontWeight: 'normal', fontSize: 24,}}>{ submitSucceeded ? 'Sesión Iniciada' : 'Iniciar Sesión'}</Text> }
+            <Text style={{color: 'white', fontWeight: 'normal', fontSize: 24,}}>Iniciar Sesión</Text> }
       </ColoredRaisedButton>
     </View>
   )
@@ -84,11 +90,18 @@ const styles = StyleSheet.create({
       justifyContent:'center'
     },
     rememberPassword:{
-      marginTop: 16,
-      marginBottom: 24
+      marginTop: 8,
+      marginBottom: 16,
+      width: 200,
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: 32,
     },
     error: {
       paddingTop: 16,
+    },
+    buttonText:{
+      fontSize: 16,
     },
     test :{
      borderStyle: 'solid',

@@ -130,7 +130,7 @@ class AuthController {
             var token = jwt.sign(user, mongo.secret, {
               expiresIn: 10000 //segundos
             });
-            res.status(201).json({ token: 'JWT '+ token, user: user.email});
+            res.status(200).json({ token: 'JWT '+ token, user: user.email});
           } else {
             res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.'});
           }
