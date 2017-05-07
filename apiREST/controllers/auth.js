@@ -165,16 +165,21 @@ class AuthController {
 
   existEmail(req, res){
     //Example validate
-    if(req.params.email && validator.isEmail(req.params.email)){
-      User.findOne({ 'email' : req.params.email })
-        .then( user => {
-          if(user){
-            return res.status(200).json({errors: {email: 'Este Correo ya está siendo utilizado'}, status: 'Error'});
-          }
-          return res.status(404).json({status: 'OK'});
-        })
+    if(!req.params.email){
+      return res.status(400).json({status: 'Error', errors: {email: 'Campo Requerido'}});
     }
 
+    if(!validator.isEmail(req.params.email)){
+      return res.status(400).json({status: 'Error', errors: {email: 'El Campo debe ser un email'}});
+    }
+
+    User.findOne({ 'email' : req.params.email })
+      .then( user => {
+        if(user){
+          return res.status(200).json({errors: {email: 'Este Correo ya está siendo utilizado'}, status: 'Error'});
+        }
+        return res.status(200).json({status: 'OK'});
+      })  
   }
 
   google(req, res){
