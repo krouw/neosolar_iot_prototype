@@ -7,3 +7,7 @@ export const mongo = {
   uri: "mongodb://localhost/apineo",
   secret: "secret"
 }
+
+export const authDevice = {
+  secret: "secret"
+}

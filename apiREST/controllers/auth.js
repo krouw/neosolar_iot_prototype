@@ -5,6 +5,7 @@ import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
 import GoogleAuth from 'google-auth-library'
 import { socialAuth } from '../config/socialAuth'
+import { authDevice } from '..config/config'
 
 import User from '../models/user';
 import Device from '../models/device';
@@ -46,8 +47,8 @@ function validateUser(data, db){
     }
 }
 
-function validateByGoole(errors, data){
 
+function validateByGoole(errors, data){
   const promise = new Promise( (resolve, reject) => {
 
     const auth = new GoogleAuth;
@@ -63,7 +64,7 @@ function validateByGoole(errors, data){
       client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
         let errors = {}
         if(err){
-          errors.google = 'Problemas de validación con Google'
+          errors.google = 'Problema validación con Google'
           return resolve({
             errors,
             isValid: isEmpty(errors)
@@ -105,13 +106,44 @@ function validateGoogle(data){
   }
 
   return validateByGoole(errors, data)
-          .then(({errors, isValid, userid}) => {
-            return {
-              errors: errors,
-              isValid: isEmpty(errors),
-              userid: userid,
+          .then( ({ errors, isValid, userid}) => {
+            if(isValid){
+              User.findOne({ 'google.id' : userid.id })
+                .then( user => {
+                  console.log(user);
+                    return {
+                      errors: {},
+                      isValid: true,
+                      user: user,
+                    }
+                })
+                .catch((err) => {
+                  let errors = {}
+                  errors.server = 'Problemas con el servidor'
+                  return {
+                    errors: errors,
+                    isValid: true,
+                    user: user,
+                  }
+                })
+            }
+            else{
+              return {
+                errors: errors,
+                isValid: isEmpty(errors),
+                user: undefined
+              }
             }
           })
+          .catch((err) => {
+            let errors = {}
+            errors.google = 'Problemas validación con Google'
+            return {
+              errors: errors,
+              isValid: isEmpty(errors)
+            }
+          })
+
 }
 
 class AuthController {
@@ -130,7 +162,7 @@ class AuthController {
             var token = jwt.sign(user, mongo.secret, {
               expiresIn: 10000 //segundos
             });
-            res.status(200).json({ token: 'JWT '+ token, user: user.email});
+            res.status(201).json({ token: 'JWT '+ token, user: user.email});
           } else {
             res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.'});
           }
@@ -165,21 +197,15 @@ class AuthController {
 
   existEmail(req, res){
     //Example validate
-    if(!req.params.email){
-      return res.status(400).json({status: 'Error', errors: {email: 'Campo Requerido'}});
-    }
-
-    if(!validator.isEmail(req.params.email)){
-      return res.status(400).json({status: 'Error', errors: {email: 'El Campo debe ser un email'}});
-    }
-
-    User.findOne({ 'email' : req.params.email })
-      .then( user => {
-        if(user){
-          return res.status(200).json({errors: {email: 'Este Correo ya está siendo utilizado'}, status: 'Error'});
+    validateUser(req.body, true)
+      .then(({ errors, isValid}) => {
+        if(isValid){
+          res.status(200).json({email:'Email valido'});
         }
-        return res.status(200).json({status: 'OK'});
-      })  
+        else{
+          res.status(400).json(errors)
+        }
+      })
   }
 
   google(req, res){
@@ -196,38 +222,19 @@ class AuthController {
 
   googleNative(req, res){
     validateGoogle(req.body)
-      .then(({errors, isValid, userid}) => {
+      .then(({errors, isValid, user}) => {
         if(isValid){
-          User.findOne({ 'google.id' : userid.id })
-            .then( user => {
-              if(user){
-                const token = jwt.sign(user, mongo.secret, {
-                      expiresIn: 10000 //segundos
-                });
-                return res.status(200).json({user: user, token: `JWT ${token}`});
-              }
-              else{
-                User.create({
-                  email: res.body.email,
-                  google: userid,
-                  password: id })
-                  .then( userCreate => {
-                    const token = jwt.sign(user, mongo.secret, {
-                          expiresIn: 10000 //segundos
-                    });
-                    return res.status(201).json({user: user, token: `JWT ${token}`});
-                  })
-                  .catch( err => {
-                    return res.status(400).json({
-                      errors: {email: 'Este Email ya está siendo utilizado'}
-                      , status: 'Error'})
-                  })
-              }
-            })
+          //const token = jwt.sign(user, mongo.secret, {
+            //expiresIn: 10000 //segundos
+          //});
+          return res.status(200).json({user: user,});
         }
         else{
           return res.status(400).json({errors: errors, status: 'Error'})
         }
+      })
+      .catch((err) => {
+        console.log('dasd'+err);
       })
   }
 
@@ -262,6 +269,7 @@ class AuthController {
             var data = {
               token: 'JWT ' + token,
               user: req.user,
+              secret: authDevice.secret,
             }
             res.status(201).json({ data: data });
           } else {
