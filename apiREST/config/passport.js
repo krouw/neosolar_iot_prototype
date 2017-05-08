@@ -10,8 +10,7 @@ import User from '../models/user'
 // load the auth variables
 import { socialAuth } from './socialAuth'
 
-
-module.exports = function(passport) {
+module.exports = (passport) => {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {

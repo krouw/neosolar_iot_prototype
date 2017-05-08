@@ -1,6 +1,7 @@
 import express from 'express'
 import passport from 'passport'
 import UserController from '../controllers/user'
+import { getAccu } from '../services/accu'
 
 const router = express.Router()
 const user = new UserController();
@@ -15,6 +16,7 @@ const AuthorizationRole = (req, res, next) => {
 router.use(passport.authenticate('jwt', {session: false}));
 router.use(AuthorizationRole)
 
+//router.get('/', (req, res) => user.getAll(req, res));
 router.get('/', (req, res) => user.getAll(req, res));
 router.get('/:idUser', (req, res) => user.getById(req, res));
 router.post('/', (req, res) => user.create(req, res));
