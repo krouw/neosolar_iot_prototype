@@ -93,7 +93,7 @@ class UserController {
         })
       }
     }
-
+  //get all
   getAllDev(req, res) {
     Device.find({user: req.user})
       .then( devices => {
@@ -104,7 +104,7 @@ class UserController {
         return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
-
+  // get
   getByIdDev(req, res) {
     Device.findById({_id: req.params.idDevice})
       .then( device => {

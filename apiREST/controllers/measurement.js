@@ -3,30 +3,23 @@ import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import Measurement from '../models/measurement';
+import Device from '../models/device'
+import User from '../models/user'
 
 class MeasurementController {
-  //get
+  //get all
   getAllMsm(req, res) {
-    Measurement.find({})
+    console.log(req);
+    Measurement.find({user: req.device})
       .then( measurements => {
-        return res.status(200).json(measurements)
-      })
-      .catch( err => {
-        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
-      })
-  }
-  //get
-  getByIdMsm(req, res) {
-    Measurement.find({user: req.user})
-      .then( measurements => {
-        Device.populate(measurements, {path: "measurement"})
+        Device.populate(measurements, {path: "device"})
           res.status(200).json(measurements)
       })
       .catch( err => {
         return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
-
+  //get
   getByIdMsm(req, res) {
     Measurement.findById({_id: req.params.idMeasurement})
       .then( measurement => {
@@ -45,7 +38,7 @@ class MeasurementController {
       else {
         Measurement.create({
           //required
-          idDevice: req.body.name,
+          idDevice: req.params.idDevice,
           //not required
           voltage: req.body.voltage,
           intensity: req.body.intensity
