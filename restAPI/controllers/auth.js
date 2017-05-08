@@ -200,7 +200,7 @@ class AuthController {
           if(user){
             if(user.email === data.email){
               errors.email = 'Este email está siendo utilizado por un usuario'
-              res.status(400).json({errors: errors})
+              res.status(400).json({errors: errors, isValid: false})
 
             }
           }
