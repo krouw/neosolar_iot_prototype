@@ -145,6 +145,10 @@ function validateGoogle(data){
 
 }
 
+function validateInput(isValid){
+
+}
+
 class AuthController {
 
   signin(req, res) {
@@ -206,8 +210,8 @@ class AuthController {
           }
           else {
             let newUser = new User({
-                email: req.body.email,
-                password: req.body.password
+                email: data.email,
+                password: data.password
             });
             const token = jwt.sign(newUser._id, mongo.secret, {
               expiresIn: 10000 //segundos
