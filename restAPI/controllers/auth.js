@@ -48,6 +48,7 @@ function validateUser(data, db){
 }
 
 function validateByGoole(errors, data){
+
   const promise = new Promise( (resolve, reject) => {
 
     const auth = new GoogleAuth;
@@ -63,7 +64,7 @@ function validateByGoole(errors, data){
       client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
         let errors = {}
         if(err){
-          errors.google = 'Problema validación con Google'
+          errors.google = 'Problemas de validación con Google'
           return resolve({
             errors,
             isValid: isEmpty(errors)
@@ -105,48 +106,13 @@ function validateGoogle(data){
   }
 
   return validateByGoole(errors, data)
-          .then( ({ errors, isValid, userid}) => {
-            if(isValid){
-              User.findOne({ 'google.id' : userid.id })
-                .then( user => {
-                  console.log(user);
-                    return {
-                      errors: {},
-                      isValid: true,
-                      user: user,
-                    }
-                })
-                .catch((err) => {
-                  let errors = {}
-                  errors.server = 'Problemas con el servidor'
-                  return {
-                    errors: errors,
-                    isValid: true,
-                    user: user,
-                  }
-                })
-            }
-            else{
-              return {
-                errors: errors,
-                isValid: isEmpty(errors),
-                user: undefined
-              }
-            }
-          })
-          .catch((err) => {
-            let errors = {}
-            errors.google = 'Problemas validación con Google'
+          .then(({errors, isValid, userid}) => {
             return {
               errors: errors,
-              isValid: isEmpty(errors)
+              isValid: isEmpty(errors),
+              userid: userid,
             }
           })
-
-}
-
-function validateInput(isValid){
-
 }
 
 class AuthController {
@@ -265,21 +231,40 @@ class AuthController {
   }
 
 
-  googleNative(req,res){
+  googleNative(req, res){
     validateGoogle(req.body)
-      .then(({errors, isValid, user}) => {
+      .then(({errors, isValid, userid}) => {
         if(isValid){
-          //const token = jwt.sign(user, mongo.secret, {
-            //expiresIn: 10000 //segundos
-          //});
-          return res.status(200).json({user: user,});
+          User.findOne({ 'google.id' : userid.id })
+            .then( user => {
+              if(user){
+                const token = jwt.sign(user, mongo.secret, {
+                      expiresIn: 10000 //segundos
+                });
+                return res.status(200).json({user: user, token: `JWT ${token}`});
+              }
+              else{
+                User.create({
+                  email: res.body.email,
+                  google: userid,
+                  password: id })
+                  .then( userCreate => {
+                    const token = jwt.sign(user, mongo.secret, {
+                          expiresIn: 10000 //segundos
+                    });
+                    return res.status(201).json({user: user, token: `JWT ${token}`});
+                  })
+                  .catch( err => {
+                    return res.status(400).json({
+                      errors: {email: 'Este Email ya está siendo utilizado'}
+                      , status: 'Error'})
+                  })
+              }
+            })
         }
         else{
           return res.status(400).json({errors: errors, status: 'Error'})
         }
-      })
-      .catch((err) => {
-        console.log('dasd'+err);
       })
   }
 
