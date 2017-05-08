@@ -269,7 +269,7 @@ class AuthController {
             var data = {
               token: 'JWT ' + token,
               user: req.user,
-              secret: authDevice.secret,
+              secret: auth.secret,
             }
             res.status(201).json({ data: data });
           } else {

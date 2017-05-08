@@ -8,6 +8,9 @@ export const mongo = {
   secret: "secret"
 }
 
-export const authDevice = {
-  secret: "secret"
+export const auth = {
+  secret: "secret",
+  clientSecret: "clientSecret",
+  managerSecret: "managerSecret",
+  adminSecret: "adminSecret",
 }
