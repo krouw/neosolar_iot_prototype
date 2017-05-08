@@ -47,30 +47,6 @@ function validateUser(data, db){
     }
 }
 
-function validateByInput(errors,data){
-  let isValid = true;
-  //validator.email sin un string devuelve err server
-  if(isEmpty(data.email)){
-    errors.email = 'Campo Requerido'
-    isValid = false;
-  }
-  else if (!validator.isEmail(data.email)) {
-    errors.email = 'Email inválido'
-    isValid = false;
-  }
-
-  if(isEmpty(data.id)){
-    errors.id = 'Campo Requerido'
-    isValid = false;
-  }
-
-  if(isEmpty(data.idToken)){
-    errors.idToken = 'Campo Requerido'
-    isValid = false;
-  }
-  return isValid;
-}
-
 function validateByGoole(errors, data){
   const promise = new Promise( (resolve, reject) => {
 
@@ -169,55 +145,6 @@ function validateGoogle(data){
 
 }
 
-function validateInput(data){
-  let errors = {};
-
-  return validateByInput(errors, data)
-
-          .then(({ errors, isValid, userid}) => {
-            if(isValid){
-              User.findById({_id: req.params.idUser})
-
-                .then( user => {
-                  console.log(user);
-                    return {
-                      errors: {},
-                      isValid: true,
-                      user: user,
-                    }
-                })
-
-                .catch((err) => {
-                  let errors = {}
-                  errors.server = 'Problemas con el servidor'
-                  return {
-                    errors: errors,
-                    isValid: true,
-                    user: user,
-                  }
-                })
-
-            }
-            else{
-              return {
-                errors: errors,
-                isValid: isEmpty(errors),
-                user: undefined
-              }
-            }
-          })
-
-          .catch((err) => {
-            let errors = {}
-            errors.google = 'Problemas validación con Google'
-            return {
-              errors: errors,
-              isValid: isEmpty(errors)
-            }
-          })
-}
-
-
 class AuthController {
 
   signin(req, res) {
@@ -234,7 +161,7 @@ class AuthController {
             var token = jwt.sign(user, mongo.secret, {
               expiresIn: 10000 //segundos
             });
-            res.status(201).json({ token: 'JWT '+ token, user: user.email});
+            res.status(200).json({ token: 'JWT '+ token, user: user.email});
           } else {
             res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.'});
           }
@@ -244,33 +171,47 @@ class AuthController {
   }
 
   signup(req, res){
-    validateInput(req.body)
-      .then(({errors, isValid, user}) => {
-        if(isValid){
-          var newUser = new User({
-            email: req.body.email,
-            password: req.body.password,
-          //const token = jwt.sign(user, mongo.secret, {
-            //expiresIn: 10000 //segundos
-          //});
-          });
-          newUser.save( (err) => {
-            if (err) {
-              return res.status(400).json({ message: 'El correo ya existe' });
-            }
-            res.status(201).json({ message: 'Usuario registrado con éxito.' });
-            });
+    let data = req.body;
+    let errors = {};
+    let isValid = true;
+    //validator.email sin un string devuelve err server
+    if(isEmpty(data.email)){
+      errors.email = 'Campo Requerido'
+      isValid = false;
+    }
+    else if (!validator.isEmail(data.email)) {
+      errors.email = 'Email inválido'
+      isValid = false;
+    }
 
-          return res.status(200).json({user: user,});
+    if(isEmpty(data.id)){
+      errors.id = 'Campo Requerido'
+      isValid = false;
+    }
+
+    if(isEmpty(data.idToken)){
+      errors.idToken = 'Campo Requerido'
+      isValid = false;
+    }
+    if(isValid){
+      var newUser = new User({
+          email: req.body.email,
+          password: req.body.password
+      });
+      newUser.save( (err) => {
+        if (err) {
+          return res.status(400).json({ message: 'El correo ya existe', errors: errors, isValid: false });
         }
-        else{
-          return res.status(400).json({errors: errors, status: 'Error'})
+        else {
+          return res.status(200).json({ message: 'Usuario registrado con éxito.', errors: {}, isValid: true, });
         }
-      })
-      .catch((err) => {
-        console.log('dasd'+err);
-      })
+
+      });
+    }
+    else {
+      res.status(400).json({ message: 'Los datos entregados no son válidos.', errors: errors });
   }
+}
 
   existEmail(req, res){
     //Example validate
@@ -298,7 +239,7 @@ class AuthController {
   }
 
 
-  googleNative(req, res){
+  googleNative(req,res){
     validateGoogle(req.body)
       .then(({errors, isValid, user}) => {
         if(isValid){
@@ -349,9 +290,9 @@ class AuthController {
               user: req.user,
               secret: authDevice.secret,
             }
-            res.status(201).json({ data: data });
+            res.status(200).json({ data: data });
           } else {
-            res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.' });
+            res.status(400).json({ message: 'Fallo en la autenticación. La clave no coincide.' });
           }
         });
       }
