@@ -193,7 +193,12 @@ class AuthController {
       errors.idToken = 'Campo Requerido'
       isValid = false;
     }
+
     if(isValid){
+
+      const token = jwt.sign(data.user, mongo.secret, {
+        //expiresIn: 10000 //segundos
+      });
       var newUser = new User({
           email: req.body.email,
           password: req.body.password
@@ -203,7 +208,7 @@ class AuthController {
           return res.status(400).json({ message: 'El correo ya existe', errors: errors, isValid: false });
         }
         else {
-          return res.status(200).json({ message: 'Usuario registrado con éxito.', errors: {}, isValid: true, });
+          return res.status(200).json({ message: 'Usuario registrado con éxito.', errors: {}, isValid: true, token: token});
         }
 
       });
