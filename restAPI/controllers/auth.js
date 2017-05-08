@@ -195,23 +195,34 @@ class AuthController {
     }
 
     if(isValid){
+      User.findOne({ 'email' : data.email })
+        .then( user => {
+          if(user){
+            if(user.email === data.email){
+              errors.email = 'Este email está siendo utilizado por un usuario'
+              res.status(400).json({errors: errors})
 
-      const token = jwt.sign(data.user, mongo.secret, {
-        //expiresIn: 10000 //segundos
-      });
-      var newUser = new User({
-          email: req.body.email,
-          password: req.body.password
-      });
-      newUser.save( (err) => {
-        if (err) {
-          return res.status(400).json({ message: 'El correo ya existe', errors: errors, isValid: false });
-        }
-        else {
-          return res.status(200).json({ message: 'Usuario registrado con éxito.', errors: {}, isValid: true, token: token});
-        }
+            }
+          }
+          else {
+            let newUser = new User({
+                email: req.body.email,
+                password: req.body.password
+            });
+            const token = jwt.sign(newUser._id, mongo.secret, {
+              expiresIn: 10000 //segundos
+            });
+            newUser.save( (err) => {
+              if (err) {
+                return res.status(400).json({ message: 'El correo ya existe', errors: errors, isValid: false });
+              }
+              else {
+                return res.status(200).json({ message: 'Usuario registrado con éxito.', errors: {}, isValid: true, token: token});
+              }
 
-      });
+            });
+          }
+        })
     }
     else {
       res.status(400).json({ message: 'Los datos entregados no son válidos.', errors: errors });
