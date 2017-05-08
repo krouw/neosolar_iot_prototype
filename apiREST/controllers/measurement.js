@@ -17,6 +17,17 @@ class MeasurementController {
   }
   //get
   getByIdMsm(req, res) {
+    Measurement.find({user: req.user})
+      .then( measurements => {
+        Device.populate(measurements, {path: "measurement"})
+          res.status(200).json(measurements)
+      })
+      .catch( err => {
+        return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
+      })
+  }
+
+  getByIdMsm(req, res) {
     Measurement.findById({_id: req.params.idMeasurement})
       .then( measurement => {
         return res.status(200).json(measurement)

@@ -4,11 +4,11 @@ import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
 import GoogleAuth from 'google-auth-library'
-import { socialAuth } from '../config/socialAuth'
-import { authDevice } from '..config/config'
 
 import User from '../models/user';
 import Device from '../models/device';
+import { socialAuth } from '../config/socialAuth'
+//import { authDevice } from '..config/config'
 import { mongo } from '../config/config';
 
 function validateUser(data, db){

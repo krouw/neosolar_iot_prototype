@@ -93,21 +93,7 @@ class UserController {
         })
       }
     }
-/*
-  getAllDev(req, res) {
-    //'id' : mail
-    Device.find({ idUser: req.params.idUser })
-      .then( devices => {
-        return res.json(devices)
-      })
-      .catch( err => {
-        return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
-        });
-      })
-  }
-  */
+
   getAllDev(req, res) {
     Device.find({user: req.user})
       .then( devices => {
