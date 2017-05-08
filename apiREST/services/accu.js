@@ -1,4 +1,3 @@
-import express from 'express';
 var accuweather = require('node-accuweather')()('HeVASZ1RAZuAji6Loywzn6RzjdpRis5W');
 
 export const getAccu = (req, res) => {

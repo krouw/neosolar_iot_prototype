@@ -1,7 +1,10 @@
 import express from 'express'
 import passport from 'passport'
 import UserController from '../controllers/user'
+//Servicio para consumir API Accuweather
 import { getAccu } from '../services/accu'
+//servicio para validar rol de usuario
+import { validateRole } from '../services/validate'
 
 const router = express.Router()
 const user = new UserController();
@@ -17,7 +20,7 @@ router.use(passport.authenticate('jwt', {session: false}));
 router.use(AuthorizationRole)
 
 //router.get('/', (req, res) => user.getAll(req, res));
-router.get('/', (req, res) => user.getAll(req, res));
+router.get('/', (req, res) => validateRole(req, res));
 router.get('/:idUser', (req, res) => user.getById(req, res));
 router.post('/', (req, res) => user.create(req, res));
 router.put('/:idUser', (req, res) => user.update(req, res));
