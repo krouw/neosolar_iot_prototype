@@ -10,6 +10,7 @@ import Device from '../models/device';
 import { socialAuth } from '../config/socialAuth'
 //import { authDevice } from '..config/config'
 import { mongo } from '../config/config';
+import { auth } from '../config/config'
 
 function validateUser(data, db){
     let errors = {};
@@ -22,6 +23,12 @@ function validateUser(data, db){
       if(!validator.isEmail(data.email)){
         errors.email = 'Email inválido'
       }
+    }
+    if (isEmpty(data.password)) {
+      errors.password = 'Campo Requerido'
+    }
+    else if (data.password.length<6 || data.password.length>20 ) {
+      errors.password = 'Contraseña de 6 a 20 caracteres'
     }
     if(db){
       //Retorno una funcion (Promise) y recibo resultado
@@ -118,26 +125,31 @@ function validateGoogle(data){
 class AuthController {
 
   signin(req, res) {
-    User.findOne({
-      email: req.body.email
-    }, (err, user) => {
-      if (err) throw (err);
+    //TODO implementar promesas then-catch en find y create
+    let validate = validateUser(req.body)
+    if (validate.isValid) {
+      //Promesa findOne
+      User.findOne({
+        email: req.body.email
+      }, (err, user) => {
+        if (err) throw (err);
 
-      if(!user) {
-        res.status(401).json({ message: 'Fallo en la autenticación. Usuario no registrado.'});
-      } else {
-        user.comparePassword(req.body.password, (err, isMatch) => {
-          if (isMatch && !err) {
-            var token = jwt.sign(user, mongo.secret, {
-              expiresIn: 10000 //segundos
-            });
-            res.status(200).json({ token: 'JWT '+ token, user: user.email});
-          } else {
-            res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.'});
-          }
-        });
-      }
-    });
+        if(!user) {
+          res.status(401).json({ message: 'Fallo en la autenticación. Usuario no registrado.'});
+        } else {
+          user.comparePassword(req.body.password, (err, isMatch) => {
+            if (isMatch && !err) {
+              var token = jwt.sign(user, mongo.secret, {
+                expiresIn: 10000 //segundos
+              });
+              res.status(200).json({ token: 'JWT '+ token, user: user});
+            } else {
+              res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.'});
+            }
+          });
+        }
+      });
+    }
   }
 
   signup(req, res){
@@ -299,7 +311,7 @@ class AuthController {
             var data = {
               token: 'JWT ' + token,
               user: req.user,
-              secret: authDevice.secret,
+              secret: auth.secret,
             }
             res.status(200).json({ data: data });
           } else {

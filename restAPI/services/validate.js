@@ -1,10 +1,10 @@
 import User from '../models/user'
 import auth from '../services/validate'
 
-export const validateRole = (req, res) => {
+export const validateSecret = (req, res) => {
   User.findById({_id: req.user._id})
     .then( user => {
-      console.log(user.role);
+      console.log(user);
       if (user.role == "Client") {
         return res.status(200).json({ message: 'Rol identificado', Role: user.role, secret: secret.clientSecret })
       }

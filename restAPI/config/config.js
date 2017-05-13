@@ -9,7 +9,7 @@ export const mongo = {
 }
 
 export const auth = {
-  secret: "secret",
+  secret: "secretbeibe",
   clientSecret: "clientSecret",
   managerSecret: "managerSecret",
   adminSecret: "adminSecret",
