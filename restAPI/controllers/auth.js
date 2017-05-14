@@ -120,9 +120,10 @@ class AuthController {
         return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
       })
     }
-    else{
+    else {
       return res.status(400).json({ status: 'Error', errors: validate.errors });
     }
+
   }
 
   signup(req, res){
@@ -151,6 +152,7 @@ class AuthController {
   }
 
   existEmail(req, res){
+
    if(!req.params.email){
      return res.status(400).json({status: 'Error', errors: {email: 'Campo Requerido'}});
    }
@@ -166,6 +168,7 @@ class AuthController {
        }
        return res.status(200).json({status: 'OK'});
     })
+
   }
 
   google(req, res){
