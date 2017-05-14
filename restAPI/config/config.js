@@ -7,10 +7,3 @@ export const mongo = {
   uri: "mongodb://localhost/apineo",
   secret: "secret"
 }
-
-export const auth = {
-  secret: "secretbeibe",
-  clientSecret: "clientSecret",
-  managerSecret: "managerSecret",
-  adminSecret: "adminSecret",
-}

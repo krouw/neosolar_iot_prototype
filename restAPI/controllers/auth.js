@@ -3,19 +3,15 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
-import GoogleAuth from 'google-auth-library'
 
 import User from '../models/user';
 import Device from '../models/device';
-import { socialAuth } from '../config/socialAuth'
-//import { authDevice } from '..config/config'
+import { socialAuth, validateByGoole } from '../config/socialAuth'
 import { mongo } from '../config/config';
-import { auth } from '../config/config'
 
 function validateUser(data, db){
     let errors = {};
 
-    //validator.email sin un string devuelve err server
     if(isEmpty(data.email)){
       errors.email = 'Campo Requerido'
     }
@@ -24,21 +20,28 @@ function validateUser(data, db){
         errors.email = 'Email inválido'
       }
     }
+
     if (isEmpty(data.password)) {
       errors.password = 'Campo Requerido'
     }
     else if (data.password.length<6 || data.password.length>20 ) {
       errors.password = 'Contraseña de 6 a 20 caracteres'
     }
+
     if(db){
       //Retorno una funcion (Promise) y recibo resultado
       return User.findOne({ 'email' : data.email })
         .then( user => {
           if(user){
-            if(user.email === data.email){
-              errors.email = 'Este email está siendo utilizado por un usuario'
-            }
+            errors.email = 'Este email está siendo utilizado por un usuario'
           }
+          return {
+            errors,
+            isValid: isEmpty(errors)
+          }
+        })
+        .catch((err) => {
+          errrors.server = 'Problemas con el servidor'
           return {
             errors,
             isValid: isEmpty(errors)
@@ -54,40 +57,6 @@ function validateUser(data, db){
     }
 }
 
-function validateByGoole(errors, data){
-
-  const promise = new Promise( (resolve, reject) => {
-
-    const auth = new GoogleAuth;
-    const client = new auth.OAuth2(socialAuth.clientID, '', '');
-
-    if(!isEmpty(errors)){
-      return resolve({
-        errors,
-        isValid: isEmpty(errors)
-      })
-    }
-    else{
-      client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
-        let errors = {}
-        if(err){
-          errors.google = 'Problemas de validación con Google'
-          return resolve({
-            errors,
-            isValid: isEmpty(errors)
-          })
-        }
-        const payload = login.getPayload();
-        return resolve({
-          userid: {id: payload['sub']},
-          isValid: isEmpty(errors),
-          errors,
-        });
-      })
-    }
-  })
-  return promise;
-}
 
 function validateGoogle(data){
   let errors = {};
@@ -153,66 +122,31 @@ class AuthController {
   }
 
   signup(req, res){
-    let data = req.body;
-    let errors = {};
-    let isValid = true;
-    //validator.email sin un string devuelve err server
-    if(isEmpty(data.email)){
-      errors.email = 'Campo Requerido'
-      isValid = false;
-    }
-    else if (!validator.isEmail(data.email)) {
-      errors.email = 'Email inválido'
-      isValid = false;
-    }
 
-    if(isEmpty(data.id)){
-      errors.id = 'Campo Requerido'
-      isValid = false;
-    }
+    validateUser(req.body, true)
+      .then(({errors, isValid}) => {
+        if(isValid) {
+          User.create({
+            email: req.body.email,
+            password: req.body.password})
+            .then((user) => {
+              const token = jwt.sign(user._id, mongo.secret, {
+                expiresIn: 10000,
+              });
+              return res.status(201).json({ status: 'OK', user: user, token: 'JWT '+token });
+            })
+            .catch((err) => {
+              return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+            })
+        }
+        else {
+          res.status(400).json({ status: 'Error', errors: errors });
+        }
+      })
 
-    if(isEmpty(data.idToken)){
-      errors.idToken = 'Campo Requerido'
-      isValid = false;
-    }
-
-    if(isValid){
-      User.findOne({ 'email' : data.email })
-        .then( user => {
-          if(user){
-            if(user.email === data.email){
-              errors.email = 'Este email está siendo utilizado por un usuario'
-              res.status(400).json({errors: errors, isValid: false})
-
-            }
-          }
-          else {
-            let newUser = new User({
-                email: data.email,
-                password: data.password
-            });
-            const token = jwt.sign(newUser._id, mongo.secret, {
-              expiresIn: 10000 //segundos
-            });
-            newUser.save( (err) => {
-              if (err) {
-                return res.status(400).json({ message: 'El correo ya existe', errors: errors, isValid: false });
-              }
-              else {
-                return res.status(200).json({ message: 'Usuario registrado con éxito.', errors: {}, isValid: true, token: token});
-              }
-
-            });
-          }
-        })
-    }
-    else {
-      res.status(400).json({ message: 'Los datos entregados no son válidos.', errors: errors });
   }
-}
 
   existEmail(req, res){
-   //Example validate
    if(!req.params.email){
      return res.status(400).json({status: 'Error', errors: {email: 'Campo Requerido'}});
    }
@@ -280,20 +214,7 @@ class AuthController {
       })
   }
 
-  signout(req, res) {
-    req.logout();
-    res.redirect('/');
-/*
-    req.logout();
-    res.status(200).json({action: 'AUTH_LOGOUT'})
-    return res.status(200).json({
-      "message": "User has been successfully logged out"
-    });
-    res.redirect("/api");
-*/
-  }
-
-// Login para Raspi, valida la peticion de datos en el cliente.
+  // Login para Raspi, valida la peticion de datos en el cliente.
   deviceSignin(req, res) {
     User.findOne({
       email: req.body.email
