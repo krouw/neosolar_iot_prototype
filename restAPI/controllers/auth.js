@@ -94,30 +94,34 @@ function validateGoogle(data){
 class AuthController {
 
   signin(req, res) {
-    //TODO implementar promesas then-catch en find y create
-    let validate = validateUser(req.body)
-    if (validate.isValid) {
-      //Promesa findOne
-      User.findOne({
-        email: req.body.email
-      }, (err, user) => {
-        if (err) throw (err);
 
-        if(!user) {
-          res.status(401).json({ message: 'Fallo en la autenticación. Usuario no registrado.'});
-        } else {
+    let validate = validateUser(req.body, false)
+    if (validate.isValid) {
+      User.findOne({ email: req.body.email })
+      .then((user) => {
+        if(user){
           user.comparePassword(req.body.password, (err, isMatch) => {
             if (isMatch && !err) {
               var token = jwt.sign(user, mongo.secret, {
                 expiresIn: 10000 //segundos
               });
-              res.status(200).json({ token: 'JWT '+ token, user: user});
-            } else {
-              res.status(401).json({ message: 'Fallo en la autenticación. La clave no coincide.'});
+              return res.status(200).json({ status: 'OK', token: 'JWT '+ token, user: user});
             }
-          });
+            else {
+              return res.status(400).json({ status: 'Error', errors: { password: 'Password Incorrecta' } });
+            }
+          })
         }
-      });
+        else{
+          return res.status(404).json({ status: 'Error', errors: { user: 'Usuario No Encontrado' } });
+        }
+      })
+      .catch((err) => {
+        return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+      })
+    }
+    else{
+      return res.status(400).json({ status: 'Error', errors: validate.errors });
     }
   }
 
