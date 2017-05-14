@@ -2,10 +2,11 @@ const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 import jwt from 'jsonwebtoken';
-import { mongo } from './config'
+import { MONGO } from './config'
 
-// load up the user model
 import User from '../models/user'
+import Device from '../models/device'
+
 
 // load the auth variables
 import { socialAuth } from './socialAuth'
@@ -16,20 +17,37 @@ module.exports = (passport) => {
     var opts = {};
    // revisa los headers
    opts.jwtFromRequest = ExtractJwt.fromAuthHeader();
-   opts.secretOrKey = mongo.secret;
+   opts.secretOrKey = MONGO.secret;
    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
      var id = jwt_payload._doc._id;
-     console.log(jwt_payload._doc);
-     User.findOne({_id: id}, (err, user) => {
-       if (err) {
-         return done(err, false);
-       }
-       if (user) {
-         done(null, user);
-       } else {
-         done(null, false);
-       }
-      });
+     if(jwt_payload._doc.role == 'Device' ){
+       Device.findOne({_id: id})
+        .then((device) => {
+          if(device){
+            return done(null, device)
+          }
+          else{
+            return done(null, false)
+          }
+        })
+        .catch((err) => {
+          return done(err, false)
+        })
+     }
+     else{
+       User.findOne({_id: id})
+        .then((user) => {
+          if(user){
+            return done(null, user)
+          }
+          else{
+            return done(null, false)
+          }
+        })
+        .catch((err) => {
+          return done(err, false)
+        })
+     }
     }));
 
     // code for signup (use('local-signup', new LocalStategy))

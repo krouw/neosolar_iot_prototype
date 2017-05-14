@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import User from '../models/user'
+import { ROLE_DEVICE } from '../config/config'
 
 const Schema = mongoose.Schema
 
@@ -12,6 +13,10 @@ const DeviceSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  role :{
+    type: String,
+    default: ROLE_DEVICE,
   },
   location: {
     type: String,

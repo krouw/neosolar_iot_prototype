@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import { ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN } from '../config/config'
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -14,8 +15,8 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['Client', 'Manager', 'Admin'],
-    default: 'Client',
+    enum: [ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN],
+    default: ROLE_CLIENT,
   },
   google:{
     type: Object,

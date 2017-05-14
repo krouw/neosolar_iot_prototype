@@ -3,11 +3,11 @@ import bodyParser from 'body-parser'
 import logger from 'morgan'
 import mongoose from 'mongoose'
 import passport from 'passport'
-import { mongo } from './config/config'
+import { MONGO } from './config/config'
 import routesBinder from './libs/Route'
 const app = express()
 
-const database  = process.env.MONGO_URL || mongo.uri
+const database  = process.env.MONGO_URL || MONGO.uri
 
 mongoose.Promise = global.Promise; //mongoose uso de promesas es6
 mongoose.connect(database);

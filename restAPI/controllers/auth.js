@@ -8,7 +8,7 @@ import isEmpty from 'lodash/isEmpty';
 import User from '../models/user';
 import Device from '../models/device';
 import { socialAuth, validateByGoole } from '../config/socialAuth'
-import { mongo } from '../config/config';
+import { MONGO } from '../config/config';
 
 function validateUser(data, db){
     let errors = {};
@@ -120,7 +120,7 @@ class AuthController {
         if(user){
           user.comparePassword(req.body.password, (err, isMatch) => {
             if (isMatch && !err) {
-              var token = jwt.sign(user, mongo.secret, {
+              var token = jwt.sign(user, MONGO.secret, {
                 expiresIn: 10000 //segundos
               });
               return res.status(200).json({ status: 'OK', token: 'JWT '+ token, user: user});
@@ -153,7 +153,7 @@ class AuthController {
             email: req.body.email,
             password: req.body.password})
             .then((user) => {
-              const token = jwt.sign(user, mongo.secret, {
+              const token = jwt.sign(user, MONGO.secret, {
                 expiresIn: 10000,
               });
               return res.status(201).json({ status: 'OK', user: user, token: 'JWT '+token });
@@ -191,7 +191,7 @@ class AuthController {
 
   google(req, res){
 
-    const token = jwt.sign(req.user, mongo.secret, {
+    const token = jwt.sign(req.user, MONGO.secret, {
       expiresIn: 10000 //segundos
     });
 
@@ -212,7 +212,7 @@ class AuthController {
           User.findOne({ 'google.id' : userid.id })
             .then( user => {
               if(user){
-                const token = jwt.sign(user, mongo.secret, {
+                const token = jwt.sign(user, MONGO.secret, {
                       expiresIn: 10000 //segundos
                 });
                 return res.status(200).json({user: user, token: `JWT ${token}`});
@@ -223,7 +223,7 @@ class AuthController {
                   google: userid,
                   password: id })
                   .then( userCreate => {
-                    const token = jwt.sign(user, mongo.secret, {
+                    const token = jwt.sign(user, MONGO.secret, {
                           expiresIn: 10000 //segundos
                     });
                     return res.status(201).json({user: user, token: `JWT ${token}`});
@@ -252,12 +252,11 @@ class AuthController {
           if(device){
             bcrypt.compare(req.body.password, device.password)
             .then((validatePassword) => {
-              console.log(validatePassword);
               if(validatePassword == false){
                 return res.status(400).json({ status: 'Error', errors: { password: 'Password Incorrecta' } });
               }
               else{
-                let token = jwt.sign(device, mongo.secret, {
+                let token = jwt.sign(device, MONGO.secret, {
                   expiresIn: 10000 //segundos
                 });
                 return res.status(200).json({ status: 'OK', token: 'JWT '+ token, device: device});
