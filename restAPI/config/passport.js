@@ -19,6 +19,7 @@ module.exports = (passport) => {
    opts.secretOrKey = mongo.secret;
    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
      var id = jwt_payload._doc._id;
+     console.log(jwt_payload._doc);
      User.findOne({_id: id}, (err, user) => {
        if (err) {
          return done(err, false);

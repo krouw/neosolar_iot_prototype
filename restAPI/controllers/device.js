@@ -29,34 +29,31 @@ class DeviceController {
         return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
+
   //post
   createDev(req, res) {
-    if (validator.isEmail(req.body.email+'')) {
-      if(!req.body.email || !req.body.password) {
-        res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
+      if(!req.body.name && !req.body.password) {
+        return res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
       }
       else{
-        let id = mongoose.Types.ObjectId();
         Device.create({
           name: req.body.name,
-          idDevice: id,
-          //autor:
+          password: req.body.password
         })
-          .then( device => {
-            return res.status(201).json({
-              message: 'Dispositivo registrado con éxito.',
-              device: device,
-            });
-          })
-          .catch( err => {
-            return res.status(422).json({ message: 'El dispositivo ya está registrado: ' + JSON.stringify(req.body) });
-          })
+        .then( device => {
+          return res.status(201).json({
+            message: 'Dispositivo registrado con éxito.',
+            device: device,
+          });
+        })
+        .catch( err => {
+          return res.status(422).json({
+            message: 'El dispositivo ya está registrado: ' + JSON.stringify(req.body)
+          });
+        })
       }
-    }
-    else{
-      res.status(422).json({ message: 'Por favor ingrese email válido.' });
-    }
   }
+
   //put
   updateDev(req, res) {
     if(!req.body.email || !req.body.password) {

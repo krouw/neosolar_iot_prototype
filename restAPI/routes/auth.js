@@ -8,8 +8,7 @@ const auth = new AuthController();
 router.get('/', (req, res) => res.send("get auth"));
 router.post('/signin', (req, res) => auth.signin(req, res));
 router.post('/signup', (req, res) => auth.signup(req, res));
-router.post('/device/', (req, res) => auth.deviceSignin(req, res));
-router.get('/signout', (req, res) => auth.signout(req, res));
+router.post('/device', (req, res) => auth.deviceSignin(req, res));
 router.get('/:email/exists', (req, res) => auth.existEmail(req, res))
 
 //Social Login Google API

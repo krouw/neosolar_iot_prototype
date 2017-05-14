@@ -63,7 +63,7 @@ UserSchema.methods.comparePassword = function(pw, cb){
     if (err) {
       return cb(err);
     }
-    cb(null, isMatch);
+    return cb(null, isMatch);
   });
 };
 

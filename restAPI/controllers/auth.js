@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
+import bcrypt from 'bcrypt'
 import isEmpty from 'lodash/isEmpty';
 
 import User from '../models/user';
@@ -57,13 +58,9 @@ function validateUser(data, db){
     }
 }
 
-
 function validateGoogle(data){
   let errors = {};
-  const auth = new GoogleAuth;
-  let client = new auth.OAuth2(data.id,'','');
 
-  //validator.email sin un string devuelve err server
   if(isEmpty(data.email)){
     errors.email = 'Campo Requerido'
   }
@@ -89,6 +86,27 @@ function validateGoogle(data){
               userid: userid,
             }
           })
+}
+
+
+function validateDevice(data){
+  let errors = {};
+
+  if(isEmpty(data.id)){
+    errors.id = 'Campo Requerido';
+  }
+
+  if(isEmpty(data.password)){
+    errors.password = 'Campo Requerido';
+  }
+  else if (data.password.length<6 || data.password.length>20 ) {
+    errors.password = 'Contraseña de 6 a 20 caracteres'
+  }
+
+  return {
+    errors: errors,
+    isValid: isEmpty(errors)
+  }
 }
 
 class AuthController {
@@ -135,7 +153,7 @@ class AuthController {
             email: req.body.email,
             password: req.body.password})
             .then((user) => {
-              const token = jwt.sign(user._id, mongo.secret, {
+              const token = jwt.sign(user, mongo.secret, {
                 expiresIn: 10000,
               });
               return res.status(201).json({ status: 'OK', user: user, token: 'JWT '+token });
@@ -153,15 +171,15 @@ class AuthController {
 
   existEmail(req, res){
 
-   if(!req.params.email){
+    if(!req.params.email){
      return res.status(400).json({status: 'Error', errors: {email: 'Campo Requerido'}});
-   }
+    }
 
-   if(!validator.isEmail(req.params.email)){
+    if(!validator.isEmail(req.params.email)){
      return res.status(400).json({status: 'Error', errors: {email: 'El Campo debe ser un email'}});
-   }
+    }
 
-   User.findOne({ 'email' : req.params.email })
+    User.findOne({ 'email' : req.params.email })
      .then( user => {
        if(user){
          return res.status(200).json({errors: {email: 'Este Correo ya está siendo utilizado'}, status: 'Error'});
@@ -172,6 +190,7 @@ class AuthController {
   }
 
   google(req, res){
+
     const token = jwt.sign(req.user, mongo.secret, {
       expiresIn: 10000 //segundos
     });
@@ -181,10 +200,12 @@ class AuthController {
       user: req.user,
     }
     res.status(200).json(data);
+
   }
 
 
   googleNative(req, res){
+
     validateGoogle(req.body)
       .then(({errors, isValid, userid}) => {
         if(isValid){
@@ -219,36 +240,44 @@ class AuthController {
           return res.status(400).json({errors: errors, status: 'Error'})
         }
       })
+
   }
 
-  // Login para Raspi, valida la peticion de datos en el cliente.
   deviceSignin(req, res) {
-    User.findOne({
-      email: req.body.email
-    }, (err, user) => {
-      if (err) throw (err);
 
-      if(!user) {
-        res.status(401).json({ message: 'Fallo en la autenticación. Usuario no registrado.' });
-      } else {
-        user.comparePassword(req.body.password, (err, isMatch) => {
-          if (isMatch && !err) {
-            var token = jwt.sign(user, mongo.secret, {
-              expiresIn: 10000 //segundos
-            });
-            var data = {
-              token: 'JWT ' + token,
-              user: req.user,
-              secret: auth.secret,
-            }
-            res.status(200).json({ data: data });
-          } else {
-            res.status(400).json({ message: 'Fallo en la autenticación. La clave no coincide.' });
+    let validate = validateDevice(req.body)
+    if(validate.isValid){
+      Device.findOne({_id: req.body.id})
+        .then((device) => {
+          if(device){
+            bcrypt.compare(req.body.password, device.password)
+            .then((validatePassword) => {
+              console.log(validatePassword);
+              if(validatePassword == false){
+                return res.status(400).json({ status: 'Error', errors: { password: 'Password Incorrecta' } });
+              }
+              else{
+                let token = jwt.sign(device, mongo.secret, {
+                  expiresIn: 10000 //segundos
+                });
+                return res.status(200).json({ status: 'OK', token: 'JWT '+ token, device: device});
+              }
+            })
           }
-        });
-      }
-    });
+          else{
+            return res.status(404).json({ status: 'Error', errors: { device: 'Device No Encontrado' } });
+          }
+        })
+        .catch((err) => {
+          return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+        })
+    }
+    else {
+      return res.status(400).json({ status: 'Error', errors: validate.errors });
+    }
+
   }
+
 }
 
 export default AuthController;
