@@ -2,7 +2,7 @@ const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 import jwt from 'jsonwebtoken';
-import { MONGO } from './config'
+import { MONGO, ROLE_DEVICE } from './config'
 
 import User from '../models/user'
 import Device from '../models/device'
@@ -20,7 +20,7 @@ module.exports = (passport) => {
    opts.secretOrKey = MONGO.secret;
    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
      var id = jwt_payload._doc._id;
-     if(jwt_payload._doc.role == 'Device' ){
+     if(jwt_payload._doc.role == ROLE_DEVICE ){
        Device.findOne({_id: id})
         .then((device) => {
           if(device){

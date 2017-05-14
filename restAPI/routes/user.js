@@ -1,18 +1,19 @@
 import express from 'express'
 import passport from 'passport'
 import UserController from '../controllers/user'
-//Servicio para consumir API Accuweather
-import { getAccu } from '../services/accu'
-//servicio para validar rol de usuario
-//import { validateRole } from '../services/validate'
+import { ROLE_DEVICE, ROLE_CLIENT, ROLE_MANAGER } from '../config/config'
 
 const router = express.Router()
 const user = new UserController();
 
 //Middleware comprobacion de Rol usuario
 const AuthorizationRole = (req, res, next) => {
-  //console.log(req.user.role);
-  next();
+  if(req.user.role == ROLE_DEVICE || req.user.role == ROLE_CLIENT || req.user.role == ROLE_MANAGER){
+    return res.status(403).json({ status: 'Unauthorized', error: { credentials: 'No tienes suficiente acceso.' } })
+  }
+  else{
+    next();
+  }
 }
 
 //Primero se verifica el token por passport y se pasa el usuario encontrado al middleware de Autorizacion de Roles
