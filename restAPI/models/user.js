@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
-import { ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN } from '../config/config'
+import { ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN } from '../config/roles'
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -8,6 +8,9 @@ const UserSchema = new mongoose.Schema({
     lowecase: true,
     unique: true,
     required:true,
+  },
+  name: {
+    type: String,
   },
   password: {
     type: String,
@@ -20,6 +23,10 @@ const UserSchema = new mongoose.Schema({
   },
   google:{
     type: Object,
+  },
+  devices: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Device"
   },
 },{ timestamps: true });
 

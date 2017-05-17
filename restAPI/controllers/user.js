@@ -5,6 +5,30 @@ import mongoose from 'mongoose';
 import User from '../models/user';
 import Device from '../models/device';
 
+function validateDevice(data, user){
+  let errors = {};
+
+  if(isEmpty(data.name)){
+    errors.name = 'Campo Requerido'
+  }
+
+  if(isEmpty(user)){
+    errors.idUser = 'Campo Requerido'
+  }
+
+  if(isEmpty(data.password)){
+    errors.name = 'Campo Requerido'
+  }
+  else if (data.password.length<6 || data.password.length>20 ) {
+    errors.password = 'Contraseña de 6 a 20 caracteres'
+  }
+
+  return {
+    errors,
+    isValid: isEmpty(errors)
+  }
+}
+
 class UserController {
 
   //get
@@ -116,26 +140,21 @@ class UserController {
   }
 
   createDev(req, res) {
-    if (validator.isEmail(req.body.email+'')) {
-      if(!req.body.email || !req.body.password) {
-        res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-      }
-      else{
-          Device.create({
-          idUser: req.params.idUser,
-          name : req.body.name,
-          })
-          .then( device => {
-            return res.status(201).json({  message: 'Dispositivo registrado con éxito.', device: device });
-          })
-          .catch( err => {
-            console.log(err);
-            return res.status(422).json({  message: 'Dispositivo no se ha registrado con éxito.' });
-          })
-      }
+    let validate = validateDevice(req.body, req.params.idUser)
+    if(validate.isValid){
+      Device.create({
+        name: req.body.name,
+        password: req.body.password,
+        user: req.params.idUser, })
+        .then( device => {
+          return res.status(201).json({ status: 'OK', device: device });
+        })
+        .catch((err) => {
+          return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+        })
     }
-    else{
-      res.status(422).json({ message: 'Por favor ingrese email válido.' });
+    else {
+      return res.status(400).json({ status: 'Error', errors: validate.errors });
     }
   }
 

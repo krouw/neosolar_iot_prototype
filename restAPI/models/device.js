@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import User from '../models/user'
-import { ROLE_DEVICE } from '../config/config'
+import { ROLE_DEVICE } from '../config/roles'
 
 const Schema = mongoose.Schema
 
@@ -22,7 +22,7 @@ const DeviceSchema = new mongoose.Schema({
     type: String,
   },
   coordenadas: {
-    type: String,
+    type: Array,
   },
   batery: {
     type: Object,
@@ -30,7 +30,13 @@ const DeviceSchema = new mongoose.Schema({
   state: {
     type: String,
   },
-  user:{ type: Schema.ObjectId, ref: "User"},
+  forecast: {
+    type: Object,
+  },
+  user:{
+    type: mongoose.Schema.ObjectId,
+    ref: "User"
+  },
 },{ timestamps: true });
 
 //Quita los atributos de las consultas

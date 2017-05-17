@@ -30,7 +30,7 @@ routesBinder(app)
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
-    message: 'Lo Sentimos, este recuros no se ha encontrado.'
+    message: 'Lo Sentimos, no hemos encontrado este recurso.'
   });
 })
 
