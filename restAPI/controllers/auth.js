@@ -9,58 +9,7 @@ import User from '../models/user';
 import Device from '../models/device';
 import { socialAuth, validateByGoole } from '../config/socialAuth'
 import { MONGO } from '../config/config';
-import { validateUser } from '../libs/validate'
-
-function validateGoogle(data){
-  let errors = {};
-
-  if(isEmpty(data.email)){
-    errors.email = 'Campo Requerido'
-  }
-  else{
-    if(!validator.isEmail(data.email)){
-      errors.email = 'Email inválido'
-    }
-  }
-
-  if(isEmpty(data.id)){
-    errors.id = 'Campo Requerido'
-  }
-
-  if(isEmpty(data.idToken)){
-    errors.idToken = 'Campo Requerido'
-  }
-
-  return validateByGoole(errors, data)
-          .then(({errors, isValid, userid}) => {
-            return {
-              errors: errors,
-              isValid: isEmpty(errors),
-              userid: userid,
-            }
-          })
-}
-
-
-function validateDevice(data){
-  let errors = {};
-
-  if(isEmpty(data.id)){
-    errors.id = 'Campo Requerido';
-  }
-
-  if(isEmpty(data.password)){
-    errors.password = 'Campo Requerido';
-  }
-  else if (data.password.length<6 || data.password.length>20 ) {
-    errors.password = 'Contraseña de 6 a 20 caracteres'
-  }
-
-  return {
-    errors: errors,
-    isValid: isEmpty(errors)
-  }
-}
+import { validateUser, validateGoogle, validateDevice } from '../libs/validate'
 
 class AuthController {
 
