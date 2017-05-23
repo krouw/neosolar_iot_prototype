@@ -4,6 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import Device from '../models/device';
+import { validateUser } from '../libs/validate'
 
 function validateDevice(data, user){
   let errors = {};
@@ -35,22 +36,30 @@ class UserController {
   getAll(req, res) {
     User.find({})
       .then( users => {
-        return res.status(200).json(users)
+        return res
+                .status(200)
+                .json({status:'OK', data: {users: users}})
       })
       .catch( err => {
-        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
+        return res
+                .status(500)
+                .json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
       })
   }
+
   //get
   getById(req, res) {
     User.findById({_id: req.params.idUser})
       .then( user => {
-        return res.status(200).json(user)
+        return res
+                .status(200)
+                .json({status:'OK', data: {user: user}})
       })
       .catch( err => {
-        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
+        return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
       })
   }
+
   //post
   create(req, res) {
     if (validator.isEmail(req.body.email+'')) {
@@ -72,7 +81,11 @@ class UserController {
     else{
       res.status(422).json({ message: 'Por favor ingrese email válido.' });
     }
+
+    validateUser(req.body, true)
+      .then(({errors, isValid}) => {})
   }
+
   //put
   update(req, res) {
     if(!req.body.email || !req.body.password) {
