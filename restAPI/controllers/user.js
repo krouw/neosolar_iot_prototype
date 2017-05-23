@@ -4,31 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import Device from '../models/device';
-import { validateUser } from '../libs/validate'
-
-function validateDevice(data, user){
-  let errors = {};
-
-  if(isEmpty(data.name)){
-    errors.name = 'Campo Requerido'
-  }
-
-  if(isEmpty(user)){
-    errors.idUser = 'Campo Requerido'
-  }
-
-  if(isEmpty(data.password)){
-    errors.name = 'Campo Requerido'
-  }
-  else if (data.password.length<6 || data.password.length>20 ) {
-    errors.password = 'Contraseña de 6 a 20 caracteres'
-  }
-
-  return {
-    errors,
-    isValid: isEmpty(errors)
-  }
-}
+import { validateUser, validateDevice } from '../libs/validate'
 
 class UserController {
 
