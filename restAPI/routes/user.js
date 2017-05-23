@@ -14,8 +14,8 @@ const user = new UserController();
 const userRoles = new ConnectRoles({
   failureHandler: function (req, res, next) {
     // optional function to customise code that runs when
-    // user fails authorisation
-    return res.status(403).json({ status: 'Unauthorized', error: { credentials: 'Acceso Denegado, no tienes suficientes permisos.' } })
+    // user fails authorization
+    return res.status(403).json({ status: 'Unauthorized', error: { authorization: 'Acceso Denegado, no tienes suficientes permisos.' } })
   }
 });
 

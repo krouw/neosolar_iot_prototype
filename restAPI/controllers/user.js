@@ -62,28 +62,25 @@ class UserController {
 
   //post
   create(req, res) {
-    if (validator.isEmail(req.body.email+'')) {
-      if(!req.body.email || !req.body.password) {
-        res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-      }
-      else{
-        User.create({
-          email: req.body.email,
-          password: req.body.password })
-          .then( user => {
-            return res.status(201).json({ message: 'Usuario registrado con éxito.', user: user });
-          })
-          .catch( err => {
-            return res.status(422).json({ message: 'El correo ya está siendo utilizado.' });
-          })
-      }
-    }
-    else{
-      res.status(422).json({ message: 'Por favor ingrese email válido.' });
-    }
-
     validateUser(req.body, true)
-      .then(({errors, isValid}) => {})
+      .then(({errors, isValid}) => {
+        if(isValid) {
+          User.create({
+            email: req.body.email,
+            password: req.body.password,
+            name: req.body.name,
+            role: req.body.role })
+            .then((user) => {
+              return res.status(201).json({ status: 'OK', data: { user: user } });
+            })
+            .catch((err) => {
+              return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+            })
+        }
+        else {
+          res.status(400).json({ status: 'Error', errors: errors });
+        }
+      })
   }
 
   //put
