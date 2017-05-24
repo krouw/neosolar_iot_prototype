@@ -86,7 +86,7 @@ class UserController {
             }
           })
           .catch( err => {
-            return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
+            return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
           })
       })
       .catch(({errors}) => {
@@ -96,27 +96,26 @@ class UserController {
 
   //delete
   delete(req, res) {
-    if(!req.body.email || !req.body.password) {
-      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-    }
-    else {
-      User.findByIdAndRemove({_id: req.params.idUser})
+    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
+      User.findByIdAndRemove(req.params.idUser)
         .then( user => {
-          if (user==null) {
-            return res.status(400).json('Usuario no encontrado.')
+          if (!user) {
+            return res.status(404).json({status: 'Error', errors: { user: 'Usuario no encontrado.' }})
           }
           else {
-            return res.status(200).json('Usuario eliminado: ' + user)
+            return res.status(200).json({ status: 'OK', data: { user: 'Usuario Eliminado' }})
           }
 
         })
-
         .catch( err => {
-          return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
+          return res.status(500).json({ message: 'Lo Sentimos, no hemos podido responder tu solicitud.' });
         })
-      }
+    }
+    else{
+      return res.status(400).json({ status: 'Error', errors: { id: 'Campo Inválido.' } })
+    }
   }
-  
+
   //get all
   getAllDev(req, res) {
     Device.find({user: req.user})
