@@ -33,10 +33,10 @@ const DeviceSchema = new mongoose.Schema({
   forecast: {
     type: Object,
   },
-  user:{
+  users: [{
     type: mongoose.Schema.ObjectId,
     ref: "User"
-  },
+  }],
 },{ timestamps: true });
 
 //Quita los atributos de las consultas
