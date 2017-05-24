@@ -19,21 +19,31 @@ class UserController {
       .catch( err => {
         return res
                 .status(500)
-                .json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
+                .json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
       })
   }
 
   //get
   getById(req, res) {
-    User.findById({_id: req.params.idUser})
-      .then( user => {
-        return res
-                .status(200)
-                .json({status:'OK', data: {user: user}})
-      })
-      .catch( err => {
-        return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
-      })
+    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
+      User.findById({_id: req.params.idUser})
+        .then( user => {
+          if(user){
+            return res
+                    .status(200)
+                    .json({status:'OK', data: {user: user}})
+          }
+          else{
+            return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+          }
+        })
+        .catch( err => {
+          return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+        })
+    }
+    else{
+      return res.status(400).json({ status: 'Error', errors: { id: 'Campo Inválido.' } });
+    }
   }
 
   //post
@@ -61,24 +71,19 @@ class UserController {
 
   //put
   update(req, res) {
-    if(!req.body.email || !req.body.password) {
-      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-    }
-    else {
+    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
       User.findById({_id: req.params.idUser})
-      .then( user => {
-        user.email = req.body.email;
-        user.password = req.body.password;
-
-        user.save((err) => {
-          if (err)
-            res.send(err);
+        .then( user => {
+          return res
+                  .status(200)
+                  .json({status:'OK', data: {user: user}})
         })
-        return res.status(200).json('Usuario actualizado con éxito' + user )
-      })
-      .catch( err => {
-        return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
-      })
+        .catch( err => {
+          return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
+        })
+    }
+    else{
+      return res.status(400).json({ status: 'Error', errors: { id: 'Campo Inválido.' } });
     }
   }
   //delete
@@ -99,7 +104,7 @@ class UserController {
         })
 
         .catch( err => {
-          return res.status(500).json({ message: 'No existe usuario. Lo sentimos, Hubo un problema en responder tu solicitud.' });
+          return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
         })
       }
     }
