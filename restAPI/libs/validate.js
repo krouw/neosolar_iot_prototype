@@ -1,6 +1,9 @@
 import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
+import mongoose from 'mongoose'
 import User from '../models/user';
+import bcrypt from 'bcrypt'
+import { ROLE_ADMIN } from '../config/roles'
 
 const validateUser = (data, db) => {
     let errors = {};
@@ -48,6 +51,45 @@ const validateUser = (data, db) => {
         isValid: isEmpty(errors)
       }
     }
+}
+
+const validateUserUpdate = (data, user, id_update) => {
+  let errors = {};
+  let result = {};
+
+  if(!mongoose.Types.ObjectId.isValid(id_update)){
+    errors.id = 'Campo Inválido.';
+  }
+
+  if(!isEmpty(data.name)){
+    result.name = data.name
+  }
+
+  if(!isEmpty(data.role) && (user.role === ROLE_ADMIN)){
+    result.role = data.role
+  }
+
+  if(!isEmpty(data.password)){
+    if (data.password.length<6 || data.password.length>20 ){
+      errors.password = 'Contraseña de 6 a 20 caracteres'
+    }
+    else{
+      bcrypt.genSalt(10, function(err, salt){
+        if (err) {
+          errors.password = 'Lo Sentimos, no hemos podido responder tu solicitud'
+          return
+        }
+        bcrypt.hash(user.password, salt, function(err,hash){
+          if (err) {
+            return next(err);
+          }
+          user.password = hash;
+          next();
+        });
+      })
+    }
+  }
+
 }
 
 const validateGoogle = (data) => {
@@ -100,4 +142,4 @@ const validateDevice = (data) =>{
   }
 }
 
-export { validateUser, validateGoogle, validateDevice }
+export { validateUser, validateGoogle, validateDevice, validateUserUpdate }

@@ -24,10 +24,10 @@ const UserSchema = new mongoose.Schema({
   google:{
     type: Object,
   },
-  devices: {
+  devices: [{
     type: mongoose.Schema.ObjectId,
     ref: "Device"
-  },
+  }],
 },{ timestamps: true });
 
 //Quita los atributos de las consultas
@@ -62,7 +62,6 @@ UserSchema.pre('save', function(next){
     return next();
   }
 });
-
 
 // comparacion del pwd
 

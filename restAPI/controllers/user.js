@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import Device from '../models/device';
-import { validateUser, validateDevice } from '../libs/validate'
+import { validateUser, validateDevice, validateUserUpdate } from '../libs/validate'
 
 class UserController {
 
@@ -60,7 +60,7 @@ class UserController {
               return res.status(201).json({ status: 'OK', data: { user: user } });
             })
             .catch((err) => {
-              return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+              return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
             })
         }
         else {
@@ -71,19 +71,25 @@ class UserController {
 
   //put
   update(req, res) {
-    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
-      User.findById({_id: req.params.idUser})
+    let validate = validateUserUpdate(req.body, req.user, req.params.idUser);
+    if(validate.isValid){
+      User.findByIdAndUpdate(req.params.idUser, validate.result , {new:true})
         .then( user => {
-          return res
-                  .status(200)
-                  .json({status:'OK', data: {user: user}})
+          if (user) {
+            return res
+                    .status(200)
+                    .json({status:'OK', data: {user: user}})
+          }
+          else{
+            return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+          }
         })
         .catch( err => {
           return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
         })
     }
     else{
-      return res.status(400).json({ status: 'Error', errors: { id: 'Campo Inválido.' } });
+      return res.status(400).json({ status: 'Error', errors: validate.errors });
     }
   }
   //delete
