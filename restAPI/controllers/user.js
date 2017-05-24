@@ -71,27 +71,29 @@ class UserController {
 
   //put
   update(req, res) {
-    let validate = validateUserUpdate(req.body, req.user, req.params.idUser);
-    if(validate.isValid){
-      User.findByIdAndUpdate(req.params.idUser, validate.result , {new:true})
-        .then( user => {
-          if (user) {
-            return res
-                    .status(200)
-                    .json({status:'OK', data: {user: user}})
-          }
-          else{
-            return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
-          }
-        })
-        .catch( err => {
-          return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
-        })
-    }
-    else{
-      return res.status(400).json({ status: 'Error', errors: validate.errors });
-    }
+    validateUserUpdate(req.body, req.user, req.params.idUser)
+      .then((validate) => {
+
+        User.findByIdAndUpdate(req.params.idUser, validate.update , {new:true})
+          .then( user => {
+            if (user) {
+              return res
+                      .status(200)
+                      .json({status:'OK', data: {user: user}})
+            }
+            else{
+              return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+            }
+          })
+          .catch( err => {
+            return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
+          })
+      })
+      .catch((err) => {
+        return res.status(400).json({ status: 'Error', errors: err.errors })
+      })
   }
+  
   //delete
   delete(req, res) {
     if(!req.body.email || !req.body.password) {

@@ -61,6 +61,10 @@ const validateUserUpdate = (data, user, id_update) => {
     errors.id = 'Campo Inválido.';
   }
 
+  if(isEmpty(data)){
+    errors.update = 'Ingrese al menos un campo.'
+  }
+
   if(!isEmpty(data.name)){
     result.name = data.name
   }
@@ -73,22 +77,42 @@ const validateUserUpdate = (data, user, id_update) => {
     if (data.password.length<6 || data.password.length>20 ){
       errors.password = 'Contraseña de 6 a 20 caracteres'
     }
-    else{
-      bcrypt.genSalt(10, function(err, salt){
-        if (err) {
-          errors.password = 'Lo Sentimos, no hemos podido responder tu solicitud'
-          return
-        }
-        bcrypt.hash(user.password, salt, function(err,hash){
-          if (err) {
-            return next(err);
-          }
-          user.password = hash;
-          next();
-        });
-      })
-    }
   }
+
+  return new Promise( (resolve, reject) => {
+      if(isEmpty(errors)){
+        if(data.password){
+          bcrypt.genSalt(10, function(err, salt){
+            if (err) {
+              return reject({
+                errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' }
+              })
+            }
+            bcrypt.hash(data.password, salt, function(err,hash){
+              if (err) {
+                return reject({
+                  errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' }
+                })
+              }
+              result.password = hash;
+              return resolve({
+                update: result
+              })
+            });
+          });
+        }
+        else{
+          return resolve({
+            update: result
+          })
+        }
+      }
+      else{
+        return reject({
+          errors: errors,
+        })
+      }
+  })
 
 }
 
