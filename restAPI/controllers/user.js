@@ -72,9 +72,9 @@ class UserController {
   //put
   update(req, res) {
     validateUserUpdate(req.body, req.user, req.params.idUser)
-      .then((validate) => {
+      .then(({update}) => {
 
-        User.findByIdAndUpdate(req.params.idUser, validate.update , {new:true})
+        User.findByIdAndUpdate(req.params.idUser, update , {new:true})
           .then( user => {
             if (user) {
               return res
@@ -89,11 +89,11 @@ class UserController {
             return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, Problemas con el servidor' } })
           })
       })
-      .catch((err) => {
-        return res.status(400).json({ status: 'Error', errors: err.errors })
+      .catch(({errors}) => {
+        return res.status(400).json({ status: 'Error', errors: errors })
       })
   }
-  
+
   //delete
   delete(req, res) {
     if(!req.body.email || !req.body.password) {
@@ -115,7 +115,8 @@ class UserController {
           return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
         })
       }
-    }
+  }
+  
   //get all
   getAllDev(req, res) {
     Device.find({user: req.user})
