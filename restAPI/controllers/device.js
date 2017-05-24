@@ -9,12 +9,12 @@ class DeviceController {
   getAllDev(req, res) {
     Device.find({})
       .then( devices => {
-        return res.status(200).json(devices)
+        return res.status(200).json({status:'OK', data: {devices: devices}})
       })
       .catch( err => {
         return res.status(500).json({
-          success: false,
-          message: 'Lo sentimos, Hubo un problema en responder tu solicitud.',
+          status: 'Error',
+          message: 'Lo Sentimos, no hemos podido responder tu solicitud',
         });
       })
   }

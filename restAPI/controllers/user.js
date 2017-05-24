@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import Device from '../models/device';
-import { validateUser, validateDevice, validateUserUpdate } from '../libs/validate'
+import { validateUser, validateUserUpdate, validateUserDevice } from '../libs/validate'
 
 class UserController {
 
@@ -118,7 +118,7 @@ class UserController {
 
   //get all
   getAllDev(req, res) {
-    Device.find({user: req.user})
+    Device.find({users: req.params.idUser})
       .then( devices => {
         User.populate(devices, {path: "user"})
           res.status(200).json(devices)
@@ -127,6 +127,7 @@ class UserController {
         return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
       })
   }
+
   // get
   getByIdDev(req, res) {
     Device.findById({_id: req.params.idDevice})
@@ -139,22 +140,28 @@ class UserController {
   }
 
   createDev(req, res) {
-    let validate = validateDevice(req.body, req.params.idUser)
-    if(validate.isValid){
-      Device.create({
-        name: req.body.name,
-        password: req.body.password,
-        user: req.params.idUser, })
-        .then( device => {
-          return res.status(201).json({ status: 'OK', device: device });
-        })
-        .catch((err) => {
-          return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
-        })
-    }
-    else {
-      return res.status(400).json({ status: 'Error', errors: validate.errors });
-    }
+    validateUserDevice(req.body, req.params.idUser)
+      .then(({device}) => {
+        User.findById(req.params.idUser)
+          .then( user => {
+            if (user) {
+              user.devices.push(req.body.id);
+              user.save().then( userUpdate => {
+                console.log(userUpdate);
+              })
+            }
+            else{
+              return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+            }
+          })
+          .catch( err => {
+            return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+          })
+      })
+      .catch(({errors}) => {
+        return res.status(400).json({ status: 'Error', errors: errors })
+      })
+
   }
 
   updateDev(req, res) {
