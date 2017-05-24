@@ -69,6 +69,7 @@ const validateUserUpdate = (data, user, id_update) => {
     result.name = data.name
   }
 
+  //Validación para Cambiar el Rol de usuario
   if(!isEmpty(data.role) && (user.role === ROLE_ADMIN)){
     result.role = data.role
   }
