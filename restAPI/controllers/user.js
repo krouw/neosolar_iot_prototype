@@ -11,6 +11,7 @@ class UserController {
   //get
   getAll(req, res) {
     User.find({})
+      .populate({path: 'devices', select: '-__v -password'})
       .then( users => {
         return res
                 .status(200)
@@ -27,6 +28,7 @@ class UserController {
   getById(req, res) {
     if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
       User.findById({_id: req.params.idUser})
+        .populate({path: 'devices', select: '-__v -password'})
         .then( user => {
           if(user){
             return res
@@ -75,6 +77,7 @@ class UserController {
       .then(({update}) => {
 
         User.findByIdAndUpdate(req.params.idUser, update , {new:true})
+          .populate({path: 'devices', select: '-__v -password'})
           .then( user => {
             if (user) {
               return res
@@ -151,7 +154,9 @@ class UserController {
                   device.users.push(updateUser._id);
                   device.save()
                     .then( updateDevice => {
-                      return res.status(201).json({ status: 'OK', data: { user: updateUser } })
+                      Device.populate(updateUser, {path: "devices", select: '-__v -password'},function(err, populateUser){
+                         return res.status(201).json({ status: 'OK', data: { user: populateUser } })
+                      });
                     })
                     .catch((err) => {
                       return res.status(400).json({ status: 'Error', errors: { user: 'Este usuario ya está registrado en el dispositivo.' } })
@@ -172,7 +177,6 @@ class UserController {
       .catch(({errors}) => {
         return res.status(400).json({ status: 'Error', errors: errors })
       })
-
   }
 
   updateDev(req, res) {
