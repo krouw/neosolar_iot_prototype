@@ -148,13 +148,37 @@ class UserController {
 
   // get
   getByIdDev(req, res) {
-    Device.findById({_id: req.params.idDevice})
-      .then( device => {
-        return res.status(200).json(device)
-      })
-      .catch( err => {
-        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
-      })
+    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
+      if(mongoose.Types.ObjectId.isValid(req.params.idDevice)){
+        User.findById(req.params.idUser)
+          .populate({path: 'devices', select: '-__v -password'})
+          .then((user) => {
+            if(user){
+              const isDevice = user.devices.filter( device => {
+                  return device._id == req.params.idDevice
+              })
+              if(!isEmpty(isDevice)){
+                return res.status(200).json({ status: 'OK', data: { device: isDevice[0] } })
+              }
+              else{
+                return res.status(404).json({ status: 'Not Found', errors: { device: 'Este recurso no Existe.' } })
+              }
+            }
+            else{
+              return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+            }
+          })
+          .catch((err) => {
+            return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+          })
+      }
+      else{
+        return res.status(400).json({ status: 'Error', errors: { id_device: 'Campo Inválido.' } });
+      }
+    }
+    else{
+      return res.status(400).json({ status: 'Error', errors: { id_user: 'Campo Inválido.' } });
+    }
   }
 
   createDev(req, res) {
