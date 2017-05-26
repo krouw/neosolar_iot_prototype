@@ -123,14 +123,27 @@ class UserController {
 
   //get all
   getAllDev(req, res) {
-    Device.find({users: req.params.idUser})
-      .then( devices => {
-        User.populate(devices, {path: "user"})
-          res.status(200).json(devices)
-      })
-      .catch( err => {
-        return res.status(500).json({  message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
-      })
+
+    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
+      User.findById(req.params.idUser)
+        .populate({path: 'devices', select: '-__v -password'})
+        .then( user => {
+          if(user){
+            return res
+                    .status(200)
+                    .json({status:'OK', data: { devices: user.devices}})
+          }
+          else{
+            return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+          }
+        })
+        .catch( err => {
+          return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+        })
+    }
+    else{
+      return res.status(400).json({ status: 'Error', errors: { id: 'Campo Inválido.' } });
+    }
   }
 
   // get
