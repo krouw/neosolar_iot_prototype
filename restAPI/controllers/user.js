@@ -146,9 +146,20 @@ class UserController {
           .then( user => {
             if (user) {
               user.devices.push(req.body.id);
-              user.save().then( userUpdate => {
-                console.log(userUpdate);
-              })
+              user.save()
+                .then( updateUser => {
+                  device.users.push(updateUser._id);
+                  device.save()
+                    .then( updateDevice => {
+                      return res.status(201).json({ status: 'OK', data: { user: updateUser } })
+                    })
+                    .catch((err) => {
+                      return res.status(400).json({ status: 'Error', errors: { user: 'Este usuario ya está registrado en el dispositivo.' } })
+                    })
+                })
+                .catch((err) => {
+                  return res.status(400).json({ status: 'Error', errors: { device: 'Este dispositivo ya está registrado.' } })
+                })
             }
             else{
               return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })

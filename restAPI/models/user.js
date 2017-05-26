@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import arrayUniquePlugin from 'mongoose-unique-array'
 import { ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN } from '../config/roles'
 
 const UserSchema = new mongoose.Schema({
@@ -29,6 +30,8 @@ const UserSchema = new mongoose.Schema({
     ref: "Device"
   }],
 },{ timestamps: true });
+
+UserSchema.plugin(arrayUniquePlugin);
 
 //Quita los atributos de las consultas
 
