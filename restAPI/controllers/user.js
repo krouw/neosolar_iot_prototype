@@ -4,7 +4,9 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import Device from '../models/device';
-import { validateUser, validateUserUpdate, validateUserDevice } from '../libs/validate'
+import { validateUser,
+         validateUserUpdate,
+         validateUserDevice } from '../libs/validate'
 
 class UserController {
 

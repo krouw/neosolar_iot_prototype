@@ -38,7 +38,7 @@ router.delete('/:idUser', userRoles.can('access user') ,(req, res) => user.delet
 
 router.get('/:idUser/device', userRoles.can('access user device') ,(req, res) => user.getAllDev(req, res));
 router.get('/:idUser/device/:idDevice', (req, res) => user.getByIdDev(req, res));
-router.post('/:idUser/device', (req, res) => user.createDev(req, res));
+router.post('/:idUser/device', userRoles.can('access user device') ,(req, res) => user.createDev(req, res));
 router.put('/:idUser/device/:idDevice', (req, res) => user.updateDev(req, res));
 router.delete('/:idUser/device/:idDevice', (req, res) => user.deleteDev(req, res));
 
