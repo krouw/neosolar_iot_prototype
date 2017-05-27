@@ -241,25 +241,33 @@ class UserController {
   }
 
   deleteDev(req, res) {
-    if(!req.body.email || !req.body.password) {
-      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-    }
-    else {
-      Device.findByIdAndRemove({_id: req.params.idDevice})
-        .then( device => {
-          if (device==null) {
-            return res.status(400).json('Dispositivo no encontrado.')
-          }
-          else {
-            return res.status(200).json('Dispositivo eliminado: ' + device.idUser + ', ' + device.name)
-          }
-        })
-
-        .catch( err => {
-          return res.status(500).json({  message: 'No existe dispositivo. Lo sentimos, Hubo un problema en responder tu solicitud.' });
-        })
+    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
+      if(mongoose.Types.ObjectId.isValid(req.params.idDevice)){
+        User.findById(req.params.idUser)
+          .then( user => {
+            if(user){
+              const newDevices = user.devices.filter( device => {
+                  let aux = device.toString()
+                  return aux !== req.params.idDevice
+              })
+              
+            }
+            else{
+              return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+            }
+          })
+          .catch((err) => {
+            return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+          })
+      }
+      else{
+        return res.status(400).json({ status: 'Error', errors: { id_device: 'Campo Inválido.' } });
       }
     }
+    else{
+      return res.status(400).json({ status: 'Error', errors: { id_user: 'Campo Inválido.' } });
+    }
+  }
 }
 
 export default UserController
