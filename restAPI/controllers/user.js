@@ -246,11 +246,37 @@ class UserController {
         User.findById(req.params.idUser)
           .then( user => {
             if(user){
+              let check = false;
               const newDevices = user.devices.filter( device => {
                   let aux = device.toString()
-                  return aux !== req.params.idDevice
+                  if(aux !== req.params.idDevice){
+                    return true
+                  }
+                  else{
+                    check = true;
+                    return false;
+                  }
               })
-              
+              if(check){
+                User.findByIdAndUpdate(req.params.idUser, { devices: newDevices } , {new:true})
+                  .populate({path: 'devices', select: '-__v -password'})
+                  .then( user => {
+                    if (user) {
+                      return res
+                              .status(200)
+                              .json({status:'OK', data: {user: user}})
+                    }
+                    else{
+                      return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
+                    }
+                  })
+                  .catch( err => {
+                    return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+                  })
+              }
+              else{
+                return res.status(404).json({ status: 'Not Found', errors: { device: 'Este recurso no Existe.' } })
+              }
             }
             else{
               return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
