@@ -6,7 +6,8 @@ import User from '../models/user';
 import Device from '../models/device';
 import { validateUser,
          validateUserUpdate,
-         validateUserDevice } from '../libs/validate'
+         validateUserDevice,
+         validateUserDevDelete } from '../libs/validate'
 
 class UserController {
 
@@ -241,58 +242,28 @@ class UserController {
   }
 
   deleteDev(req, res) {
-    if(mongoose.Types.ObjectId.isValid(req.params.idUser)){
-      if(mongoose.Types.ObjectId.isValid(req.params.idDevice)){
-        User.findById(req.params.idUser)
+    validateUserDevDelete(req.params)
+      .then(({newDevices}) => {
+        User.findByIdAndUpdate(req.params.idUser, { devices: newDevices } , {new:true})
+          .populate({path: 'devices', select: '-__v -password'})
           .then( user => {
-            if(user){
-              let check = false;
-              const newDevices = user.devices.filter( device => {
-                  let aux = device.toString()
-                  if(aux !== req.params.idDevice){
-                    return true
-                  }
-                  else{
-                    check = true;
-                    return false;
-                  }
-              })
-              if(check){
-                User.findByIdAndUpdate(req.params.idUser, { devices: newDevices } , {new:true})
-                  .populate({path: 'devices', select: '-__v -password'})
-                  .then( user => {
-                    if (user) {
-                      return res
-                              .status(200)
-                              .json({status:'OK', data: {user: user}})
-                    }
-                    else{
-                      return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
-                    }
-                  })
-                  .catch( err => {
-                    return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
-                  })
-              }
-              else{
-                return res.status(404).json({ status: 'Not Found', errors: { device: 'Este recurso no Existe.' } })
-              }
+            if (user) {
+              return res
+                      .status(200)
+                      .json({status:'OK', data: {user: user}})
             }
             else{
               return res.status(404).json({ status: 'Not Found', errors: { user: 'Este recurso no Existe.' } })
             }
           })
-          .catch((err) => {
+          .catch( err => {
             return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
           })
-      }
-      else{
-        return res.status(400).json({ status: 'Error', errors: { id_device: 'Campo Inválido.' } });
-      }
-    }
-    else{
-      return res.status(400).json({ status: 'Error', errors: { id_user: 'Campo Inválido.' } });
-    }
+      })
+      .catch(({errors, status}) => {
+        console.log(errors);
+        return res.status(status).json({ status: 'Error', errors: errors })
+      })
   }
 }
 

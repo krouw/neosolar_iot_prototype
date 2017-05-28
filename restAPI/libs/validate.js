@@ -233,9 +233,78 @@ const validateUserDevice = (data, id_update) =>{
   })
 }
 
+const validateUserDevDelete = (data) => {
+  let errors = {}
+
+  if(!mongoose.Types.ObjectId.isValid(data.idUser)){
+    errors.id_user = 'Campo Inválido.';
+  }
+
+  if(!mongoose.Types.ObjectId.isValid(data.idDevice)){
+      errors.id_device = 'Campo Inválido';
+  }
+
+  return new Promise( (resolve, reject) => {
+    if(isEmpty(errors)){
+      User.findById(data.idUser)
+        .then( user => {
+          if(user){
+            let isDevice = false;
+            const newDevices = user.devices.filter( device => {
+                let aux = device.toString()
+                if(aux !== data.idDevice){
+                  return true
+                }
+                else{
+                  isDevice = true;
+                  return false;
+                }
+            })
+            if(isDevice){
+              return resolve({
+                newDevices: newDevices
+              })
+            }
+            else{
+
+              errors.device = 'Este recurso no Existe.'
+              return reject({
+                errors: errors,
+                status: 404,
+              })
+            }
+          }
+          else{
+            errors.user = 'Este recurso no Existe.'
+            return reject({
+              errors: errors,
+              status: 404,
+            })
+          }
+        })
+        .catch((err) => {
+          errors.server = 'Lo Sentimos, no hemos podido responder tu solicitud'
+          return reject({
+            errors: errors,
+            status: 500,
+          })
+        })
+
+    }
+    else{
+      return reject({
+        errors: errors,
+        status: 400,
+      })
+    }
+  })
+
+}
+
 export {
         validateUser,
         validateGoogle,
         validateDevice,
         validateUserUpdate,
+        validateUserDevDelete,
         validateUserDevice }
