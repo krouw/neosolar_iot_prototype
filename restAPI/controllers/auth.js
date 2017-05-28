@@ -9,7 +9,8 @@ import User from '../models/user';
 import Device from '../models/device';
 import { socialAuth, validateByGoole } from '../config/socialAuth'
 import { MONGO } from '../config/config';
-import { validateUser, validateGoogle, validateDevice } from '../libs/validate'
+import { validateUser, validateGoogle } from '../validate/user'
+import { validateDevice } from '../validate/device'
 
 class AuthController {
 

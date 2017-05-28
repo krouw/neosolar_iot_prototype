@@ -7,7 +7,7 @@ import Device from '../models/device';
 import { validateUser,
          validateUserUpdate,
          validateUserDevice,
-         validateUserDevDelete } from '../libs/validate'
+         validateUserDevDelete } from '../validate/user'
 
 class UserController {
 
@@ -261,7 +261,6 @@ class UserController {
           })
       })
       .catch(({errors, status}) => {
-        console.log(errors);
         return res.status(status).json({ status: 'Error', errors: errors })
       })
   }
