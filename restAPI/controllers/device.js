@@ -8,13 +8,16 @@ class DeviceController {
 
   getAllDev(req, res) {
     Device.find({})
+      .populate({path: 'users', select: '-__v -password'})
       .then( devices => {
-        return res.status(200).json({status:'OK', data: {devices: devices}})
+        return res
+                .status(200)
+                .json({status:'OK', data: {devices: devices}})
       })
       .catch( err => {
         return res.status(500).json({
           status: 'Error',
-          message: 'Lo Sentimos, no hemos podido responder tu solicitud',
+          errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' },
         });
       })
   }
@@ -48,7 +51,7 @@ class DeviceController {
             message: 'El dispositivo ya está registrado: ' + JSON.stringify(req.body)
           });
         })
-      
+
   }
 
   //put
