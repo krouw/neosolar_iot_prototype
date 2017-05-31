@@ -32,10 +32,7 @@ class DeviceController {
 
   //post
   createDev(req, res) {
-      if(!req.body.name && !req.body.password) {
-        return res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-      }
-      else{
+
         Device.create({
           name: req.body.name,
           password: req.body.password
@@ -51,7 +48,7 @@ class DeviceController {
             message: 'El dispositivo ya está registrado: ' + JSON.stringify(req.body)
           });
         })
-      }
+      
   }
 
   //put

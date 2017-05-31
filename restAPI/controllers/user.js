@@ -224,8 +224,26 @@ class UserController {
 
   updateDev(req, res) {
     validateUserDeviceUpdate(req.params, req.body)
-    .then(({newDevices}) => {
-      
+    .then(({update}) => {
+      Device.findByIdAndUpdate(req.params.idDevice, update , {new:true})
+        .populate({path: 'users', select: '-__v -password'})
+        .then( device => {
+          if (device) {
+            return res
+                    .status(200)
+                    .json({status:'OK', data: {device: device}})
+          }
+          else{
+            return res
+                    .status(404)
+                    .json({ status: 'Not Found', errors: { device: 'Este recurso no Existe.' } })
+          }
+        })
+        .catch( err => {
+          return res
+                  .status(500)
+                  .json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+        })
     })
     .catch(({errors, status}) => {
       return res.status(status).json({ status: 'Error', errors: errors })

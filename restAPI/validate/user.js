@@ -226,15 +226,15 @@ const validateUserDeviceUpdate = (params, body) => {
   }
 
   if(!isEmpty(body.name)){
-    result.name = data.name
+    result.name = body.name
   }
 
   if(!isEmpty(body.coordenadas)){
-    result.coordenadas = data.coordenadas
+    result.coordenadas = body.coordenadas
   }
 
   if(!isEmpty(body.battery)){
-    result.battery = data.battery
+    result.battery = body.battery
   }
 
   if(!isEmpty(body.password)){
@@ -251,16 +251,42 @@ const validateUserDeviceUpdate = (params, body) => {
             if(device){
               const checkUser = device.users.filter( user => {
                   let aux = user.toString()
-                  return aux === params.user
+                  return aux == params.idUser
               })
-              if(checkUser){
-                console.log(result);
+              if(!isEmpty(checkUser)){
+                if(body.password){
+                  bcrypt.genSalt(10, function(err, salt){
+                    if (err) {
+                      return reject({
+                        errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' },
+                        status: 500
+                      })
+                    }
+                    bcrypt.hash(body.password, salt, function(err,hash){
+                      if (err) {
+                        return reject({
+                          errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' },
+                          status: 500,
+                        })
+                      }
+                      result.password = hash;
+                      return resolve({
+                        update: result
+                      })
+                    });
+                  });
+                }
+                else{
+                  return resolve({
+                    update: result
+                  })
+                }
               }
               else{
-                errors.user = 'Recurso no Encontrado.'
+                errors.user = 'No tienes permiso para realizar cambios.'
                 return reject({
                   errors: errors,
-                  status: 404,
+                  status: 403,
                 })
               }
             }
