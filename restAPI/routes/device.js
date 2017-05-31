@@ -2,14 +2,28 @@ import express from 'express'
 import passport from 'passport'
 import DeviceController from '../controllers/device'
 import MeasurementController from '../controllers/measurement'
+import ConnectRoles from 'connect-roles'
+import { UserRole,
+         AdminRole, } from '../config/roles'
 
 const router = express.Router()
 const measurement = new MeasurementController()
 const device = new DeviceController()
+const deviceRoles = new ConnectRoles({
+  failureHandler: function (req, res, next) {
+    // optional function to customise code that runs when
+    // user fails authorization
+    return res.status(403).json({ status: 'Unauthorized', error: { authorization: 'Acceso Denegado, no tienes suficientes permisos.' } })
+  }
+});
 
 router.use(passport.authenticate('jwt', {session: false}))
+router.use(deviceRoles.middleware());
 
-router.get('/', (req, res) => device.getAllDev(req, res));
+//Roles
+deviceRoles.use('admin', AdminRole)
+
+router.get('/', deviceRoles.is('admin') ,(req, res) => device.getAllDev(req, res));
 router.get('/:idDevice', (req, res) => device.getByIdDev(req, res));
 router.post('/', (req, res) => device.createDev(req, res));
 router.put('/:idDevice', (req, res) => device.updateDev(req, res));

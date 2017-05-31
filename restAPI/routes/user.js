@@ -2,12 +2,8 @@ import express from 'express'
 import passport from 'passport'
 import UserController from '../controllers/user'
 import ConnectRoles from 'connect-roles'
-import { ROLE_ADMIN,
-        ROLE_CLIENT,
-        ROLE_MANAGER,
-        UserRole,
-        AdminRole,
-        UserDeviceRole} from '../config/roles'
+import { UserRole,
+         AdminRole, } from '../config/roles'
 
 const router = express.Router()
 const user = new UserController();

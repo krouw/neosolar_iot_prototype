@@ -13,11 +13,6 @@ const UserRole = (req) => {
   }
 }
 
-const UserDeviceRole = (req) => {
-  //Falta
-}
-
-
 const AdminRole = (req) => {
   if (req.user.role === ROLE_ADMIN) {
     return true;
@@ -25,4 +20,4 @@ const AdminRole = (req) => {
 }
 
 export { ROLE_CLIENT, ROLE_DEVICE, ROLE_MANAGER, ROLE_ADMIN }
-export { UserRole, UserDeviceRole, AdminRole }
+export { UserRole, AdminRole }
