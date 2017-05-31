@@ -1,4 +1,5 @@
 import isEmpty from 'lodash/isEmpty'
+import mongoose from 'mongoose';
 
 const ROLE_CLIENT = 'Client',
   ROLE_DEVICE = 'Device',
@@ -22,6 +23,15 @@ const AdminRole = (req) => {
 }
 
 const deviceRole = (req) => {
+
+  if(!mongoose.Types.ObjectId.isValid(req.params.idDevice)){
+    return true
+  }
+
+  if(req.user.role === ROLE_ADMIN || req.user.role === ROLE_MANAGER){
+    return true
+  }
+
   const checkUser = req.user.devices.filter( device => {
       let aux = device.toString()
       return aux == req.params.idDevice

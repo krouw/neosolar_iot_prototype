@@ -22,15 +22,27 @@ class DeviceController {
       })
   }
 
-  getByIdDev(req, res) {
-    Device.findById({_id: req.params.idDevice})
-      .then( device => {
-        console.log(device);
-        return res.status(200).json(device)
-      })
-      .catch( err => {
-        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
-      })
+  getById(req, res) {
+    if(mongoose.Types.ObjectId.isValid(req.params.idDevice)){
+      Device.findById(req.params.idDevice)
+        .populate({path: 'users', select: '-__v -password'})
+        .then( device => {
+          if(device){
+            return res
+                    .status(200)
+                    .json({status:'OK', data: {device: device}})
+          }
+          else{
+            return res.status(404).json({ status: 'Not Found', errors: { device: 'Este recurso no Existe.' } })
+          }
+        })
+        .catch( err => {
+          return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+        })
+    }
+    else{
+      return res.status(400).json({ status: 'Error', errors: { id: 'Campo Inválido.' } });
+    }
   }
 
   //post

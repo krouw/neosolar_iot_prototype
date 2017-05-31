@@ -3,7 +3,7 @@ import passport from 'passport'
 import DeviceController from '../controllers/device'
 import MeasurementController from '../controllers/measurement'
 import ConnectRoles from 'connect-roles'
-import { UserRole,
+import { deviceRole,
          AdminRole, } from '../config/roles'
 
 const router = express.Router()
@@ -22,9 +22,10 @@ router.use(deviceRoles.middleware());
 
 //Roles
 deviceRoles.use('admin', AdminRole)
+deviceRoles.use('access device', '/:idDevice', deviceRole)
 
 router.get('/', deviceRoles.is('admin') ,(req, res) => device.getAllDev(req, res));
-router.get('/:idDevice', (req, res) => device.getByIdDev(req, res));
+router.get('/:idDevice', deviceRoles.can('access device') ,(req, res) => device.getById(req, res));
 router.post('/', (req, res) => device.createDev(req, res));
 router.put('/:idDevice', (req, res) => device.updateDev(req, res));
 router.delete('/:idDevice', (req, res) => device.deleteDev(req, res));
