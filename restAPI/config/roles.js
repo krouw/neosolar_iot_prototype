@@ -1,3 +1,5 @@
+import isEmpty from 'lodash/isEmpty'
+
 const ROLE_CLIENT = 'Client',
   ROLE_DEVICE = 'Device',
   ROLE_MANAGER = 'Manager',
@@ -19,5 +21,18 @@ const AdminRole = (req) => {
   }
 }
 
+const deviceRole = (req) => {
+  const checkUser = req.user.devices.filter( device => {
+      let aux = device.toString()
+      return aux == req.params.idDevice
+  })
+  if(!isEmpty(checkUser)){
+    return true
+  }
+  else{
+    return false
+  }
+}
+
 export { ROLE_CLIENT, ROLE_DEVICE, ROLE_MANAGER, ROLE_ADMIN }
-export { UserRole, AdminRole }
+export { UserRole, AdminRole, deviceRole }
