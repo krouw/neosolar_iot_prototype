@@ -25,7 +25,7 @@ const DeviceSchema = new mongoose.Schema({
   coordenadas: {
     type: Array,
   },
-  batery: {
+  battery: {
     type: Object,
   },
   state: {

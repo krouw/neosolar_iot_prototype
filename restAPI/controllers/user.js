@@ -7,7 +7,8 @@ import Device from '../models/device';
 import { validateUser,
          validateUserUpdate,
          validateUserDevice,
-         validateUserDevDelete } from '../validate/user'
+         validateUserDevDelete,
+         validateUserDeviceUpdate } from '../validate/user'
 
 class UserController {
 
@@ -159,7 +160,9 @@ class UserController {
                   return device._id == req.params.idDevice
               })
               if(!isEmpty(isDevice)){
-                return res.status(200).json({ status: 'OK', data: { device: isDevice[0] } })
+                return res
+                        .status(200)
+                        .json({ status: 'OK', data: { device: isDevice[0] } })
               }
               else{
                 return res.status(404).json({ status: 'Not Found', errors: { device: 'Este recurso no Existe.' } })
@@ -220,25 +223,13 @@ class UserController {
   }
 
   updateDev(req, res) {
-    if(!req.body.email || !req.body.password) {
-      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-    }
-    else {
-      Device.findById({_id: req.params.idDevice})
-      .then( device => {
-        device.email = req.body.email;
-        device.password = req.body.password;
-
-        device.save((err) => {
-          if (err)
-            res.send(err);
-        })
-        return res.status(200).json('Dispositivo actualizado con éxito: ' + device )
-      })
-      .catch( err => {
-        return res.status(500).json({ message: 'Lo sentimos, Hubo un problema en responder tu solicitud.' });
-      })
-    }
+    validateUserDeviceUpdate(req.params, req.body)
+    .then(({newDevices}) => {
+      
+    })
+    .catch(({errors, status}) => {
+      return res.status(status).json({ status: 'Error', errors: errors })
+    })
   }
 
   deleteDev(req, res) {

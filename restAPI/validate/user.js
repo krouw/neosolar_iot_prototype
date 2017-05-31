@@ -194,7 +194,7 @@ const validateUserDevice = (data, id_update) =>{
               })
             }
             else{
-              errors.device = 'Este recurso no Existe.'
+              errors.device = 'Recurso no Encontrado.'
               return reject({
                 errors: errors,
               })
@@ -207,6 +207,87 @@ const validateUserDevice = (data, id_update) =>{
         })
       }
   })
+}
+
+const validateUserDeviceUpdate = (params, body) => {
+  let errors = {}
+  let result = {}
+
+  if(!mongoose.Types.ObjectId.isValid(params.idUser)){
+    errors.id_user = 'Campo Inválido.';
+  }
+
+  if(!mongoose.Types.ObjectId.isValid(params.idDevice)){
+      errors.id_device = 'Campo Inválido';
+  }
+
+  if(isEmpty(body)){
+    errors.fields = 'Ingrese al menos un campo.'
+  }
+
+  if(!isEmpty(body.name)){
+    result.name = data.name
+  }
+
+  if(!isEmpty(body.coordenadas)){
+    result.coordenadas = data.coordenadas
+  }
+
+  if(!isEmpty(body.battery)){
+    result.battery = data.battery
+  }
+
+  if(!isEmpty(body.password)){
+    if (body.password.length<6 || body.password.length>20 ){
+      errors.password = 'Contraseña de 6 a 20 caracteres'
+    }
+  }
+
+  return new Promise( (resolve, reject) => {
+      if(isEmpty(errors)){
+        Device
+          .findById(params.idDevice)
+          .then((device) => {
+            if(device){
+              const checkUser = device.users.filter( user => {
+                  let aux = user.toString()
+                  return aux === params.user
+              })
+              if(checkUser){
+                console.log(result);
+              }
+              else{
+                errors.user = 'Recurso no Encontrado.'
+                return reject({
+                  errors: errors,
+                  status: 404,
+                })
+              }
+            }
+            else{
+              errors.device = 'Recurso no Encontrado'
+              return reject({
+                errors: errors,
+                status: 404
+              })
+            }
+          })
+          .catch((err) => {
+            errors.server = 'Lo Sentimos, no hemos podido responder tu solicitud'
+            return reject({
+              errors: errors,
+              status: 500
+            })
+          })
+      }
+      else{
+        return reject({
+          errors: errors,
+          status: 400,
+        })
+      }
+  })
+
 }
 
 const validateUserDevDelete = (data) => {
@@ -243,7 +324,7 @@ const validateUserDevDelete = (data) => {
             }
             else{
 
-              errors.device = 'Este recurso no Existe.'
+              errors.device = 'Recurso no Encontrado.'
               return reject({
                 errors: errors,
                 status: 404,
@@ -251,7 +332,7 @@ const validateUserDevDelete = (data) => {
             }
           }
           else{
-            errors.user = 'Este recurso no Existe.'
+            errors.user = 'Recurso no Encontrado.'
             return reject({
               errors: errors,
               status: 404,
@@ -281,7 +362,7 @@ const validateUserDevDelete = (data) => {
 export {
         validateUser,
         validateGoogle,
-        validateDevice,
         validateUserUpdate,
         validateUserDevDelete,
-        validateUserDevice }
+        validateUserDevice,
+        validateUserDeviceUpdate }
