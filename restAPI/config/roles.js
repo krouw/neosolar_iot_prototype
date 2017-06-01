@@ -28,7 +28,7 @@ const AdminMaganerRole = (req) => {
   }
 }
 
-const deviceRole = (req) => {
+const UserDeviceRole = (req) => {
 
   if(!mongoose.Types.ObjectId.isValid(req.params.idDevice)){
     return true
@@ -50,5 +50,15 @@ const deviceRole = (req) => {
   }
 }
 
+const deviceRole = (req) => {
+  if(req.user.role === ROLE_ADMIN || req.user.role === ROLE_MANAGER){
+    return true
+  }
+
+  if (req.user.role === ROLE_DEVICE && req.user._id === req.params.idDevice) {
+    return true;
+  }
+}
+
 export { ROLE_CLIENT, ROLE_DEVICE, ROLE_MANAGER, ROLE_ADMIN }
-export { UserRole, AdminRole, deviceRole, AdminMaganerRole }
+export { UserRole, AdminRole, UserDeviceRole, AdminMaganerRole, deviceRole }

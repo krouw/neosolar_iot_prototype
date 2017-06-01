@@ -3,9 +3,10 @@ import passport from 'passport'
 import DeviceController from '../controllers/device'
 import MeasurementController from '../controllers/measurement'
 import ConnectRoles from 'connect-roles'
-import { deviceRole,
+import { UserDeviceRole,
          AdminRole,
-         AdminMaganerRole } from '../config/roles'
+         AdminMaganerRole,
+         deviceRole } from '../config/roles'
 
 const router = express.Router()
 const measurement = new MeasurementController()
@@ -23,13 +24,14 @@ router.use(deviceRoles.middleware());
 
 //Roles
 deviceRoles.use('admin', AdminRole)
-deviceRoles.use('access device', '/:idDevice', deviceRole)
+deviceRoles.use('access user device', '/:idDevice', UserDeviceRole)
 deviceRoles.use('AdminManager', AdminMaganerRole)
+deviceRoles.use('access device', '/:idDevice' ,deviceRole)
 
 router.get('/', deviceRoles.is('admin') ,(req, res) => device.getAllDev(req, res));
-router.get('/:idDevice', deviceRoles.can('access device') ,(req, res) => device.getById(req, res));
+router.get('/:idDevice', deviceRoles.can('access user device') ,(req, res) => device.getById(req, res));
 router.post('/', deviceRoles.can('AdminManager') ,(req, res) => device.createDev(req, res));
-router.put('/:idDevice', (req, res) => device.updateDev(req, res));
+router.put('/:idDevice', deviceRoles.can('access device') ,(req, res) => device.updateDev(req, res));
 router.delete('/:idDevice', (req, res) => device.deleteDev(req, res));
 
 router.get('/:idDevice/measurement/', (req, res) => measurement.getAllMsm(req, res));
