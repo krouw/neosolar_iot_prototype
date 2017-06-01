@@ -77,4 +77,9 @@ UserSchema.methods.comparePassword = function(pw, cb){
   });
 };
 
+UserSchema.pre('remove', function(next) {
+    // Remove all the assignment docs that reference the removed person.
+    this.model('Device').remove({ users: this._id }, next);
+});
+
 export default mongoose.model('User', UserSchema)
