@@ -2,8 +2,9 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose'
 import Device from '../models/device'
 
-const validateDevice = (data) =>{
+const validateDeviceCreate = (data) =>{
   let errors = {};
+  let result = {};
 
   if(isEmpty(data)){
     errors.fields = 'Ingrese al menos un campo.'

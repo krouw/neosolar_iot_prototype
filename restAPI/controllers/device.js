@@ -3,6 +3,7 @@ import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import Device from '../models/device';
+import { validateDeviceCreate } from '../validate/device'
 
 class DeviceController {
 
@@ -15,10 +16,10 @@ class DeviceController {
                 .json({status:'OK', data: {devices: devices}})
       })
       .catch( err => {
-        return res.status(500).json({
-          status: 'Error',
-          errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' },
-        });
+        return res
+                .status(500)
+                .json({ status: 'Error',
+                        errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } });
       })
   }
 
@@ -33,15 +34,24 @@ class DeviceController {
                     .json({status:'OK', data: {device: device}})
           }
           else{
-            return res.status(404).json({ status: 'Not Found', errors: { device: 'Este recurso no Existe.' } })
+            return res
+                    .status(404)
+                    .json({ status: 'Not Found',
+                            errors: { device: 'Este recurso no Existe.' } })
           }
         })
         .catch( err => {
-          return res.status(500).json({ status: 'Error', errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+          return res
+                  .status(500)
+                  .json({ status: 'Error',
+                  errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
         })
     }
     else{
-      return res.status(400).json({ status: 'Error', errors: { id: 'Campo Inválido.' } });
+      return res
+              .status(400)
+              .json({ status: 'Error',
+                      errors: { id: 'Campo Inválido.' } });
     }
   }
 
