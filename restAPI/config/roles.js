@@ -22,6 +22,12 @@ const AdminRole = (req) => {
   }
 }
 
+const AdminMaganerRole = (req) => {
+  if (req.user.role === ROLE_ADMIN || req.user.role === ROLE_MANAGER) {
+    return true;
+  }
+}
+
 const deviceRole = (req) => {
 
   if(!mongoose.Types.ObjectId.isValid(req.params.idDevice)){
