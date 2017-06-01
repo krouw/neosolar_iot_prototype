@@ -74,7 +74,7 @@ DeviceSchema.pre('save', function(next){
 });
 
 DeviceSchema.pre('remove', function(next) {
-    // Remove all the assignment docs that reference the removed person.
+    // Remove all the assignment docs that reference the removed Device.
     this.model('User').remove({ devices: this._id }, next);
 });
 
