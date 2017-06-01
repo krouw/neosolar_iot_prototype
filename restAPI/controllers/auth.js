@@ -7,11 +7,11 @@ import isEmpty from 'lodash/isEmpty';
 
 import User from '../models/user';
 import Device from '../models/device';
-import { socialAuth, validateByGoole } from '../config/socialAuth'
 import { MONGO } from '../config/config';
 import { validateSignIn,
          validateSingUp,
-        validateGoogle } from '../validate/auth'
+         validateGoogle,
+         validateDevice } from '../validate/auth'
 
 class AuthController {
 
@@ -200,7 +200,7 @@ class AuthController {
             .then((validatePassword) => {
               if(validatePassword == false){
                 return res
-                        .status(400)
+                        .status(403)
                         .json({ status: 'Error',
                                 errors: { password: 'Password Incorrecta' } });
               }

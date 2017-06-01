@@ -98,7 +98,7 @@ const validateGoogle = (body) => {
           })
 }
 
-const validateDevice = (body) =>{
+const validateDevice = (body) => {
   let errors = {};
 
   if(isEmpty(body)){
