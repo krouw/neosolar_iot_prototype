@@ -129,13 +129,13 @@ class UserController {
             return res
                     .status(404)
                     .json({ status: 'Error',
-                            errors: { user: 'Usuario no encontrado.' }})
+                            errors: { user: 'Recurso no encontrado.' }})
           }
           else {
             return res
                     .status(200)
                     .json({ status: 'OK',
-                            data: { user: 'Usuario Eliminado' }})
+                            data: { user: 'Recurso Eliminado' }})
           }
 
         })
@@ -333,10 +333,18 @@ class UserController {
           .then( user => {
             if (user) {
               Device.findByIdAndUpdate(req.params.idDevice, { users: newUsers }, {new:true})
-                .then((value) => {
-                  return res
-                          .status(200)
-                          .json({status:'OK', data: {user: user}})
+                .then((device) => {
+                  if(device){
+                    return res
+                            .status(200)
+                            .json({status:'OK', data: {user: user}})
+                  }
+                  else{
+                    return res
+                            .status(404)
+                            .json({ status: 'Error',
+                                    erorrs: { device: 'Recurso No Encontrado' }  })
+                  }
                 })
                 .catch((err) => {
                   return res

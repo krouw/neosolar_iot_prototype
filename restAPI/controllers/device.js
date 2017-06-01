@@ -119,28 +119,35 @@ class DeviceController {
   }
 
   deleteDev(req, res) {
-    if(!req.body.email || !req.body.password) {
-      res.status(422).json({ message: 'Por favor ingrese email y contraseña.' });
-    }
-    else {
-      Device.findByIdAndRemove({_id: req.params.idDevice})
+    if(mongoose.Types.ObjectId.isValid(req.params.idDevice)){
+      Device.findByIdAndRemove(req.params.idDevice)
         .then( device => {
-          if (device==null) {
-            //revisar cod 400
-            return res.status(400).json('Dispositivo no encontrado: ' + req.params.idDevice)
+          if (!device) {
+            return res
+                    .status(404)
+                    .json({ status: 'Error',
+                            errors: { device: 'Recurso no encontrado.' }})
           }
           else {
-            //revisar 200
-            return res.status(200).json('Dispositivo eliminado: ' + device)
+            return res
+                    .status(200)
+                    .json({ status: 'OK',
+                            data: { device: 'Recurso Eliminado' }})
           }
 
         })
-
         .catch( err => {
-          return res.status(500).json({ message: 'No existe dispositivo. Lo sentimos, Hubo un problema en responder tu solicitud.' });
+          return res
+                  .status(500)
+                  .json({ message: 'Lo Sentimos, no hemos podido responder tu solicitud.' });
         })
-      }
     }
+    else{
+      return res
+              .status(400)
+              .json({ status: 'Error', errors: { id_device: 'Campo Inválido.' } })
+    }
+  }
 
 }
 

@@ -32,7 +32,7 @@ router.get('/', deviceRoles.is('admin') ,(req, res) => device.getAllDev(req, res
 router.get('/:idDevice', deviceRoles.can('access user device') ,(req, res) => device.getById(req, res));
 router.post('/', deviceRoles.can('AdminManager') ,(req, res) => device.createDev(req, res));
 router.put('/:idDevice', deviceRoles.can('access device') ,(req, res) => device.updateDev(req, res));
-router.delete('/:idDevice', (req, res) => device.deleteDev(req, res));
+router.delete('/:idDevice', deviceRoles.can('AdminManager') ,(req, res) => device.deleteDev(req, res));
 
 router.get('/:idDevice/measurement/', (req, res) => measurement.getAllMsm(req, res));
 router.get('/:idDevice/measurement/:idMeasurement', (req, res) => measurement.getByIdMsm(req, res));
