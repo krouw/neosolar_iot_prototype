@@ -6,94 +6,117 @@ import Device from '../models/device'
 import bcrypt from 'bcrypt'
 import { ROLE_ADMIN } from '../config/roles'
 
-const validateUser = (data, db) => {
+const validateUserCreate = (body, user) => {
     let errors = {};
+    let result = {};
 
-    if(isEmpty(data.email)){
+    if(isEmpty(body.email)){
       errors.email = 'Campo Requerido'
     }
     else{
-      if(!validator.isEmail(data.email)){
+      if(!validator.isEmail(body.email)){
         errors.email = 'Email inválido'
       }
-    }
-
-    if (isEmpty(data.password)) {
-      errors.password = 'Campo Requerido'
-    }
-    else if (data.password.length<6 || data.password.length>20 ) {
-      errors.password = 'Contraseña de 6 a 20 caracteres'
-    }
-
-    if(db){
-      //Retorno una funcion (Promise) y recibo resultado
-      return User.findOne({ 'email' : data.email })
-        .then( user => {
-          if(user){
-            errors.email = 'Este email está siendo utilizado por un usuario'
-          }
-          return {
-            errors,
-            isValid: isEmpty(errors)
-          }
-        })
-        .catch((err) => {
-          errrors.server = 'Problemas con el servidor'
-          return {
-            errors,
-            isValid: isEmpty(errors)
-          }
-        })
-    }
-    else{
-      //Retorno un objeto
-      return {
-        errors,
-        isValid: isEmpty(errors)
+      else {
+        result.email = body.email
       }
     }
+
+    if (isEmpty(body.password)) {
+      errors.password = 'Campo Requerido'
+    }
+    else if (body.password.length<6 || body.password.length>20 ) {
+      errors.password = 'Contraseña de 6 a 20 caracteres'
+    }
+    else {
+      result.password = body.password
+    }
+
+    if(!isEmpty(body.name)){
+      result.name = body.name
+    }
+
+    //Validación Rol de usuario
+    if(!isEmpty(body.role) && (user.role === ROLE_ADMIN)){
+      result.role = body.role
+    }
+
+    return new Promise( (resolve, reject) => {
+      if(isEmpty(errors)){
+        User.findOne({ 'email' : body.email })
+          .then( user => {
+            if(user){
+              errors.email = 'Este email está siendo utilizado por un usuario'
+              reject({
+                errors: errors,
+                status: 400,
+              })
+            }
+            else{
+              resolve({
+                result: result,
+              })
+            }
+          })
+          .catch((err) => {
+            errors.server = 'Problemas con el servidor'
+            return {
+              errors: errors,
+              status: 500,
+            }
+          })
+      }
+      else{
+        reject({
+          errors: errors,
+          status: 400,
+        })
+      }
+    });
 }
 
-const validateUserUpdate = (data, user, id_update) => {
+const validateUserUpdate = (body, user, params) => {
   let errors = {};
   let result = {};
 
-  if(!mongoose.Types.ObjectId.isValid(id_update)){
+  if(!mongoose.Types.ObjectId.isValid(params.idUser)){
     errors.id = 'Campo Inválido.';
   }
 
-  if(isEmpty(data)){
+  if(isEmpty(body)){
     errors.fields = 'Ingrese al menos un campo.'
   }
 
-  if(!isEmpty(data.name)){
-    result.name = data.name
+  if(!isEmpty(body.name)){
+    result.name = body.name
   }
 
   //Validación para Cambiar el Rol de usuario
-  if(!isEmpty(data.role) && (user.role === ROLE_ADMIN)){
-    result.role = data.role
+  if(!isEmpty(body.role) && (user.role === ROLE_ADMIN)){
+    result.role = body.role
   }
 
-  if(!isEmpty(data.password)){
-    if (data.password.length<6 || data.password.length>20 ){
+  if(!isEmpty(body.password)){
+    if (body.password.length<6 || body.password.length>20 ){
       errors.password = 'Contraseña de 6 a 20 caracteres'
     }
   }
 
   return new Promise( (resolve, reject) => {
       if(isEmpty(errors)){
-        if(data.password){
+        if(body.password){
           bcrypt.genSalt(10, function(err, salt){
             if (err) {
               return reject({
-                errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' }
+                errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' },
+                status: 500,
               })
             }
-            bcrypt.hash(data.password, salt, function(err,hash){
+            bcrypt.hash(body.password, salt, function(err,hash){
               if (err) {
                 return reject({
-                  errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' }
+                  errors: { password: 'Lo Sentimos, no hemos podido responder tu solicitud' },
+                  status: 500,
                 })
               }
               result.password = hash;
@@ -112,78 +135,50 @@ const validateUserUpdate = (data, user, id_update) => {
       else{
         return reject({
           errors: errors,
+          status: 400,
         })
       }
   })
 
 }
 
-const validateGoogle = (data) => {
+const validateUserDevice = (body, params) =>{
   let errors = {};
 
-  if(isEmpty(data.email)){
-    errors.email = 'Campo Requerido'
-  }
-  else{
-    if(!validator.isEmail(data.email)){
-      errors.email = 'Email inválido'
-    }
-  }
-
-  if(isEmpty(data.id)){
-    errors.id = 'Campo Requerido'
-  }
-
-  if(isEmpty(data.idToken)){
-    errors.idToken = 'Campo Requerido'
-  }
-
-  return validateByGoole(errors, data)
-          .then(({errors, isValid, userid}) => {
-            return {
-              errors: errors,
-              isValid: isEmpty(errors),
-              userid: userid,
-            }
-          })
-}
-
-const validateUserDevice = (data, id_update) =>{
-  let errors = {};
-
-  if(isEmpty(data)){
+  if(isEmpty(body)){
     errors.fields = 'Ingrese al menos un campo.'
   }
 
-  if(!mongoose.Types.ObjectId.isValid(id_update)){
+  if(!mongoose.Types.ObjectId.isValid(params.idUser)){
     errors.id_user = 'Campo Inválido.';
   }
 
-  if(isEmpty(data.id)){
+  if(isEmpty(body.id)){
     errors.id_device = 'Campo Requerido';
   }
-  else if(!mongoose.Types.ObjectId.isValid(data.id)){
+  else if(!mongoose.Types.ObjectId.isValid(body.id)){
     errors.id_device = 'Campo Inválido.'
   }
 
-  if(isEmpty(data.password)){
+  if(isEmpty(body.password)){
     errors.password = 'Campo Requerido';
   }
-  else if (data.password.length<6 || data.password.length>20 ) {
+  else if (body.password.length<6 || body.password.length>20 ) {
     errors.password = 'Contraseña de 6 a 20 caracteres'
   }
 
   return new Promise( (resolve, reject) => {
       if(isEmpty(errors)){
-        Device.findById(data.id)
+        Device.findById(body.id)
           .then((device) => {
             if(device){
-              bcrypt.compare(data.password, device.password)
+              bcrypt.compare(body.password, device.password)
               .then((validatePassword) => {
                 if(validatePassword == false){
                   errors.password = 'Contraseña Erronea.'
                   return reject({
                     errors: errors,
+                    status: 403,
                   })
                 }
                 else{
@@ -197,6 +192,7 @@ const validateUserDevice = (data, id_update) =>{
               errors.device = 'Recurso no Encontrado.'
               return reject({
                 errors: errors,
+                status: 404,
               })
             }
           })
@@ -204,6 +200,7 @@ const validateUserDevice = (data, id_update) =>{
       else{
         return reject({
           errors: errors,
+          status: 400,
         })
       }
   })
@@ -316,26 +313,26 @@ const validateUserDeviceUpdate = (params, body) => {
 
 }
 
-const validateUserDevDelete = (data) => {
+const validateUserDevDelete = (body) => {
   let errors = {}
 
-  if(!mongoose.Types.ObjectId.isValid(data.idUser)){
+  if(!mongoose.Types.ObjectId.isValid(body.idUser)){
     errors.id_user = 'Campo Inválido.';
   }
 
-  if(!mongoose.Types.ObjectId.isValid(data.idDevice)){
+  if(!mongoose.Types.ObjectId.isValid(body.idDevice)){
       errors.id_device = 'Campo Inválido';
   }
 
   return new Promise( (resolve, reject) => {
     if(isEmpty(errors)){
-      User.findById(data.idUser)
+      User.findById(body.idUser)
         .then( user => {
           if(user){
             let isDevice = false;
             const newDevices = user.devices.filter( device => {
                 let aux = device.toString()
-                if(aux !== data.idDevice){
+                if(aux !== body.idDevice){
                   return true
                 }
                 else{
@@ -385,10 +382,8 @@ const validateUserDevDelete = (data) => {
 }
 
 
-export {
-        validateUser,
-        validateGoogle,
-        validateUserUpdate,
-        validateUserDevDelete,
-        validateUserDevice,
-        validateUserDeviceUpdate }
+export { validateUserCreate,
+         validateUserUpdate,
+         validateUserDevDelete,
+         validateUserDevice,
+         validateUserDeviceUpdate }
