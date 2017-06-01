@@ -9,14 +9,15 @@ import User from '../models/user';
 import Device from '../models/device';
 import { socialAuth, validateByGoole } from '../config/socialAuth'
 import { MONGO } from '../config/config';
-import { validateUser, validateGoogle } from '../validate/user'
-import { validateDevice } from '../validate/device'
+import { validateSignIn,
+         validateSingUp,
+        validateGoogle } from '../validate/auth'
 
 class AuthController {
 
   signin(req, res) {
 
-    let validate = validateUser(req.body, false)
+    let validate = validateSignIn(req.body)
     if (validate.isValid) {
       User.findOne({ email: req.body.email })
       .then((user) => {
@@ -26,48 +27,71 @@ class AuthController {
               var token = jwt.sign(user, MONGO.secret, {
                 expiresIn: 10000 //segundos
               });
-              return res.status(200).json({ status: 'OK', token: 'JWT '+ token, user: user});
+              return res
+                      .status(200)
+                      .json({ status: 'OK',
+                              token: `JWT ${token}`,
+                              user: user });
             }
             else {
-              return res.status(400).json({ status: 'Error', errors: { password: 'Password Incorrecta' } });
+              return res
+                      .status(403)
+                      .json({ status: 'Error',
+                              errors: { password: 'Password Incorrecta' } });
             }
           })
         }
         else{
-          return res.status(404).json({ status: 'Error', errors: { user: 'Usuario No Encontrado' } });
+          return res
+                  .status(404)
+                  .json({ status: 'Error',
+                          errors: { user: 'Usuario No Encontrado' } });
         }
       })
       .catch((err) => {
-        return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+        return res
+                .status(500)
+                .json({ status: 'Error',
+                        errors: { server: 'Problemas con el servidor' } })
       })
     }
     else {
-      return res.status(400).json({ status: 'Error', errors: validate.errors });
+      return res
+              .status(400)
+              .json({ status: 'Error', errors: validate.errors });
     }
 
   }
 
   signup(req, res){
 
-    validateUser(req.body, true)
-      .then(({errors, isValid}) => {
-        if(isValid) {
-          User.create({
-            email: req.body.email,
-            password: req.body.password})
-            .then((user) => {
-              const token = jwt.sign(user, MONGO.secret, {
-                expiresIn: 10000,
-              });
-              return res.status(201).json({ status: 'OK', user: user, token: 'JWT '+token });
-            })
-            .catch((err) => {
-              return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
-            })
-        }
-        else {
-          res.status(400).json({ status: 'Error', errors: errors });
-        }
+    validateSingUp(req.body)
+      .then(({isValid}) => {
+        User.create({
+          email: req.body.email,
+          password: req.body.password})
+          .then((user) => {
+            const token = jwt.sign(user, MONGO.secret, {
+              expiresIn: 10000,
+            });
+            return res
+                    .status(201)
+                    .json({ status: 'OK',
+                            token: `JWT ${token}`,
+                            user: user});
+          })
+          .catch((err) => {
+            return res
+                    .status(500)
+                    .json({ status: 'Error',
+                              errors: { server: 'Problemas con el servidor' } })
+          })
+      })
+      .catch(({errors, status}) => {
+        return res
+                .status(status)
+                .json({ status: 'Error',
+                        errors: errors })
       })
 
   }
@@ -75,19 +99,32 @@ class AuthController {
   existEmail(req, res){
 
     if(!req.params.email){
-     return res.status(400).json({status: 'Error', errors: {email: 'Campo Requerido'}});
+     return res
+              .status(400)
+              .json({ status: 'Error',
+                      errors: { email: 'Campo Requerido' } });
     }
 
     if(!validator.isEmail(req.params.email)){
-     return res.status(400).json({status: 'Error', errors: {email: 'El Campo debe ser un email'}});
+     return res
+              .status(400)
+              .json({ status: 'Error',
+                      errors: { email: 'El Campo debe ser un email'} });
     }
 
     User.findOne({ 'email' : req.params.email })
      .then( user => {
        if(user){
-         return res.status(200).json({errors: {email: 'Este Correo ya está siendo utilizado'}, status: 'Error'});
+         return res
+                  .status(200)
+                  .json({ status: 'Error',
+                          errors: { email: 'Este Correo ya está siendo utilizado'} });
        }
-       return res.status(200).json({status: 'OK'});
+       else{
+         return res
+                  .status(404)
+                  .json({ status: 'OK' })
+       }
     })
 
   }
@@ -99,7 +136,7 @@ class AuthController {
     });
 
     const data = {
-      token: "JWT "+token,
+      token: `JWT ${token}`,
       user: req.user,
     }
     res.status(200).json(data);
@@ -118,7 +155,10 @@ class AuthController {
                 const token = jwt.sign(user, MONGO.secret, {
                       expiresIn: 10000 //segundos
                 });
-                return res.status(200).json({user: user, token: `JWT ${token}`});
+                return res
+                        .status(200)
+                        .json({ user: user,
+                                token: `JWT ${token}` });
               }
               else{
                 User.create({
@@ -129,17 +169,20 @@ class AuthController {
                     const token = jwt.sign(user, MONGO.secret, {
                           expiresIn: 10000 //segundos
                     });
-                    return res.status(201).json({user: user, token: `JWT ${token}`});
+                    return res
+                            .status(201)
+                            .json({ user: user, token: `JWT ${token}` });
                   })
                   .catch( err => {
-                    return res.status(400).json({
-                      errors: {email: 'Este Email ya está siendo utilizado'}
-                      , status: 'Error'})
+                    return res
+                            .status(400)
+                            .json({ status: 'Error',
+                                    errors: {email: 'Este Email ya está siendo utilizado'} })
                   })
               }
             })
         }
-        else{
+        else {
           return res.status(400).json({errors: errors, status: 'Error'})
         }
       })
@@ -156,26 +199,42 @@ class AuthController {
             bcrypt.compare(req.body.password, device.password)
             .then((validatePassword) => {
               if(validatePassword == false){
-                return res.status(400).json({ status: 'Error', errors: { password: 'Password Incorrecta' } });
+                return res
+                        .status(400)
+                        .json({ status: 'Error',
+                                errors: { password: 'Password Incorrecta' } });
               }
               else{
                 let token = jwt.sign(device, MONGO.secret, {
                   expiresIn: 10000 //segundos
                 });
-                return res.status(200).json({ status: 'OK', token: 'JWT '+ token, device: device});
+                return res
+                        .status(200)
+                        .json({ status: 'OK',
+                                token: `JWT ${token}`,
+                                device: device });
               }
             })
           }
           else{
-            return res.status(404).json({ status: 'Error', errors: { device: 'Device No Encontrado' } });
+            return res
+                    .status(404)
+                    .json({ status: 'Error',
+                            errors: { device: 'Device No Encontrado' } });
           }
         })
         .catch((err) => {
-          return res.status(500).json({ status: 'Error', errors: { server: 'Problemas con el servidor' } })
+          return res
+                  .status(500)
+                  .json({ status: 'Error',
+                          errors: { server: 'Problemas con el servidor' } })
         })
     }
     else {
-      return res.status(400).json({ status: 'Error', errors: validate.errors });
+      return res
+              .status(400)
+              .json({ status: 'Error',
+                      errors: validate.errors });
     }
 
   }
