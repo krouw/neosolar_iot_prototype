@@ -51,4 +51,4 @@ const deviceRole = (req) => {
 }
 
 export { ROLE_CLIENT, ROLE_DEVICE, ROLE_MANAGER, ROLE_ADMIN }
-export { UserRole, AdminRole, deviceRole }
+export { UserRole, AdminRole, deviceRole, AdminMaganerRole }

@@ -58,21 +58,28 @@ class DeviceController {
   //post
   createDev(req, res) {
 
-        Device.create({
-          name: req.body.name,
-          password: req.body.password
-        })
+    validateDeviceCreate(req.body)
+      .then(({device}) => {
+        Device.create(device)
         .then( device => {
-          return res.status(201).json({
-            message: 'Dispositivo registrado con éxito.',
-            device: device,
-          });
+          return res
+                  .status(201)
+                  .json({ status: 'OK',
+                          data: { device: device} });
         })
         .catch( err => {
-          return res.status(422).json({
-            message: 'El dispositivo ya está registrado: ' + JSON.stringify(req.body)
-          });
+          return res
+                  .status(500)
+                  .json({ status: 'Error',
+                            errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } });
         })
+      })
+      .catch(({errors, status}) => {
+        return res
+                .status(status)
+                .json({ status: 'Error',
+                        errors: errors })
+      })
 
   }
 

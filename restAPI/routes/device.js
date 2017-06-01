@@ -4,7 +4,8 @@ import DeviceController from '../controllers/device'
 import MeasurementController from '../controllers/measurement'
 import ConnectRoles from 'connect-roles'
 import { deviceRole,
-         AdminRole, } from '../config/roles'
+         AdminRole,
+         AdminMaganerRole } from '../config/roles'
 
 const router = express.Router()
 const measurement = new MeasurementController()
@@ -23,10 +24,11 @@ router.use(deviceRoles.middleware());
 //Roles
 deviceRoles.use('admin', AdminRole)
 deviceRoles.use('access device', '/:idDevice', deviceRole)
+deviceRoles.use('AdminManager', AdminMaganerRole)
 
 router.get('/', deviceRoles.is('admin') ,(req, res) => device.getAllDev(req, res));
 router.get('/:idDevice', deviceRoles.can('access device') ,(req, res) => device.getById(req, res));
-router.post('/', (req, res) => device.createDev(req, res));
+router.post('/', deviceRoles.can('AdminManager') ,(req, res) => device.createDev(req, res));
 router.put('/:idDevice', (req, res) => device.updateDev(req, res));
 router.delete('/:idDevice', (req, res) => device.deleteDev(req, res));
 
