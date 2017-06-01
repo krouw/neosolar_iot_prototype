@@ -80,7 +80,7 @@ const validateUserUpdate = (body, user, params) => {
   let result = {};
 
   if(!mongoose.Types.ObjectId.isValid(params.idUser)){
-    errors.id = 'Campo Inválido.';
+    errors.id_user = 'Campo Inválido.';
   }
 
   if(isEmpty(body)){
@@ -313,37 +313,52 @@ const validateUserDeviceUpdate = (params, body) => {
 
 }
 
-const validateUserDevDelete = (body) => {
+const validateUserDevDelete = (params) => {
   let errors = {}
 
-  if(!mongoose.Types.ObjectId.isValid(body.idUser)){
+  if(!mongoose.Types.ObjectId.isValid(params.idUser)){
     errors.id_user = 'Campo Inválido.';
   }
 
-  if(!mongoose.Types.ObjectId.isValid(body.idDevice)){
+  if(!mongoose.Types.ObjectId.isValid(params.idDevice)){
       errors.id_device = 'Campo Inválido';
   }
 
   return new Promise( (resolve, reject) => {
     if(isEmpty(errors)){
-      User.findById(body.idUser)
+      User.findById(params.idUser)
         .then( user => {
           if(user){
-            let isDevice = false;
+            let isDevice = undefined;
             const newDevices = user.devices.filter( device => {
                 let aux = device.toString()
-                if(aux !== body.idDevice){
+                if(aux !== params.idDevice){
                   return true
                 }
                 else{
-                  isDevice = true;
+                  isDevice = device;
                   return false;
                 }
             })
             if(isDevice){
-              return resolve({
-                newDevices: newDevices
-              })
+              Device.findById(isDevice)
+                .then((device) => {
+                  const newUsers = device.users.filter( userDev => {
+                      let aux = userDev.toString()
+                      return aux !== params.idUser;
+                  })
+                  return resolve({
+                    newDevices: newDevices,
+                    newUsers: newUsers,
+                  })
+                })
+                .catch((err) => {
+                  errors.server = 'Lo Sentimos, no hemos podido responder tu solicitud'
+                  return reject({
+                    errors: errors,
+                    status: 500,
+                  })
+                })
             }
             else{
 

@@ -327,14 +327,23 @@ class UserController {
 
   deleteDev(req, res) {
     validateUserDevDelete(req.params)
-      .then(({newDevices}) => {
+      .then(({newDevices, newUsers}) => {
         User.findByIdAndUpdate(req.params.idUser, { devices: newDevices } , {new:true})
           .populate({path: 'devices', select: '-__v -password'})
           .then( user => {
             if (user) {
-              return res
-                      .status(200)
-                      .json({status:'OK', data: {user: user}})
+              Device.findByIdAndUpdate(req.params.idDevice, { users: newUsers }, {new:true})
+                .then((value) => {
+                  return res
+                          .status(200)
+                          .json({status:'OK', data: {user: user}})
+                })
+                .catch((err) => {
+                  return res
+                          .status(500)
+                          .json({ status: 'Error',
+                                  errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+                })
             }
             else{
               return res
