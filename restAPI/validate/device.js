@@ -27,4 +27,4 @@ const validateDeviceCreate = (data) =>{
   }
 }
 
-export { validateDevice }
+export { validateDeviceCreate }
