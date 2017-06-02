@@ -156,7 +156,27 @@ class DeviceController {
       Device.findById(req.params.idDevice)
         .then( device => {
           if(device){
-
+            Measurement.find({ device: req.params.idDevice })
+              .then((msm) => {
+                if(msm){
+                  return res
+                          .status(200)
+                          .json({ status: 'OK',
+                                  data: { device: device, measurement: msm}  })
+                }
+                else{
+                  return res
+                          .status(404)
+                          .json({ status: 'Not Found',
+                                  errors: { measurement: 'Este recurso no Existe.' } })
+                }
+              })
+              .catch((err) => {
+                return res
+                        .status(500)
+                        .json({ status: 'Error',
+                                errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+              })
           }
           else{
             return res
