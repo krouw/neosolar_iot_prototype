@@ -55,7 +55,7 @@ const deviceRole = (req) => {
     return true
   }
 
-  if (req.user.role === ROLE_DEVICE && req.user._id === req.params.idDevice) {
+  if (req.user.role === ROLE_DEVICE && req.user._id == req.params.idDevice) {
     return true;
   }
 }

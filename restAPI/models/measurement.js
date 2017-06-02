@@ -5,15 +5,13 @@ import Device from '../models/device'
 const Schema = mongoose.Schema
 
 const MeasurementSchema = new mongoose.Schema({
-  idDevice: {
-    type: String,
-    required:true,
-  },
   intensity: {
     type:  String,
+    required: true
   },
   voltage: {
     type: String,
+    required: true
   },
   device:{ type: Schema.ObjectId, ref: "Measurement"},
 },{ timestamps: true });

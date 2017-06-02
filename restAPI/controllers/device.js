@@ -3,8 +3,10 @@ import validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import Device from '../models/device';
+import Measurement from '../models/measurement';
 import { validateDeviceCreate,
-         validateDeviceUpdate } from '../validate/device'
+         validateDeviceUpdate,
+         validateMsmCreate } from '../validate/device'
 
 class DeviceController {
 
@@ -147,6 +149,66 @@ class DeviceController {
               .status(400)
               .json({ status: 'Error', errors: { id_device: 'Campo Inválido.' } })
     }
+  }
+
+  getAllDevMsm(req, res){
+    if(mongoose.Types.ObjectId.isValid(req.params.idDevice)){
+      Device.findById(req.params.idDevice)
+        .then( device => {
+          if(device){
+
+          }
+          else{
+            return res
+                    .status(404)
+                    .json({ status: 'Not Found',
+                            errors: { device: 'Este recurso no Existe.' } })
+          }
+        })
+        .catch( err => {
+          return res
+                  .status(500)
+                  .json({ status: 'Error',
+                          errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+        })
+    }
+    else{
+      return res
+              .status(400)
+              .json({ status: 'Error',
+                      errors: { id_device: 'Campo Inválido.' } });
+    }
+  }
+
+  createDevMsm(req, res){
+    validateMsmCreate(req.body, req.params)
+      .then(({device}) => {
+        Measurement.create({
+          intensity: req.body.intensity,
+          voltage: req.body.voltage,
+          device: req.params.idDevice
+        })
+        .then((msm) => {
+          return res
+                  .status(201)
+                  .json({ status: 'OK',
+                          data: { device: device, measurement: msm } })
+        })
+        .catch((err) => {
+          console.log(err);
+          return res
+                  .status(500)
+                  .json({ status: 'Errors',
+                          errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' }  })
+        })
+      })
+      .catch(({errors, status}) => {
+        return res
+                .status(status)
+                .json({ status: 'Error',
+                        errors: errors })
+      })
+
   }
 
 }

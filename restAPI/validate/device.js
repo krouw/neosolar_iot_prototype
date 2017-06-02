@@ -129,4 +129,55 @@ const validateDeviceUpdate = (body, params) => {
 
 }
 
-export { validateDeviceCreate, validateDeviceUpdate }
+const validateMsmCreate = (body, params) => {
+  let errors = {};
+
+  if(!mongoose.Types.ObjectId.isValid(params.idDevice)){
+    errors.id_device = 'Campo Inválido.';
+  }
+
+  if(isEmpty(body.intensity)){
+    errors.intensity = 'Campo requerido'
+  }
+
+  if(isEmpty(body.voltage)){
+    errors.voltage = 'Campo requerido'
+  }
+
+  return new Promise( (resolve, reject) => {
+    if(isEmpty(errors)){
+      Device.findById(params.idDevice)
+        .then((device) => {
+          if(device){
+            resolve({device: device})
+          }
+          else{
+            errors.device = 'Recurso no Encontrado.'
+            reject({
+              errors: errors,
+              status: 404
+            })
+          }
+        })
+        .catch((err) => {
+          errors.server = 'Lo Sentimos, no hemos podido responder tu solicitud',
+          reject({
+            errors: errors,
+            status: 500
+          })
+        })
+    }
+    else{
+      reject({
+        errors: errors,
+        status: 400,
+      })
+    }
+  });
+
+
+}
+
+export { validateDeviceCreate,
+         validateDeviceUpdate,
+         validateMsmCreate }
