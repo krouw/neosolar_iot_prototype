@@ -24,9 +24,10 @@ const asyncValidate = (values) => {
   console.log(values);
   return axios.get(`${api.uri}/auth/${values.email}/exists`)
     .then( res => {
-      if(res.data.errors){
-        throw { email: res.data.errors.email }
-      }
+      console.log(res);
+    })
+    .catch((err) => {
+      throw err.response.data.errors
     })
 }
 
@@ -99,5 +100,5 @@ export default reduxForm({
   form: 'signup',
   validate,
   asyncValidate,
-  asyncBlurFields: ['password'],
+  asyncBlurFields: ['email'],
 })(SignupForm)

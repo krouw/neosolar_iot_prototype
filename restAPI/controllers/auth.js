@@ -52,7 +52,7 @@ class AuthController {
         return res
                 .status(500)
                 .json({ status: 'Error',
-                        errors: { server: 'Problemas con el servidor' } })
+                        errors: { _error: 'Problemas con el servidor' } })
       })
     }
     else {
@@ -84,7 +84,7 @@ class AuthController {
             return res
                     .status(500)
                     .json({ status: 'Error',
-                              errors: { server: 'Problemas con el servidor' } })
+                              errors: { _error: 'Problemas con el servidor' } })
           })
       })
       .catch(({errors, status}) => {
@@ -97,7 +97,6 @@ class AuthController {
   }
 
   existEmail(req, res){
-
     if(!req.params.email){
      return res
               .status(400)
@@ -116,13 +115,13 @@ class AuthController {
      .then( user => {
        if(user){
          return res
-                  .status(200)
+                  .status(400)
                   .json({ status: 'Error',
                           errors: { email: 'Este Correo ya está siendo utilizado'} });
        }
        else{
          return res
-                  .status(404)
+                  .status(200)
                   .json({ status: 'OK' })
        }
     })
@@ -227,7 +226,7 @@ class AuthController {
           return res
                   .status(500)
                   .json({ status: 'Error',
-                          errors: { server: 'Problemas con el servidor' } })
+                          errors: { _error: 'Problemas con el servidor' } })
         })
     }
     else {

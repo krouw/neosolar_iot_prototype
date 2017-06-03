@@ -41,11 +41,23 @@ export const SignupServer = data => {
   return dispatch => {
     return axios.post( `${api.uri}/auth/signup`, data)
       .then( res => {
-
-          console.log(res);
+        console.log(res);
+        const token = res.data.token;
+        InsertStorage(STORAGE_KEY_TOKEN, token)
+        setAuthorizationToken(token)
+        Actions.main({type: ActionConst.RESET})
+        dispatch(setCurrentUser(res.data.user))
       })
       .catch( err => {
-        console.log(err);
+        console.log(err.response);
+        if(!err.response){
+          ToastAndroid.show('No se ha podido establecer conexión con el Servidor', ToastAndroid.LONG);
+        }
+        if(err.response){
+          if(err.response.status === 400){
+            throw new SubmissionError(err.response.data.errors)
+          }
+        }
       })
   }
 }

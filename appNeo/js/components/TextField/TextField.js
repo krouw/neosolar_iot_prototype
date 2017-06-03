@@ -38,12 +38,12 @@ class TextField extends Component {
               onFocus={(e) => {
                 this.refs.label.floatLabel();
                 this.refs.underline.expandLine();
-                onFocus(e);
+                onFocus(value);
               }}
               onBlur={(e) => {
                 !value.length ? this.refs.label.sinkLabel() : null;
                 error ? this.refs.underline.expandLine() : this.refs.underline.shrinkLine() ;
-                onBlur(e);
+                onBlur(value);
               }}
               secureTextEntry={isPassword ? isPassword : false}
               {...restInput}
