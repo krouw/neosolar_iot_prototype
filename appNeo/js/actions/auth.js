@@ -32,7 +32,6 @@ export const SigninServer = data => {
         }
         if(err.response){
           if(err.response.status === 400 || err.response.status === 404 || err.response.status === 403){
-            console.log(err.response.data.errors);
             throw new SubmissionError(err.response.data.errors)
           }
           if(err.response.status === 500){

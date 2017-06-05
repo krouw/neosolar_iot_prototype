@@ -14,14 +14,16 @@ const validate = values => {
     errors.email = 'Email inválido'
   }
   if (!values.password) {
-    errors.password = 'Campo requerido'
+    errors.password = 'Campo Requerido'
+  }
+  else if (values.password.length<6 || values.passwordlength>20 ) {
+    errors.password = 'Contraseña de 6 a 20 caracteres'
   }
   return errors
 }
 
 const asyncValidate = (values) => {
   const errors = {};
-  console.log(values);
   return axios.get(`${api.uri}/auth/${values.email}/exists`)
     .then( res => {
       console.log(res);
