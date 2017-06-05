@@ -4,26 +4,26 @@ import setAuthorizationToken from './setAuthorizationToken'
 import { id, password, api } from './config'
 import { persist } from './persist'
 
-const data = {
+const bodyAuth = {
   id: id,
   password: password,
 }
 let token = ''
 
-axios.post(`${api}/auth/device`,data)
+axios.post(`${api}/auth/device`,bodyAuth)
   .then((res) => {
-    token = data.token
+    token = res.data.token
     let body = {}
     setAuthorizationToken(token)
     setInterval(() => {
 	       acquisition()
-          .then((value) => {
-            persist(value)
+          .then(({msm}) => {
+            persist(msm)
           })
           .catch((err) => {
             console.log(err);
           })
-    }, 2000)
+    }, 20000)
   })
   .catch((err) => {
     console.log(err);

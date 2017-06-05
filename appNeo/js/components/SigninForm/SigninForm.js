@@ -11,9 +11,14 @@ const validate = values => {
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = 'Email inválido'
   }
+
   if (!values.password) {
-    errors.password = 'Campo requerido'
+    errors.password = 'Campo Requerido'
   }
+  else if (values.password.length<6 || values.passwordlength>20 ) {
+    errors.password = 'Contraseña de 6 a 20 caracteres'
+  }
+
   return errors
 }
 

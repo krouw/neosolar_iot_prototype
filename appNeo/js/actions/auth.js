@@ -31,7 +31,13 @@ export const SigninServer = data => {
           ToastAndroid.show('No se ha podido establecer conexión con el Servidor', ToastAndroid.LONG);
         }
         if(err.response){
-          throw new SubmissionError({email: ' ', password: ' ', _error: 'Problemas con el email y/o contraseña.' })
+          if(err.response.status === 400 || err.response.status === 404 || err.response.status === 403){
+            console.log(err.response.data.errors);
+            throw new SubmissionError(err.response.data.errors)
+          }
+          if(err.response.status === 500){
+            ToastAndroid.show(err.response.data.errors._error, ToastAndroid.LONG);
+          }
         }
       })
   }
@@ -41,7 +47,6 @@ export const SignupServer = data => {
   return dispatch => {
     return axios.post( `${api.uri}/auth/signup`, data)
       .then( res => {
-        console.log(res);
         const token = res.data.token;
         InsertStorage(STORAGE_KEY_TOKEN, token)
         setAuthorizationToken(token)

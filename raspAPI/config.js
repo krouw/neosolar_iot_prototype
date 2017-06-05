@@ -1,5 +1,5 @@
-const id = '592f3683406f0914fbb978d6'
-const password = '123456'
-const api = 'http://pird.ddns.net:7000/api'
+const id = '5930957dd585b910aceae44a'
+const password = '1234567'
+const api = 'http://localhost:7000/api'
 
 export { id, password, api }

@@ -45,7 +45,7 @@ class AuthController {
           return res
                   .status(404)
                   .json({ status: 'Error',
-                          errors: { user: 'Usuario No Encontrado' } });
+                          errors: { email: 'Usuario No Encontrado' } });
         }
       })
       .catch((err) => {
