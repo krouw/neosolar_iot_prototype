@@ -18,7 +18,7 @@ const store = createStore(
   ),
 );
 
-persistStore(store, { storage: AsyncStorage, blacklist: ['form', 'auth'] }, () => {
+persistStore(store, { storage: AsyncStorage, blacklist: ['form', 'auth', 'device'] }, () => {
 
 })
 

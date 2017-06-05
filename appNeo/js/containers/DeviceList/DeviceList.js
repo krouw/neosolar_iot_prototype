@@ -10,10 +10,12 @@ import { Logout } from '../../actions/auth'
 import { Actions, ActionConst } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ActionButton from 'react-native-action-button';
+import { connect } from 'react-redux'
 
 import DeviceListItem from '../../components/DeviceListItem/DeviceListItem'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import DeviceModal from '../../components/DeviceModal/DeviceModal'
+import { getUserDevices } from '../../actions/device'
 
 class DeviceList extends Component  {
 
@@ -42,6 +44,11 @@ class DeviceList extends Component  {
         {name: 'Un nombre bastante largo9',
         status: 'es solo un estado'}])
     }
+  }
+
+  componentDidMount(){
+    //this.props.getUserDevice(this.props)
+    console.log(this.props.user);
   }
 
   render(){
@@ -121,4 +128,18 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DeviceList;
+function mapStateToProps(state){
+  console.log(state);
+  return {
+    user: state.auth.user,
+    devices: state.devices
+  }
+}
+
+function mapDispatchToProps(dispatch){
+  return {
+    getUserDevice: (userData) => dispatch(getUserDevice(userData)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DeviceList)
