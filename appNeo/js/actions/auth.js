@@ -4,6 +4,7 @@ import { SubmissionError, reset } from 'redux-form'
 import { Actions, ActionConst } from 'react-native-router-flux'
 import { GoogleSignin } from 'react-native-google-signin'
 import { SET_CURRENT_USER, api } from './types'
+import { setDevices } from './device'
 import { InsertStorage,
          DeleteStorage,
          STORAGE_KEY_TOKEN } from '../util/AsyncStorage'
@@ -21,10 +22,13 @@ export const SigninServer = data => {
     return axios.post( `${api.uri}/auth/signin`, data)
       .then( res => {
         const token = res.data.token;
+        dispatch(setCurrentUser(res.data.user))
+        dispatch(setDevices(res.data.user.devices))
         InsertStorage(STORAGE_KEY_TOKEN, token)
         setAuthorizationToken(token)
+      })
+      .then(() => {
         Actions.main({type: ActionConst.RESET})
-        dispatch(setCurrentUser(res.data.user))
       })
       .catch( err => {
         if(!err.response){
@@ -47,10 +51,12 @@ export const SignupServer = data => {
     return axios.post( `${api.uri}/auth/signup`, data)
       .then( res => {
         const token = res.data.token;
+        dispatch(setCurrentUser(res.data.user))
         InsertStorage(STORAGE_KEY_TOKEN, token)
         setAuthorizationToken(token)
+      })
+      .then(() => {
         Actions.main({type: ActionConst.RESET})
-        dispatch(setCurrentUser(res.data.user))
       })
       .catch( err => {
         console.log(err.response);

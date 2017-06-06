@@ -1,24 +1,29 @@
 import axios from 'axios'
-import { SET_DEVICES } from './types'
+import { SET_DEVICES, START_FETCHING_DEVICES, api } from './types'
 
-const setDevices = (devices) => {
+export const setDevices = (devices) => {
   return {
     type: SET_DEVICES,
     devices: devices,
   }
 }
 
-const getUserDevices = data => {
-  console.log(data);
+export const startFetchingMessages = () => {
+    return {
+      type: 'START_FETCHING_DEVICES'
+    }
+};
+
+
+export const getUserDevices = data => {
   return dispatch => {
-    return axios.get(`${api.uri}/user/${data.id}/device/`)
+    dispatch(startFetchingMessages())
+    return axios.get(`${api.uri}/user/${data._id}/device/`)
             .then((value) => {
-              console.log(value);
+              console.log(value.data.data.devices);
             })
             .catch((err) => {
               console.log(err);
             })
   }
 }
-
-export { getUserDevices, setDevices }

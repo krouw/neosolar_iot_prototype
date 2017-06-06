@@ -1,4 +1,4 @@
-import { SET_DEVICES } from '../actions/types'
+import { SET_DEVICES, START_FETCHING_DEVICES } from '../actions/types'
 
 const initialState = {
   devices: [],
@@ -7,10 +7,14 @@ const initialState = {
 export default (state = initialState, action = {}) => {
   switch (action.type) {
     case SET_DEVICES:
-    console.log(!isEmpty(action.devices));
       return {
         devices: action.devices,
         ...state,
+      }
+    case START_FETCHING_DEVICES:
+      return {
+        isFetching: true,
+        ...state
       }
     default:
         return state;

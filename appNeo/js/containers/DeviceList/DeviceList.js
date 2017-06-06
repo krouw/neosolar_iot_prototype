@@ -46,11 +46,6 @@ class DeviceList extends Component  {
     }
   }
 
-  componentDidMount(){
-    //this.props.getUserDevice(this.props)
-    console.log(this.props.user);
-  }
-
   render(){
     const AccentIconButton = MKButton.accentColoredFlatButton()
       .withOnPress(() => Actions.profile({type: ActionConst.PUSH}))
@@ -129,7 +124,6 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state){
-  console.log(state);
   return {
     user: state.auth.user,
     devices: state.devices
@@ -138,7 +132,7 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
   return {
-    getUserDevice: (userData) => dispatch(getUserDevice(userData)),
+    getUserDevices: (userData) => dispatch(getUserDevices(userData)),
   }
 }
 
