@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import logger from 'morgan'
 import mongoose from 'mongoose'
 import passport from 'passport'
+import kue from 'kue'
 import { MONGO } from './config/config'
 import routesBinder from './libs/Route'
 const app = express()
@@ -20,6 +21,7 @@ app.use(passport.initialize())
 require('./config/passport')(passport);
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use('/queue', kue.app);
 
 app.get('/api', (req,res) => {
   res.send('NeoSolar API REST');

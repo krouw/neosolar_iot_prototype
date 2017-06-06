@@ -7,6 +7,7 @@ import Measurement from '../models/measurement';
 import { validateDeviceCreate,
          validateDeviceUpdate,
          validateMsmCreate } from '../validate/device'
+import { createJob } from '../queue/indicators'
 
 class DeviceController {
 
@@ -159,6 +160,9 @@ class DeviceController {
             Measurement.find({ device: req.params.idDevice })
               .then((msm) => {
                 if(msm){
+                  createJob((err) => {
+                    console.log(err);
+                  })
                   return res
                           .status(200)
                           .json({ status: 'OK',
