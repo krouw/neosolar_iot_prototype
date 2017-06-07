@@ -18,8 +18,8 @@ async function existsToken(dispatch){
   const token = await GetStorage(STORAGE_KEY_TOKEN);
   if(token){
     setAuthorizationToken(token);
-    const user = jwtDecode(token.split(' ')[1]);
-    dispatch(setCurrentUser(user._doc))
+    const data = jwtDecode(token.split(' ')[1]);
+    dispatch(setCurrentUser(data.user))
     Actions.main({type: ActionConst.RESET})
   }
   else{

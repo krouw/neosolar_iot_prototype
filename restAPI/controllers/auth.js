@@ -24,7 +24,15 @@ class AuthController {
         if(user){
           user.comparePassword(req.body.password, (err, isMatch) => {
             if (isMatch && !err) {
-              var token = jwt.sign(user, MONGO.secret, {
+              const userData = {
+                user:{_id: user._id,
+                email: user.email,
+                role: user.role,
+                devices: user.devices,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt}
+              }
+              var token = jwt.sign(userData, MONGO.secret, {
                 expiresIn: 10000 //segundos
               });
               return res
@@ -71,8 +79,16 @@ class AuthController {
           email: req.body.email,
           password: req.body.password})
           .then((user) => {
-            const token = jwt.sign(user, MONGO.secret, {
-              expiresIn: 10000,
+            const userData = {
+              user:{_id: user._id,
+              email: user.email,
+              role: user.role,
+              devices: user.devices,
+              createdAt: user.createdAt,
+              updatedAt: user.updatedAt}
+            }
+            var token = jwt.sign(userData, MONGO.secret, {
+              expiresIn: 10000 //segundos
             });
             return res
                     .status(201)
