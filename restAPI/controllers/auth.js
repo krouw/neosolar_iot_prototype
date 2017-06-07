@@ -38,7 +38,7 @@ class AuthController {
                       .status(200)
                       .json({ status: 'OK',
                               token: `JWT ${token}`,
-                              user: user });
+                              user: userData });
             }
             else {
               return res
@@ -92,7 +92,7 @@ class AuthController {
                     .status(201)
                     .json({ status: 'OK',
                             token: `JWT ${token}`,
-                            user: user});
+                            user: userData});
           })
           .catch((err) => {
             return res
