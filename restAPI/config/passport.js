@@ -19,8 +19,8 @@ module.exports = (passport) => {
    opts.jwtFromRequest = ExtractJwt.fromAuthHeader();
    opts.secretOrKey = MONGO.secret;
    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-     var id = jwt_payload._doc._id;
-     if(jwt_payload._doc.role === ROLE_DEVICE ){
+     var id = jwt_payload.user._id;
+     if(jwt_payload.user.role === ROLE_DEVICE ){
        Device.findOne({_id: id})
         .then((device) => {
           if(device){

@@ -28,7 +28,6 @@ class AuthController {
                 user:{_id: user._id,
                 email: user.email,
                 role: user.role,
-                devices: user.devices,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt}
               }
@@ -83,7 +82,6 @@ class AuthController {
               user:{_id: user._id,
               email: user.email,
               role: user.role,
-              devices: user.devices,
               createdAt: user.createdAt,
               updatedAt: user.updatedAt}
             }
