@@ -11,6 +11,7 @@ import { Actions, ActionConst } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ActionButton from 'react-native-action-button';
 import { connect } from 'react-redux'
+import isEmpty from 'lodash/isEmpty'
 
 import DeviceListItem from '../../components/DeviceListItem/DeviceListItem'
 import SearchBar from '../../components/SearchBar/SearchBar'
@@ -21,28 +22,33 @@ class DeviceList extends Component  {
 
   constructor(props){
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       showModal: false,
-      dataSource: ds.cloneWithRows([
-        {name: 'Centro de Investigación 1',
-         status: 'active'},
-        {name: 'Utem ingenería 2',
-         status: 'active'},
-        {name: 'Casa 3',
-         status: 'active'},
-        {name: 'Un nombre bastante largo4',
-        status: 'es solo un estado'},
-        {name: 'Un nombre bastante largo5',
-        status: 'es solo un estado'},
-        {name: 'Un nombre bastante largo6',
-        status: 'es solo un estado'},
-        {name: 'Un nombre bastante largo7',
-        status: 'es solo un estado'},
-        {name: 'Un nombre bastante largo8',
-        status: 'es solo un estado'},
-        {name: 'Un nombre bastante largo9',
-        status: 'es solo un estado'}])
+    }
+    this.getUserDevices()
+  }
+
+  getUserDevices(){
+    this.props.getUserDevices(this.props.user)
+  }
+
+  content(){
+    if(this.props.isFetching){
+      return ( <Text> Loading... </Text> )
+    }
+    else if(this.props.devices.length <= 0){
+      return ( <Text>No hay dispositivos</Text> )
+    }
+    else{
+      return (
+        <ListView
+          style={styles.deviceList}
+          dataSource={this.ds.cloneWithRows(this.props.devices)}
+          renderRow={(rowData) => <DeviceListItem data={rowData} />}
+          renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator}></View> }
+        />
+      )
     }
   }
 
@@ -67,12 +73,7 @@ class DeviceList extends Component  {
           onDecline={() => { this.setState({showModal: false})}} />
         <SearchBar />
         <View style={[styles.content]}>
-          <ListView
-            style={styles.deviceList}
-            dataSource={this.state.dataSource}
-            renderRow={(rowData) => <DeviceListItem data={rowData} />}
-            renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator}></View> }
-          />
+          { this.content() }
           <ActionButton
             position="right"
             degrees={0}
@@ -126,7 +127,8 @@ const styles = StyleSheet.create({
 function mapStateToProps(state){
   return {
     user: state.auth.user,
-    devices: state.devices
+    devices: state.device.devices,
+    isFetching: state.device.isFetching,
   }
 }
 

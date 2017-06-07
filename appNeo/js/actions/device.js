@@ -20,10 +20,10 @@ export const getUserDevices = data => {
     dispatch(startFetchingMessages())
     return axios.get(`${api.uri}/user/${data._id}/device/`)
             .then((value) => {
-              console.log(value.data.data.devices);
+              dispatch(setDevices(value.data.data.devices))
             })
             .catch((err) => {
-              console.log(err);
+              console.log(err.response);
             })
   }
 }

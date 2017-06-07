@@ -23,7 +23,6 @@ export const SigninServer = data => {
       .then( res => {
         const token = res.data.token;
         dispatch(setCurrentUser(res.data.user))
-        dispatch(setDevices(res.data.user.devices))
         InsertStorage(STORAGE_KEY_TOKEN, token)
         setAuthorizationToken(token)
       })

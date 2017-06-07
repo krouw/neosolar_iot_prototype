@@ -30,6 +30,7 @@ const DeviceSchema = new mongoose.Schema({
   },
   state: {
     type: String,
+    default: 'active'
   },
   forecast: {
     type: Object,
