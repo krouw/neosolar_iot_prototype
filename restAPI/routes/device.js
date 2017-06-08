@@ -26,6 +26,7 @@ deviceRoles.use('access user device', '/:idDevice', UserDeviceRole)
 deviceRoles.use('AdminManager', AdminMaganerRole)
 deviceRoles.use('access device', '/:idDevice' ,deviceRole)
 deviceRoles.use('access device msm', '/:idDevice/measurement' ,deviceRole)
+deviceRoles.use('access device msm now', '/:idDevice/measurement/now' ,UserDeviceRole)
 
 router.get('/', deviceRoles.is('admin') ,(req, res) => device.getAllDev(req, res));
 router.get('/:idDevice', deviceRoles.can('access user device') ,(req, res) => device.getById(req, res));
@@ -34,7 +35,7 @@ router.put('/:idDevice', deviceRoles.can('access device') ,(req, res) => device.
 router.delete('/:idDevice', deviceRoles.can('AdminManager') ,(req, res) => device.deleteDev(req, res));
 
 router.get('/:idDevice/measurement', deviceRoles.can('access device msm')  ,(req, res) => device.getAllDevMsm(req, res));
-router.get('/:idDevice/measurement/now', (req, res) => device.getDevMsmNow(req, res));
+router.get('/:idDevice/measurement/now', deviceRoles.can('access device msm now') ,(req, res) => device.getDevMsmNow(req, res));
 router.post('/:idDevice/measurement/', deviceRoles.can('access device msm') ,(req, res) => device.createDevMsm(req, res));
 
 export default router;
