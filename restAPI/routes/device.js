@@ -34,7 +34,7 @@ router.put('/:idDevice', deviceRoles.can('access device') ,(req, res) => device.
 router.delete('/:idDevice', deviceRoles.can('AdminManager') ,(req, res) => device.deleteDev(req, res));
 
 router.get('/:idDevice/measurement', deviceRoles.can('access device msm')  ,(req, res) => device.getAllDevMsm(req, res));
-router.get('/:idDevice/measurement/:idMeasurement', (req, res) => device.getByIdMsm(req, res));
+router.get('/:idDevice/measurement/now', (req, res) => device.getDevMsmNow(req, res));
 router.post('/:idDevice/measurement/', deviceRoles.can('access device msm') ,(req, res) => device.createDevMsm(req, res));
 
 export default router;

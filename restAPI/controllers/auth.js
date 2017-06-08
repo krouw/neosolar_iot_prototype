@@ -218,7 +218,14 @@ class AuthController {
                                 errors: { password: 'Password Incorrecta' } });
               }
               else{
-                let token = jwt.sign(device, MONGO.secret, {
+                const deviceData = {
+                  user:{_id: device._id,
+                  name: device.name,
+                  role: device.role,
+                  createdAt: device.createdAt,
+                  updatedAt: device.updatedAt}
+                }
+                let token = jwt.sign(deviceData, MONGO.secret, {
                   expiresIn: 10000 //segundos
                 });
                 return res
