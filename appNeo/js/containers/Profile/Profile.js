@@ -4,7 +4,7 @@ import { View,
          StyleSheet,
          TouchableNativeFeedback,
          TextInput } from 'react-native'
-import { Actions, ActionConst } from 'react-native-router-flux'
+import { Actions } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux'
 import { MKButton } from 'react-native-material-kit'

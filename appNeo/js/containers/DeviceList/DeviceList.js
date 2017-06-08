@@ -4,6 +4,7 @@ import { View,
          StyleSheet,
          TextInput,
          ListView,
+         ActivityIndicator,
          TouchableWithoutFeedback } from 'react-native'
 import { MKButton } from 'react-native-material-kit'
 import { Logout } from '../../actions/auth'
@@ -35,10 +36,20 @@ class DeviceList extends Component  {
 
   content(){
     if(this.props.isFetching){
-      return ( <Text> Loading... </Text> )
+      return (
+        <View style={{flex:1,justifyContent: 'center',
+          alignItems: 'center',}}>
+          <ActivityIndicator
+            color="red"
+            size={48} />
+        </View>
+      )
     }
     else if(this.props.devices.length <= 0){
-      return ( <Text>No hay dispositivos</Text> )
+      return ( <View style={{flex:1,justifyContent: 'center',
+        alignItems: 'center',}}>
+        <Text> No hay dispositivos </Text>
+      </View>)
     }
     else{
       return (
@@ -128,7 +139,7 @@ function mapStateToProps(state){
   return {
     user: state.auth.user,
     devices: state.device.devices,
-    isFetching: state.device.isFetching,
+    isFetching: state.device.isFetchingDevice,
   }
 }
 

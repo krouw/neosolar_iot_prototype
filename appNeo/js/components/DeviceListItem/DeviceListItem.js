@@ -3,12 +3,13 @@ import { View,
          Text,
          StyleSheet,
          TouchableNativeFeedback } from 'react-native'
+import { Actions } from 'react-native-router-flux'
 import IconMd from 'react-native-vector-icons/MaterialIcons';
 import IconIon from 'react-native-vector-icons/Ionicons';
 
 const DeviceListItem = ({data}) => {
   return (
-    <TouchableNativeFeedback>
+    <TouchableNativeFeedback onPress={() => Actions.device({data: data}) }>
       <View style={[styles.DeviceWrapper]}>
         <IconMd
           style={styles.storage}

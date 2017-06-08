@@ -1,4 +1,4 @@
-import { SET_DEVICES, START_FETCHING_DEVICES } from '../actions/types'
+import { SET_DEVICES, START_FETCHING_DEVICES, START_FETCHING_MEASUREMENT } from '../actions/types'
 
 const initialState = {
   devices: [],
@@ -10,11 +10,15 @@ export default (state = initialState, action = {}) => {
     case SET_DEVICES:
       return Object.assign({}, state, {
           devices: action.devices,
-          isFetching: false
+          isFetchingDevice: false
         })
     case START_FETCHING_DEVICES:
       return Object.assign({}, state, {
-          isFetching: true
+          isFetchingDevice: true
+        })
+    case START_FETCHING_MEASUREMENT:
+      return Object.assign({}, state, {
+          isFetchingMeasurement: true
         })
     default:
         return state;

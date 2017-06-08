@@ -6,6 +6,7 @@ import Tutorial from './Tutorial/Tutorial'
 import Signin from './Signin/Signin'
 import DeviceList from './DeviceList/DeviceList'
 import Profile from './Profile/Profile'
+import Device from './Device/Device'
 import { GoogleSignin } from 'react-native-google-signin'
 import { STORAGE_KEY_TOKEN, GetStorage, InsertStorage } from '../util/AsyncStorage'
 import setAuthorizationToken from '../util/setAuthorizationToken'
@@ -47,6 +48,9 @@ const NavigatorComponent = ({dispatch}) => {
           key="profile"
           component={Profile}
           direction={'vertical'} />
+        <Scene
+          key="device"
+          component={Device} />
       </Scene>
     </Router>
   );
