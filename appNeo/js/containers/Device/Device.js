@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { View,
          Text,
          StyleSheet,
@@ -8,47 +8,69 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux'
 import { MKButton } from 'react-native-material-kit'
 import { Actions } from 'react-native-router-flux'
-import { getDeviceMeasurement } from '../../actions/device'
+import isEmpty from 'lodash/isEmpty'
+import { getDeviceMeasurement, updateDeviceMeasurement } from '../../actions/device'
 
-const Device = ({data, isFetching, getDeviceMeasurement}) =>{
-  getDeviceMeasurement(data)
-  const ColoredRaisedButton = MKButton.coloredButton()
-    .build();
+class Device extends Component {
 
-  const content = () => {
-    if(isFetching){
+  constructor(props){
+    super(props)
+    this.props.getDeviceMeasurement(this.props.data)
+  }
+
+  content(){
+    const msm = this.props.devices[this.props.data._id].measurement
+    if(this.props.isFetching){
       return (
         <ActivityIndicator
           color="red"
           size={48} />
       )
     }
+    console.log(msm);
+    if (isEmpty(msm)) {
+      return (
+        <Text> No hay mediciones. </Text>
+      )
+    }
     else{
       return (
-        <Text> Listo! </Text>
+        <View>
+          <Text>Itensity: {msm.intensity}</Text>
+          <Text>Voltage: {msm.voltage}</Text>
+        </View>
       )
     }
   }
 
-  return (
-    <View style={[styles.container]}>
-      <View style={[styles.header]}>
-        <TouchableNativeFeedback
-          onPress={() => Actions.pop()}>
-          <Icon name="arrow-back"
-            style={styles.test}
-            color="gray"
-            size={24} />
-        </TouchableNativeFeedback>
-        <Text style={styles.title}>
-          {data.name}
-        </Text>
+  componentDidMount(){
+    this.props.updateDeviceMeasurement(this.props.data)
+  }
+
+  render(){
+    const ColoredRaisedButton = MKButton.coloredButton()
+      .build();
+    return (
+      <View style={[styles.container]}>
+        <View style={[styles.header]}>
+          <TouchableNativeFeedback
+            onPress={() => Actions.pop()}>
+            <Icon name="arrow-back"
+              style={styles.test}
+              color="gray"
+              size={24} />
+          </TouchableNativeFeedback>
+          <Text style={styles.title}>
+            {this.props.data.name}
+          </Text>
+        </View>
+        <View style={[styles.content, styles.test]}>
+          { this.content() }
+        </View>
       </View>
-      <View style={[styles.content, styles.test]}>
-        { content() }
-      </View>
-    </View>
-  )
+    )
+  }
+
 }
 
 
@@ -84,6 +106,7 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state){
   return {
+    devices: state.device.entities,
     isFetching: state.device.isFetchingMeasurement,
   }
 }
@@ -91,6 +114,7 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getDeviceMeasurement: (device) => dispatch(getDeviceMeasurement(device)),
+    updateDeviceMeasurement: (device) => dispatch(updateDeviceMeasurement(device))
   }
 }
 

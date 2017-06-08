@@ -21,7 +21,7 @@ const DeviceListItem = ({data}) => {
             {data.name}
           </Text>
           <Text style={styles.status}>
-            {data.status}
+            {data.state}
           </Text>
         </View>
         <View style={[styles.arrow]}>

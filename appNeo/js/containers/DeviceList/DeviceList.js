@@ -26,12 +26,23 @@ class DeviceList extends Component  {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       showModal: false,
+      dataSource: []
     }
     this.getUserDevices()
   }
 
   getUserDevices(){
     this.props.getUserDevices(this.props.user)
+      .then(() => {
+        if(!isEmpty(this.props.devices)){
+          Object.keys(this.props.devices)
+            .map( deviceKey => {
+              const newState = this.state.dataSource;
+              newState.push(this.props.devices[deviceKey])
+              this.setState({dataSource: newState})
+            })
+        }
+      })
   }
 
   content(){
@@ -45,7 +56,7 @@ class DeviceList extends Component  {
         </View>
       )
     }
-    else if(this.props.devices.length <= 0){
+    else if(isEmpty(this.props.devices)){
       return ( <View style={{flex:1,justifyContent: 'center',
         alignItems: 'center',}}>
         <Text> No hay dispositivos </Text>
@@ -55,7 +66,7 @@ class DeviceList extends Component  {
       return (
         <ListView
           style={styles.deviceList}
-          dataSource={this.ds.cloneWithRows(this.props.devices)}
+          dataSource={this.ds.cloneWithRows(this.state.dataSource)}
           renderRow={(rowData) => <DeviceListItem data={rowData} />}
           renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator}></View> }
         />
@@ -138,7 +149,7 @@ const styles = StyleSheet.create({
 function mapStateToProps(state){
   return {
     user: state.auth.user,
-    devices: state.device.devices,
+    devices: state.device.entities,
     isFetching: state.device.isFetchingDevice,
   }
 }

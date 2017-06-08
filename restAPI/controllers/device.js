@@ -212,7 +212,7 @@ class DeviceController {
               return res
                       .status(200)
                       .json({ status: 'OK',
-                              data: { device: device, measurement: msm[0]} })
+                              data: { device: device, measurement: msm} })
             })
             .catch((err) => {
               return res
