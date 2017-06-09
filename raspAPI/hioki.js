@@ -9,12 +9,12 @@ const acquisition = () => {
 		.then( res => {
 		  const $ = cheerio.load(res.data)
 		  const table = $('BODY CENTER TABLE[cellspacing=0]').toArray()
-		  const intensityDOM = table[0].children[4].children[1].children[0].children[0].data
-			const voltageDOM = table[0].children[8].children[1].children[0].children[0].data
+		  const intensityDOM = table[0].children[6].children[4].children[0].children[0].data
+			const voltageDOM = table[0].children[4].children[1].children[0].children[0].data
 			let splitV = voltageDOM.split(' ')
-			let splitI = intensityDOM.split(' ')
-			let intensity = splitI[1]*100;
-			let voltage = splitV[3]
+			let splitI = intensityDOM.split('A')
+			let intensity = splitI[0]*100;
+			let voltage = splitV[2]
 		  let msm = {
 		    intensity: intensity.toString(),
 		    voltage: voltage,
