@@ -71,8 +71,7 @@ export const getDeviceMeasurement = data => {
 
 export const updateDeviceMeasurement = data => {
   return dispatch => {
-    return setInterval(() => {
-      axios.get(`${api.uri}/device/${data._id}/measurement/now`)
+    return axios.get(`${api.uri}/device/${data._id}/measurement/now`)
         .then((value) => {
           if(value.data.data.measurement.length > 0){
             dispatch(setMeasurement(value.data.data.device, value.data.data.measurement[0]))
@@ -84,6 +83,6 @@ export const updateDeviceMeasurement = data => {
         .catch((err) => {
           console.log(err);
         })
-    }, 5000)
+    }
   }
 }
