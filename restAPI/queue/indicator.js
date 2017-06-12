@@ -30,12 +30,12 @@ queue.process('valueKWh', (job, done) => {
     done()
   })
   .catch((err) => {
-    done(err.response)
+    done(new Error(err.response))
   })
 
   delayValueKWh(INDICATOR_KWH_DELAY, err => {
     if(err)
-      console.log(err);
+      console.log(new Error(err));
   })
 });
 
