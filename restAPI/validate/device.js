@@ -1,4 +1,5 @@
 import isEmpty from 'lodash/isEmpty';
+import isNumber from 'lodash/isNumber'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import Device from '../models/device'
@@ -136,11 +137,15 @@ const validateMsmCreate = (body, params) => {
     errors.id_device = 'Campo Inválido.';
   }
 
-  if(isEmpty(body.intensity)){
+  if(!body.intensity){
     errors.intensity = 'Campo requerido'
   }
 
-  if(isEmpty(body.voltage)){
+  if(!body.voltageTotal){
+    errors.voltage = 'Campo requerido'
+  }
+
+  if(!body.battery){
     errors.voltage = 'Campo requerido'
   }
 

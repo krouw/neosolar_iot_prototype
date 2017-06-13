@@ -248,7 +248,8 @@ class DeviceController {
       .then(({device}) => {
         Measurement.create({
           intensity: req.body.intensity,
-          voltage: req.body.voltage,
+          voltageTotal: req.body.voltageTotal,
+          battery: req.body.battery,
           device: req.params.idDevice
         })
         .then((msm) => {

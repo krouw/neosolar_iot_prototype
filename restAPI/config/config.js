@@ -7,3 +7,8 @@ export const MONGO = {
   uri: "mongodb://localhost/apineo",
   secret: "secret"
 }
+
+//Indicator const
+
+export const INDICATOR_KWH = 'INDICATOR_KWH'
+export const INDICATOR_KWH_DELAY = 86400000*3; //delay 3 dias
