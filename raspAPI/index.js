@@ -24,7 +24,7 @@ axios.post(`${api}/auth/device`,bodyAuth)
           .catch((err) => {
             console.log(err.response.data);
           })
-    }, 60000)
+    }, 5000)
   })
   .catch((err) => {
     console.log(err.response.data);
