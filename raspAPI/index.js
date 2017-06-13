@@ -1,7 +1,7 @@
-import acquisition from './hioki'
+import acquisition from './Hioki/index'
 import axios from 'axios'
-import setAuthorizationToken from './setAuthorizationToken'
-import { id, password, api } from './config'
+import setAuthorizationToken from './util/setAuthorizationToken'
+import { id, password, api } from './config/config'
 import { persist } from './persist'
 
 const bodyAuth = {

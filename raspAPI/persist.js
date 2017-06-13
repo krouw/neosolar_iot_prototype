@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { id, password, api } from './config'
+import { id, password, api } from './config/config'
 
 const persist = (body) => {
 
