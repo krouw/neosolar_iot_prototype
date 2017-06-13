@@ -8,7 +8,7 @@ const persist = (body) => {
     console.log(res.data.data);
 	})
 	.catch ( err => {
-		//console.log(err.response)
+		console.log(err.response.data)
 	})
 
 }

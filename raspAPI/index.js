@@ -18,14 +18,13 @@ axios.post(`${api}/auth/device`,bodyAuth)
     setInterval(() => {
 	       acquisition()
           .then(({msm}) => {
-            //console.log(msm);
             persist(msm)
           })
           .catch((err) => {
-            console.log(err.response.data);
+            console.log('Error acquisition ' + err.response.data);
           })
-    }, 60000)
+    }, 6000)
   })
   .catch((err) => {
-    console.log(err.response.data);
+    console.log('Error Login ' + err.response.data);
   })
