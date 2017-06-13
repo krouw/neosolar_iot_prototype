@@ -9,8 +9,12 @@ const MeasurementSchema = new mongoose.Schema({
     type:  String,
     required: true
   },
-  voltage: {
+  voltageTotal: {
     type: String,
+    required: true
+  },
+  battery:{
+    type: Object,
     required: true
   },
   device:{ type: Schema.ObjectId, ref: "Measurement"},
