@@ -27,7 +27,7 @@ class Device extends Component {
           size={48} />
       )
     }
-    console.log(msm);
+
     if (isEmpty(msm)) {
       return (
         <Text> No hay mediciones. </Text>
@@ -44,7 +44,9 @@ class Device extends Component {
   }
 
   componentDidMount(){
-    this.props.updateDeviceMeasurement(this.props.data)
+    setInterval(() => {
+      this.props.updateDeviceMeasurement(this.props.data)
+    }, 5000)
   }
 
   render(){
@@ -56,7 +58,6 @@ class Device extends Component {
           <TouchableNativeFeedback
             onPress={() => Actions.pop()}>
             <Icon name="arrow-back"
-              style={styles.test}
               color="gray"
               size={24} />
           </TouchableNativeFeedback>

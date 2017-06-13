@@ -1,6 +1,7 @@
 import { express } from './config/config'
 import { createServer } from 'http'
 import app from './app'
+import { createFecthKWh } from './queue/indicator'
 const server = createServer(app)
 
 function normalizePort(val) {
@@ -18,6 +19,14 @@ function normalizePort(val) {
   return false;
 }
 
+function bootstrap() {
+  createFecthKWh( err => {
+    if(err)
+      console.log(err);
+  })
+}
+
+bootstrap()
 const port = normalizePort(express.port);
 app.set('port', port);
 

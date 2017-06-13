@@ -9,15 +9,27 @@ const acquisition = () => {
 		.then( res => {
 		  const $ = cheerio.load(res.data)
 		  const table = $('BODY CENTER TABLE[cellspacing=0]').toArray()
-		  const intensityDOM = table[0].children[4].children[1].children[0].children[0].data
-			const voltageDOM = table[0].children[8].children[1].children[0].children[0].data
-			let splitV = voltageDOM.split(' ')
-			let splitI = intensityDOM.split(' ')
-			let intensity = splitI[1]*100;
-			let voltage = splitV[3]
+		  const intensityDOM = table[0].children[6].children[4].children[0].children[0].data
+			const battery1DOM = table[0].children[2].children[1].children[0].children[0].data
+			const battery2DOM = table[0].children[2].children[4].children[0].children[0].data
+			const battery3DOM = table[0].children[3].children[1].children[0].children[0].data
+			const battery4DOM = table[0].children[3].children[4].children[0].children[0].data
+			const voltageDOM = table[0].children[4].children[1].children[0].children[0].data
+			let splitVT = voltageDOM.split('V')
+			let splitB1 = battery1DOM.split('V')
+			let splitB2 = battery2DOM.split('V')
+			let splitB3 = battery3DOM.split('V')
+			let splitB4 = battery4DOM.split('V')
+			let splitI = intensityDOM.split('A')
 		  let msm = {
-		    intensity: intensity.toString(),
-		    voltage: voltage,
+		    intensity: 1,
+		    voltageTotal: parseFloat(splitVT[0]),
+				battery: {
+					battery1: parseFloat(splitB1),
+					battery2: parseFloat(splitB2),
+					battery3: parseFloat(splitB3),
+					battery4: parseFloat(splitB4)
+				}
 		  }
 		  resolve({
 		    msm: msm
