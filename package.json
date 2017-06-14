@@ -1,28 +1,28 @@
 {
   "name": "neosolar",
-  "version": "0.3.0",
-  "description": "Proyecto NeoSolar",
+  "version": "1.0.0",
+  "description": "NeoSolar",
   "main": "index.js",
+  "jsnext:main": "main.mjs",
+  "browser": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/krouw/NeoSolar.git"
+    "url": "git+https://github.com/krouw/neosolar.git"
   },
   "keywords": [
-    "iot",
-    "node",
-    "nodejs",
-    "npm",
-    "solar",
-    "utem",
-    "pird"
+    "IoT",
+    "mqtt",
+    "real",
+    "time",
+    "lovejs"
   ],
-  "author": "krouw & roinflames",
+  "author": "krouw",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/krouw/NeoSolar/issues"
+    "url": "https://github.com/krouw/neosolar/issues"
   },
-  "homepage": "https://github.com/krouw/NeoSolar#readme",
+  "homepage": "https://github.com/krouw/neosolar#readme",
 }

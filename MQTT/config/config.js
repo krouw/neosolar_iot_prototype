@@ -1,0 +1,23 @@
+import mosca from 'mosca'
+
+const configRedis = {
+  type: 'redis',
+  redis: require('redis'),
+  db: 12,
+  port: 6379,
+  return_buffers: true, // to handle binary payloads
+  host: "localhost"
+};
+
+export const moscaSettings = {
+  port: 1883,
+  backend: configRedis,
+  http: {
+    port: 3000,
+    bundle: true,
+    static: './'
+  },
+  persistence: {
+    factory: mosca.persistence.Redis
+  }
+};
