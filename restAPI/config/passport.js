@@ -2,7 +2,7 @@ const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 import jwt from 'jsonwebtoken';
-import { MONGO } from './config'
+import { SECRET, AUDIENCE_CLIENT, AUDIENCE_DEVICE } from '../config/config';
 import { ROLE_DEVICE } from './roles'
 
 import User from '../models/user'
@@ -17,10 +17,12 @@ module.exports = (passport) => {
     var opts = {};
    // revisa los headers
    opts.jwtFromRequest = ExtractJwt.fromAuthHeader();
-   opts.secretOrKey = MONGO.secret;
+   opts.secretOrKey = SECRET.secret;
    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-     var id = jwt_payload.user._id;
-     if(jwt_payload.user.role === ROLE_DEVICE ){
+     var id = jwt_payload.sub
+     var audience = jwt_payload.aud
+     console.log(jwt_payload);
+     if(audience === AUDIENCE_DEVICE ){
        Device.findOne({_id: id})
         .then((device) => {
           if(device){
@@ -34,7 +36,8 @@ module.exports = (passport) => {
           return done(err, false)
         })
      }
-     else{
+
+     if(audience === AUDIENCE_CLIENT) {
        User.findOne({_id: id})
         .then((user) => {
           if(user){
@@ -48,6 +51,7 @@ module.exports = (passport) => {
           return done(err, false)
         })
      }
+
     }));
 
     // code for signup (use('local-signup', new LocalStategy))

@@ -4,11 +4,18 @@ export const express = {
 }
 
 export const MONGO = {
-  uri: "mongodb://localhost/apineo",
+  uri: "mongodb://localhost/apineo"
+}
+
+export const SECRET = {
   secret: "secret"
 }
 
-//Indicator const
+const AUDIENCE_CLIENT = 'Client',
+      AUDIENCE_DEVICE = 'Device';
 
+//Indicator const
 export const INDICATOR_KWH = 'INDICATOR_KWH'
 export const INDICATOR_KWH_DELAY = 86400000*3; //delay 3 dias
+
+export { AUDIENCE_DEVICE, AUDIENCE_CLIENT }

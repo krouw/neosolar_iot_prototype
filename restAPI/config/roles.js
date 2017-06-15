@@ -38,16 +38,19 @@ const UserDeviceRole = (req) => {
     return true
   }
 
-  const checkUser = req.user.devices.filter( device => {
-      let aux = device.toString()
-      return aux == req.params.idDevice
-  })
-  if(!isEmpty(checkUser)){
-    return true
+  if(req.user.role === ROLE_CLIENT){
+    const checkUser = req.user.devices.filter( device => {
+        let aux = device.toString()
+        return aux == req.params.idDevice
+    })
+    if(!isEmpty(checkUser)){
+      return true
+    }
+    else{
+      return false
+    }
   }
-  else{
-    return false
-  }
+
 }
 
 const deviceRole = (req) => {

@@ -7,7 +7,7 @@ import isEmpty from 'lodash/isEmpty';
 
 import User from '../models/user';
 import Device from '../models/device';
-import { MONGO } from '../config/config';
+import { SECRET, AUDIENCE_CLIENT, AUDIENCE_DEVICE } from '../config/config';
 import { validateSignIn,
          validateSingUp,
          validateGoogle,
@@ -25,20 +25,19 @@ class AuthController {
           user.comparePassword(req.body.password, (err, isMatch) => {
             if (isMatch && !err) {
               const userData = {
-                user:{_id: user._id,
+                sub: user._id,
                 email: user.email,
                 role: user.role,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt}
               }
-              var token = jwt.sign(userData, MONGO.secret, {
-                expiresIn: 10000 //segundos
+              var token = jwt.sign(userData, SECRET.secret, {
+                expiresIn: 10000,
+                audience: AUDIENCE_CLIENT,
               });
               return res
                       .status(200)
                       .json({ status: 'OK',
                               token: `JWT ${token}`,
-                              user: userData.user });
+                              user: user });
             }
             else {
               return res
@@ -79,20 +78,19 @@ class AuthController {
           password: req.body.password})
           .then((user) => {
             const userData = {
-              user:{_id: user._id,
+              sub: user._id,
               email: user.email,
               role: user.role,
-              createdAt: user.createdAt,
-              updatedAt: user.updatedAt}
             }
-            var token = jwt.sign(userData, MONGO.secret, {
-              expiresIn: 10000 //segundos
+            var token = jwt.sign(userData, SECRET.secret, {
+              expiresIn: 10000,
+              audience: AUDIENCE_CLIENT,
             });
             return res
                     .status(201)
                     .json({ status: 'OK',
                             token: `JWT ${token}`,
-                            user: userData.user});
+                            user: user});
           })
           .catch((err) => {
             return res
@@ -144,7 +142,7 @@ class AuthController {
 
   google(req, res){
 
-    const token = jwt.sign(req.user, MONGO.secret, {
+    const token = jwt.sign(req.user, SECRET.secret, {
       expiresIn: 10000 //segundos
     });
 
@@ -165,7 +163,7 @@ class AuthController {
           User.findOne({ 'google.id' : userid.id })
             .then( user => {
               if(user){
-                const token = jwt.sign(user, MONGO.secret, {
+                const token = jwt.sign(user, SECRET.secret, {
                       expiresIn: 10000 //segundos
                 });
                 return res
@@ -179,7 +177,7 @@ class AuthController {
                   google: userid,
                   password: id })
                   .then( userCreate => {
-                    const token = jwt.sign(user, MONGO.secret, {
+                    const token = jwt.sign(user, SECRET.secret, {
                           expiresIn: 10000 //segundos
                     });
                     return res
@@ -219,14 +217,13 @@ class AuthController {
               }
               else{
                 const deviceData = {
-                  user:{_id: device._id,
+                  sub: device._id,
                   name: device.name,
                   role: device.role,
-                  createdAt: device.createdAt,
-                  updatedAt: device.updatedAt}
                 }
-                let token = jwt.sign(deviceData, MONGO.secret, {
-                  expiresIn: 10000 //segundos
+                var token = jwt.sign(deviceData, SECRET.secret, {
+                  expiresIn: 10000,
+                  audience: AUDIENCE_DEVICE,
                 });
                 return res
                         .status(200)
