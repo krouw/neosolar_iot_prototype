@@ -38,4 +38,8 @@ router.get('/:idDevice/measurement', deviceRoles.can('access device msm')  ,(req
 router.get('/:idDevice/measurement/now', deviceRoles.can('access device msm now') ,(req, res) => device.getDevMsmNow(req, res));
 router.post('/:idDevice/measurement/', deviceRoles.can('access device msm') ,(req, res) => device.createDevMsm(req, res));
 
+//refreshToken
+router.post('/token', (req, res) => device.refreshTokenDevice(req, res))
+router.post('/token/reject', deviceRoles.is('admin') ,(req, res) => device.deleteRefreshTokenDevice(req, res) )
+
 export default router;

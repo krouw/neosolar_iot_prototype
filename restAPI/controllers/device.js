@@ -4,9 +4,11 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import Device from '../models/device';
 import Measurement from '../models/measurement';
+import randtoken from 'rand-token'
 import { validateDeviceCreate,
          validateDeviceUpdate,
-         validateMsmCreate } from '../validate/device'
+         validateMsmCreate,
+         validateRefreshTokenDevice  } from '../validate/device'
 
 class DeviceController {
 
@@ -273,6 +275,67 @@ class DeviceController {
                         errors: errors })
       })
 
+  }
+
+  refreshTokenDevice(req, res) {
+
+    validateRefreshTokenDevice(req.body)
+      .then( ( {value, token} ) => {
+        return res
+                .status(200)
+                .json({ status: 'OK',
+                        token: `JWT ${token}`,
+                        device: value });
+      })
+      .catch( ( {errors, status} ) => {
+        return res
+                .status(status)
+                .json( { status: 'Error',
+                        errors: errors } )
+      })
+
+  }
+
+  deleteRefreshTokenDevice(req, res) {
+    Device.findOne({ refreshToken: req.body.refreshToken })
+      .then((value) => {
+        if(value){
+          var refreshToken = randtoken.uid(256)
+          Device.findByIdAndUpdate(value._id, {refreshToken: refreshToken} , {new:true} )
+            .then( device => {
+              if (device) {
+                return res
+                        .status(200)
+                        .json({status:'OK', data: { device: device }})
+              }
+              else{
+                return res
+                        .status(404)
+                        .json({ status: 'Not Found',
+                                errors: { device: 'Este recurso no Existe.' } })
+              }
+            })
+            .catch( err => {
+              return res
+                      .status(500)
+                      .json({ status: 'Error',
+                              errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+            })
+        }
+        else {
+          return res
+                  .status(404)
+                  .json({ status: 'Not Found',
+                          errors: { refreshToken: 'Este recurso no Existe.' } })
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return res
+                .status(500)
+                .json({ status: 'Error',
+                        errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+      })
   }
 
 }

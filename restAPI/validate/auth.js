@@ -52,10 +52,10 @@ const validateSingUp = (body) => {
           })
           .catch((err) => {
             validate.errors._error = 'Problemas con el servidor'
-            return {
+            reject({
               errors: validate.errors,
               status: 500,
-            }
+            })
           })
       }
       else{

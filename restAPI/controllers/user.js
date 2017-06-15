@@ -4,11 +4,13 @@ import isEmpty from 'lodash/isEmpty';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import Device from '../models/device';
+import randtoken from 'rand-token'
 import { validateUserCreate,
          validateUserUpdate,
          validateUserDevice,
          validateUserDevDelete,
-         validateUserDeviceUpdate } from '../validate/user'
+         validateUserDeviceUpdate,
+         validateRefreshTokenUser } from '../validate/user'
 
 class UserController {
 
@@ -374,6 +376,70 @@ class UserController {
                         errors: errors })
       })
   }
+
+
+  refreshTokenUser(req, res) {
+
+      validateRefreshTokenUser(req.body)
+        .then( ( {value, token} ) => {
+          return res
+                  .status(200)
+                  .json({ status: 'OK',
+                          token: `JWT ${token}`,
+                          user: value });
+        })
+        .catch( ( {errors, status} ) => {
+          return res
+                  .status(status)
+                  .json( { status: 'Error',
+                          errors: errors } )
+        })
+  }
+
+  deleteRefreshTokenUser(req, res){
+
+    User.findOne({ refreshToken: req.body.refreshToken })
+      .then((value) => {
+        if (value) {
+          var refreshToken = randtoken.uid(256)
+          User.findByIdAndUpdate(value._id, {refreshToken: refreshToken} , {new:true} )
+            .populate({path: 'devices', select: '-__v -password'})
+            .then( user => {
+              if (user) {
+                return res
+                        .status(200)
+                        .json({status:'OK', data: { user: user }})
+              }
+              else{
+                return res
+                        .status(404)
+                        .json({ status: 'Not Found',
+                                errors: { user: 'Este recurso no Existe.' } })
+              }
+            })
+            .catch( err => {
+              return res
+                      .status(500)
+                      .json({ status: 'Error',
+                              errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+            })
+        }
+        else {
+          return res
+                  .status(404)
+                  .json({ status: 'Not Found',
+                          errors: { refreshToken: 'Este recurso no Existe.' } })  
+        }
+      })
+      .catch((err) => {
+        return res
+                .status(500)
+                .json({ status: 'Error',
+                        errors: { server: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+      })
+
+  }
+
 }
 
 export default UserController

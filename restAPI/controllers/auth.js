@@ -4,14 +4,16 @@ import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import bcrypt from 'bcrypt'
 import isEmpty from 'lodash/isEmpty';
+import randtoken from 'rand-token'
 
 import User from '../models/user';
 import Device from '../models/device';
-import { SECRET, AUDIENCE_CLIENT, AUDIENCE_DEVICE } from '../config/config';
+import { SECRET } from '../config/config';
 import { validateSignIn,
          validateSingUp,
          validateGoogle,
-         validateDevice } from '../validate/auth'
+         validateDevice,
+         validateRefreshToken } from '../validate/auth'
 
 class AuthController {
 
@@ -29,15 +31,33 @@ class AuthController {
                 email: user.email,
                 role: user.role,
               }
-              var token = jwt.sign(userData, SECRET.secret, {
-                expiresIn: 10000,
-                audience: AUDIENCE_CLIENT,
-              });
-              return res
-                      .status(200)
-                      .json({ status: 'OK',
-                              token: `JWT ${token}`,
-                              user: user });
+              var refreshToken = randtoken.uid(256)
+              user.refreshToken = refreshToken
+              user.save()
+                .then((value) => {
+                  jwt.sign(userData, SECRET.secret, {expiresIn: 10000,}, (err, token) => {
+                    if(err){
+                      return res
+                              .status(500)
+                              .json({ status: 'Error',
+                                      errors: { _error: 'Problemas con el servidor' } })
+                    }
+                    else {
+                      return res
+                              .status(200)
+                              .json({ status: 'OK',
+                                      token: `JWT ${token}`,
+                                      refreshToken: refreshToken,
+                                      user: value });
+                    }
+                  });
+                })
+                .catch((err) => {
+                  return res
+                          .status(500)
+                          .json({ status: 'Error',
+                                  errors: { _error: 'Problemas con el servidor' } })
+                })
             }
             else {
               return res
@@ -82,15 +102,33 @@ class AuthController {
               email: user.email,
               role: user.role,
             }
-            var token = jwt.sign(userData, SECRET.secret, {
-              expiresIn: 10000,
-              audience: AUDIENCE_CLIENT,
-            });
-            return res
-                    .status(201)
-                    .json({ status: 'OK',
-                            token: `JWT ${token}`,
-                            user: user});
+            var refreshToken = randtoken.uid(256)
+            user.refreshToken = refreshToken
+            user.save()
+              .then((value) => {
+                jwt.sign(userData, SECRET.secret, {expiresIn: 10000,}, (err, token) => {
+                  if(err){
+                    return res
+                            .status(500)
+                            .json({ status: 'Error',
+                                    errors: { _error: 'Problemas con el servidor' } })
+                  }
+                  else {
+                    return res
+                            .status(200)
+                            .json({ status: 'OK',
+                                    token: `JWT ${token}`,
+                                    refreshToken: refreshToken,
+                                    user: value });
+                  }
+                });
+              })
+              .catch((err) => {
+                return res
+                        .status(500)
+                        .json({ status: 'Error',
+                                errors: { _error: 'Problemas con el servidor' } })
+              })
           })
           .catch((err) => {
             return res
@@ -221,15 +259,33 @@ class AuthController {
                   name: device.name,
                   role: device.role,
                 }
-                var token = jwt.sign(deviceData, SECRET.secret, {
-                  expiresIn: 10000,
-                  audience: AUDIENCE_DEVICE,
-                });
-                return res
-                        .status(200)
-                        .json({ status: 'OK',
-                                token: `JWT ${token}`,
-                                device: device });
+                var refreshToken = randtoken.uid(256)
+                device.refreshToken = refreshToken
+                device.save()
+                  .then((value) => {
+                    jwt.sign(deviceData, SECRET.secret, { expiresIn: 10000 }, (err, token) => {
+                      if(err){
+                        return res
+                                .status(500)
+                                .json({ status: 'Error',
+                                        errors: { _error: 'Problemas con el servidor' } })
+                      }
+                      else {
+                        return res
+                                .status(200)
+                                .json({ status: 'OK',
+                                        token: `JWT ${token}`,
+                                        refreshToken: refreshToken,
+                                        device: value });
+                      }
+                    });
+                  })
+                  .catch((err) => {
+                    return res
+                            .status(500)
+                            .json({ status: 'Error',
+                                    errors: { _error: 'Problemas con el servidor' } })
+                  })
               }
             })
           }
@@ -255,7 +311,7 @@ class AuthController {
     }
 
   }
-
+  
 }
 
 export default AuthController;

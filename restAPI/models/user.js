@@ -22,8 +22,11 @@ const UserSchema = new mongoose.Schema({
     enum: [ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN],
     default: ROLE_CLIENT,
   },
-  google:{
+  google: {
     type: Object,
+  },
+  refreshToken: {
+    type: String
   },
   devices: [{
     type: mongoose.Schema.ObjectId,
@@ -41,6 +44,7 @@ UserSchema.method('toJSON', function() {
   delete user.hash;
   delete user.__v;
   delete user.password;
+  delete user.refreshToken;
   return user;
 });
 

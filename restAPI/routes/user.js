@@ -39,4 +39,8 @@ router.post('/:idUser/device', userRoles.can('access user device') ,(req, res) =
 router.put('/:idUser/device/:idDevice', userRoles.can('access device user') ,(req, res) => user.updateDev(req, res));
 router.delete('/:idUser/device/:idDevice', userRoles.can('access device user') ,(req, res) => user.deleteDev(req, res));
 
+//refreshToken
+router.post('/token', (req, res) => user.refreshTokenUser(req, res))
+router.post('/token/reject', userRoles.is('admin') ,(req, res) => user.deleteRefreshTokenUser(req, res) )
+
 export default router;

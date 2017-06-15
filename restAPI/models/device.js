@@ -15,6 +15,9 @@ const DeviceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  refreshToken: {
+    type: String,
+  },
   role :{
     type: String,
     default: ROLE_DEVICE,

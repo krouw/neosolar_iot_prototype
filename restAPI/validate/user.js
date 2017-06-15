@@ -4,6 +4,8 @@ import mongoose from 'mongoose'
 import User from '../models/user';
 import Device from '../models/device'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { SECRET } from '../config/config'
 import { ROLE_ADMIN } from '../config/roles'
 
 const validateUserCreate = (body, user) => {
@@ -396,9 +398,91 @@ const validateUserDevDelete = (params) => {
 
 }
 
+const validateRefreshTokenUser = (body) => {
+
+  let errors = {}
+
+  if(isEmpty(body)){
+    errors.fields = 'Ingrese al menos un campo.'
+  }
+
+  if(isEmpty(body.id)){
+    errors.id = 'Campo Requerido';
+  } else if(!mongoose.Types.ObjectId.isValid(body.id)){
+    errors.id = 'Campo Inválido.';
+  }
+
+  if(isEmpty(body.refreshToken)) {
+    errors.refreshToken = 'Campo Requerido'
+  }
+
+  return new Promise( (resolve, reject) => {
+    if(isEmpty(errors)){
+
+      User.findById(body.id)
+        .then((user) => {
+          if(user){
+            if(user.refreshToken === body.refreshToken){
+              const userData = {
+                sub: user._id,
+                email: user.email,
+                role: user.role,
+              }
+              jwt.sign(userData, SECRET.secret, { expiresIn: 10000 }, (err, token) => {
+                if(err){
+                  errors._error = 'Problemas con el servidor'
+                  reject({
+                    errors: errors,
+                    status: 500,
+                  })
+                }
+                else {
+                  resolve({
+                    value: user,
+                    token: token
+                  })
+                }
+              });
+            }
+            else {
+              errors.refreshToken = 'Unauthorized'
+              reject({
+                errors: errors,
+                status: 403,
+              })
+            }
+          }
+          else {
+            errors.user = 'Not Found'
+            reject({
+              errors: errors,
+              status: 404,
+            })
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          errors._error = 'Problemas con el servidor'
+          reject({
+            errors: errors,
+            status: 500,
+          })
+        })
+    }
+    else{
+      reject({
+        errors: errors,
+        status: 401,
+      })
+    }
+  })
+
+}
+
 
 export { validateUserCreate,
          validateUserUpdate,
          validateUserDevDelete,
          validateUserDevice,
-         validateUserDeviceUpdate }
+         validateUserDeviceUpdate,
+         validateRefreshTokenUser }

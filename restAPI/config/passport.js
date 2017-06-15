@@ -2,8 +2,8 @@ const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 import jwt from 'jsonwebtoken';
-import { SECRET, AUDIENCE_CLIENT, AUDIENCE_DEVICE } from '../config/config';
-import { ROLE_DEVICE } from './roles'
+import { SECRET } from '../config/config';
+import { ROLE_DEVICE, ROLE_ADMIN, ROLE_CLIENT, ROLE_MANAGER } from './roles'
 
 import User from '../models/user'
 import Device from '../models/device'
@@ -20,9 +20,8 @@ module.exports = (passport) => {
    opts.secretOrKey = SECRET.secret;
    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
      var id = jwt_payload.sub
-     var audience = jwt_payload.aud
      console.log(jwt_payload);
-     if(audience === AUDIENCE_DEVICE ){
+     if( jwt_payload.role === ROLE_DEVICE ){
        Device.findOne({_id: id})
         .then((device) => {
           if(device){
@@ -37,7 +36,10 @@ module.exports = (passport) => {
         })
      }
 
-     if(audience === AUDIENCE_CLIENT) {
+     if( jwt_payload.role === ROLE_CLIENT ||
+         jwt_payload.role === ROLE_MANAGER ||
+         jwt_payload.role === ROLE_ADMIN ) {
+
        User.findOne({_id: id})
         .then((user) => {
           if(user){
