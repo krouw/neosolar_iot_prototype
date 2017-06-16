@@ -18,7 +18,7 @@ export const publish = (payload) => {
    };
 
    const data = JSON.stringify({ d: payload });
-
+   console.log('< ================ >\n');
    console.log('Publishing to MQTT service.');
    const client = mqtt.connect(mqtt_hostname, options)
    client.on('connect', function () {
@@ -26,6 +26,7 @@ export const publish = (payload) => {
         client.publish(mqtt_topic, data);
         console.log('MQTT message published: {0}.', data);
         client.end();
-});
+        console.log('\n');
+  });
 
 }
