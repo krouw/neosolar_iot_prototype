@@ -21,3 +21,11 @@ export const moscaSettings = {
     factory: mosca.persistence.Redis
   }
 };
+
+export const SECRET = {
+  secret: "secret"
+}
+
+export const MONGO = {
+  uri: "mongodb://localhost/apineo"
+}

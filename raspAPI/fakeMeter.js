@@ -15,7 +15,7 @@ const acquisition = () => {
 					battery3: 1.3,
 					battery4: 1.3
 				},
-				createAt: moment(),
+				createAt: moment().format(),
 		  }
 		  resolve({
 		    msm: msm

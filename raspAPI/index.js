@@ -1,57 +1,38 @@
 import mqtt from 'mqtt'
 import acquisition from './fakeMeter'
-import { id, password, api } from './config/config'
-import { persist } from './persist'
+import { ID, PASSWORD, SERVER } from './config/config'
+import { datastore } from './datastore'
 import { auth } from './auth/auth'
+import { publish } from './services/mqtt'
+import { getAuthorizationToken, setAuthorizationToken } from './util/AuthorizationToken'
 
-const bodyAuth = {
-  id: id,
-  password: password,
+const send = (payload) => {
+  const auth = getAuthorizationToken()
+  datastore(payload)
+  publish(payload)
 }
 
-const message = (client, payload) => {
-  client.publish(`device/alice`, payload, err => {
-    if(err)
-      console.log(err);
-  })
-}
-
-const subscribe = () => {
-  client.on('message', function (topic, message) {
-    // message is Buffer
-    console.log(topic + ' --> ' + message.toString() );
-    //client.end()
-  })
-}
-
-const initMeter = () => {
-  const client = mqtt.connect('mqtt://localhost:1883', { username: 'alice', password: 'secret' })
-  client.on('message', function(topic, message) {
-    console.log(topic + ' - ' + message);
-  })
-
-  client.subscribe('device/alice')
-  setInterval(() => {
-       acquisition()
-        .then(({msm}) => {
-          //console.log(msm);
-          message(client, JSON.stringify(msm))
-          //persist(msm)
-        })
-        .catch((err) => {
-          console.log('Error acquisition ' + err);
-        })
-  }, 10000)
-}
-
-const bootstrap = () => {
-  auth(bodyAuth)
+const Main = () => {
+  auth({ id: ID, password: PASSWORD })
     .then((value) => {
-      initMeter()
+      console.log('==> AUTH');
+
+      setInterval(() => {
+        console.log('==> Acquisition');
+           acquisition()
+            .then(({msm}) => {
+              send(msm)
+            })
+            .catch((err) => {
+              console.log('Error acquisition ' + err);
+            })
+      }, 10000)
+
     })
     .catch((err) => {
       console.log('Error Auth' + err.response.data);
+      setAuthorizationToken()
     })
 }
 
-bootstrap()
+Main()

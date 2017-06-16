@@ -1,8 +1,14 @@
 import mosca from 'mosca'
-import { moscaSettings } from './config/config'
+import mongoose from 'mongoose'
+import { moscaSettings, MONGO } from './config/config'
 import { Authenticate,
 				 AuthorizePublish,
 				 AuthorizeSubscribe } from './auth/auth'
+
+const database  = process.env.MONGO_URL || MONGO.uri
+
+mongoose.Promise = global.Promise; //mongoose uso de promesas es6
+mongoose.connect(database);
 
 var server = new mosca.Server(moscaSettings);
 server.on('ready', setup);
@@ -39,7 +45,5 @@ function send(){
 // fired when the mqtt server is ready
 function setup() {
 	server.authenticate = Authenticate;
-  server.authorizePublish = AuthorizePublish;
-  server.authorizeSubscribe = AuthorizeSubscribe;
   console.log('MQTT server is up and running')
 }

@@ -1,7 +1,4 @@
 import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
-import User from '../models/user'
-import arrayUniquePlugin from 'mongoose-unique-array'
 import { ROLE_DEVICE } from '../config/roles'
 
 const Schema = mongoose.Schema
@@ -44,8 +41,6 @@ const DeviceSchema = new mongoose.Schema({
   }],
 },{ timestamps: true });
 
-DeviceSchema.plugin(arrayUniquePlugin)
-
 //Quita los atributos de las consultas
 
 DeviceSchema.method('toJSON', function() {
@@ -54,33 +49,7 @@ DeviceSchema.method('toJSON', function() {
   delete device.hash;
   delete device.__v;
   delete device.password;
-  delete device.refreshToken;
   return device;
-});
-
-DeviceSchema.pre('save', function(next){
-  var device = this;
-  if (this.isModified('password') || this.isNew){
-    bcrypt.genSalt(10, function(err, salt){
-      if (err) {
-        return next(err);
-      }
-      bcrypt.hash(device.password, salt, function(err,hash){
-        if (err) {
-          return next(err);
-        }
-        device.password = hash;
-        next();
-      });
-    });
-  } else {
-    return next();
-  }
-});
-
-DeviceSchema.pre('remove', function(next) {
-    // Remove all the assignment docs that reference the removed Device.
-    this.model('User').remove({ devices: this._id }, next);
 });
 
 export default mongoose.model('Device', DeviceSchema)

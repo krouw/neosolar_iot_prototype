@@ -1,5 +1,6 @@
-const id = '594030300b346046243c8525'
-const password = '123456'
-const api = 'http://pird.ddns.net:7000/api'
+const ID = '593b2001d94e770fc20e8121',
+      PASSWORD = '123456',
+      SERVER = 'http://localhost:7000/api',
+      MQTT = 'mqtt://localhost:1883'
 
-export { id, password, api }
+export { ID, PASSWORD, SERVER }
