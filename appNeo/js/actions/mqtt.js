@@ -21,7 +21,7 @@ export const mqttConnect = config => {
       return;
     }
     const client = new Client({ uri: mqttServer.url, clientId: config.clientId, storage: myStorage });
-    client.connect()
+    client.connect({ userName: config.username, password: config.password })
       .then((value) => {
         console.log('Valid: ', value);
       })
