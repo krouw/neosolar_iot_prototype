@@ -44,7 +44,7 @@ class DeviceList extends Component  {
     this.props.getUserDevices(this.props.user)
       .then(() => {
         if(!isEmpty(this.props.devices)){
-          this.props.mqttConnect(this.mqttConfig, this.props.devices)
+          this.connectMQTT(0)
           Object.keys(this.props.devices)
             .map( deviceKey => {
               const newState = this.state.dataSource;
@@ -52,7 +52,22 @@ class DeviceList extends Component  {
               this.setState({dataSource: newState})
             })
         }
+        return
       })
+  }
+
+  connectMQTT(delay){
+    setTimeout(() => {
+      if(!this.props.mqtt.mqttActive && this.props.devices){
+        this.props.mqttConnect(this.mqttConfig, this.props.devices)
+      }
+    }, delay)
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(!nextProps.mqtt.mqttActive && this.props.devices){
+      this.connectMQTT(30000)
+    }
   }
 
   content(){

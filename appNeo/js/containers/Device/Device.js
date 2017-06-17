@@ -15,7 +15,6 @@ class Device extends Component {
 
   constructor(props){
     super(props)
-    this.props.getDeviceMeasurement(this.props.data)
   }
 
   content(){
@@ -45,12 +44,6 @@ class Device extends Component {
         </View>
       )
     }
-  }
-
-  componentDidMount(){
-    setInterval(() => {
-      this.props.updateDeviceMeasurement(this.props.data)
-    }, 10000)
   }
 
   render(){

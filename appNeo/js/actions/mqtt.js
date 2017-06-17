@@ -1,5 +1,6 @@
 import { Client, Message } from 'react-native-paho-mqtt';
 import { mqttServer } from '../config/mqtt'
+import { setMeasurement } from './device'
 import { MQTT_CONNECTED, MQTT_SUBSCRIBE, MQTT_MESSAGE, MQTT_CONSUME } from '../actions/types'
 import { ToastAndroid } from 'react-native'
 
@@ -40,11 +41,17 @@ export const mqttConnect = (config, devices) => {
       if (responseObject.errorCode !== 0) {
         console.log(responseObject.errorMessage);
         dispatch(removeConnection())
+        client.disconnect()
         ToastAndroid.show('Problemas para acceder al Servidor', ToastAndroid.LONG);
       }
     });
     client.on('messageReceived', (message) => {
-      console.log(message.payloadString);
+
+      if(message._destinationName.split('/')[1] && message.payloadString){
+        let msm = JSON.parse(message.payloadString)
+        let device = message._destinationName.split('/')[1]
+        dispatch(setMeasurement({ _id: device }, msm.d))
+      }
     });
 
     client.connect({ userName: config.username, password: config.password })
@@ -55,7 +62,6 @@ export const mqttConnect = (config, devices) => {
       .then(() => {
         Object.keys(devices)
           .map( deviceKey => {
-            console.log(deviceKey);
             return client.subscribe('device/'+deviceKey)
           })
       })
