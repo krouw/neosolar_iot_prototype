@@ -29,7 +29,7 @@ server.on('clientDisconnected', function(client) {
 
 // fired when a message is received
 server.on('published', function(packet, client) {
-  console.log('Published', packet.topic, packet.payload.toString());
+  //console.log('Published', packet.topic, packet.payload.toString());
 });
 
 var message = {
@@ -50,6 +50,8 @@ send()
 // fired when the mqtt server is ready
 function setup() {
 	server.authenticate = Authenticate;
+	server.authorizePublish = AuthorizePublish;
+	server.authorizeSubscribe = AuthorizeSubscribe;
   console.log('MQTT server is up and running')
 }
 

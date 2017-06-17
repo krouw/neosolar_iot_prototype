@@ -1,6 +1,6 @@
 import { Client, Message } from 'react-native-paho-mqtt';
 import { mqttServer } from '../config/mqtt'
-import { GetStorage, InsertStorage, DeleteStorage } from '../util/AsyncStorage'
+import { MQTT_CONNECTED, MQTT_SUBSCRIBE, MQTT_MESSAGE, MQTT_CONSUME } from '../actions/types'
 import { ToastAndroid } from 'react-native'
 
 let client
@@ -15,18 +15,52 @@ const myStorage = {
   },
 };
 
-export const mqttConnect = config => {
+export function setConnection(){
+  return {
+    type: MQTT_CONNECTED,
+    value: true
+  }
+}
+
+export function removeConnection(){
+  return {
+    type: MQTT_CONNECTED,
+    value: false
+  }
+}
+
+export const mqttConnect = (config, devices) => {
   return dispatch => {
     if (config.mqttActive) {
       return;
     }
     const client = new Client({ uri: mqttServer.url, clientId: config.clientId, storage: myStorage });
+    // set event handlers
+    client.on('connectionLost', (responseObject) => {
+      if (responseObject.errorCode !== 0) {
+        console.log(responseObject.errorMessage);
+        dispatch(removeConnection())
+        ToastAndroid.show('Problemas para acceder al Servidor', ToastAndroid.LONG);
+      }
+    });
+    client.on('messageReceived', (message) => {
+      console.log(message.payloadString);
+    });
+
     client.connect({ userName: config.username, password: config.password })
-      .then((value) => {
-        console.log('Valid: ', value);
+      .then(() => {
+        dispatch(setConnection())
+        return
+      })
+      .then(() => {
+        Object.keys(devices)
+          .map( deviceKey => {
+            console.log(deviceKey);
+            return client.subscribe('device/'+deviceKey)
+          })
       })
       .catch((err) => {
-        console.log('Error: ', err);
+        ToastAndroid.show('Problemas para acceder al Servidor', ToastAndroid.LONG);
       })
 
   }

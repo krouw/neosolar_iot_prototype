@@ -10,7 +10,7 @@ export default (state = initialState, action = {}) => {
   switch (action.type) {
     case MQTT_CONNECTED:
       return Object.assign({}, state, {
-              mqttActive: true
+              mqttActive: action.value
              })
     default:
         return state;

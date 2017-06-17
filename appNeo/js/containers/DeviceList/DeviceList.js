@@ -31,14 +31,12 @@ class DeviceList extends Component  {
     }
     this.getUserDevices()
 
-    const mqttConfig = {
+    this.mqttConfig = {
       clientId: this.props.user._id,
       username: this.props.user._id,
       password: this.props.token,
-      mqttActive: this.props.mqtt.mqttActive
+      mqttActive: this.props.mqtt.mqttActive,
     }
-
-    this.props.mqttConnect(mqttConfig)
 
   }
 
@@ -46,6 +44,7 @@ class DeviceList extends Component  {
     this.props.getUserDevices(this.props.user)
       .then(() => {
         if(!isEmpty(this.props.devices)){
+          this.props.mqttConnect(this.mqttConfig, this.props.devices)
           Object.keys(this.props.devices)
             .map( deviceKey => {
               const newState = this.state.dataSource;
@@ -170,7 +169,7 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getUserDevices: (userData) => dispatch(getUserDevices(userData)),
-    mqttConnect: (config) => dispatch(mqttConnect(config))
+    mqttConnect: (config, devices) => dispatch(mqttConnect(config, devices))
   }
 }
 

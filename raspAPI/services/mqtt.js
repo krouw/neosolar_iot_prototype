@@ -14,7 +14,8 @@ export const publish = (payload) => {
 
   let options = {
        username: ID,
-       password: auth.token
+       password: auth.token,
+       clientId: ID,
    };
 
    const data = JSON.stringify({ d: payload });

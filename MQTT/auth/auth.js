@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
-import { validateDevice } from './device'
-import { validateUser } from './user'
+import { validateDevice, validateDevicePublish } from './device'
+import { validateUser, validateUserSubs } from './user'
 import { SECRET } from '../config/config'
 import { ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN, ROLE_DEVICE } from '../config/roles'
 
@@ -17,6 +17,7 @@ const Authenticate = function(client, username, password, cb) {
       if(decoded.role === ROLE_DEVICE) {
         validateDevice(decoded.sub)
           .then(({device, isValid}) => {
+            client.user = username
             cb(null, isValid)
           })
           .catch(({errors, isValid}) => {
@@ -29,6 +30,7 @@ const Authenticate = function(client, username, password, cb) {
 
           validateUser(decoded.sub)
             .then(({device, isValid}) => {
+              client.user = username
               cb(null, isValid)
             })
             .catch(({errors, isValid}) => {
@@ -44,13 +46,26 @@ const Authenticate = function(client, username, password, cb) {
 // In this case the client authorized as alice can publish to /users/alice taking
 // the username from the topic and verifing it is the same of the authorized user
 const AuthorizePublish = function(client, topic, payload, callback) {
+  validateDevicePublish(client.user)
+    .then(({device}) => {
+      callback(null, client.user == topic.split('/')[1]);
+    })
+    .catch(({errors}) => {
+      callback(errors, false);
+    })
 
 }
 
 // In this case the client authorized as alice can subscribe to /users/alice taking
 // the username from the topic and verifing it is the same of the authorized user
-const AuthorizeSubscribe = function(client, topic, callback) {
-  callback(null, client.user == topic.split('/')[1]);
+const AuthorizeSubscribe = function(client, topic, cb) {
+  validateUserSubs(client.user, topic.split('/')[1])
+    .then((value) => {
+      cb(null, true)
+    })
+    .catch(({errors}) => {
+      cb(errors, false)
+    })
 }
 
 export { Authenticate, AuthorizePublish, AuthorizeSubscribe }

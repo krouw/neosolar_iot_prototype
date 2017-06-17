@@ -43,3 +43,29 @@ export const validateDevice= (id) => {
   })
 
 }
+
+export const validateDevicePublish = (id) => {
+
+  return new Promise((resolve, reject) => {
+    Device.findById(id)
+      .then((device) => {
+        if(device){
+          resolve({
+            device: device,
+          })
+        }
+        else {
+          reject({
+            errors: 'Not found',
+          })
+        }
+      })
+      .catch((err) => {
+        reject({
+          errors: 'server',
+        })
+      })
+
+  });
+
+}
