@@ -49,7 +49,7 @@ send()
 
 // fired when the mqtt server is ready
 function setup() {
-	//server.authenticate = Authenticate;
+	server.authenticate = Authenticate;
   console.log('MQTT server is up and running')
 }
 

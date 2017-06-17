@@ -32,6 +32,7 @@ const Authenticate = function(client, username, password, cb) {
               cb(null, isValid)
             })
             .catch(({errors, isValid}) => {
+              console.log(errors);
               cb(null, isValid)
             })
       }

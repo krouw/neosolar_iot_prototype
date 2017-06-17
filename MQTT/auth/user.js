@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import User from '../models/user'
+import isEmpty from 'lodash/isEmpty'
 
 export const validateUser = (id) => {
 
@@ -20,6 +21,7 @@ export const validateUser = (id) => {
             })
           }
           else {
+            errors.user = 'Not found'
             reject({
               errors: 'Not found',
               isValid: false
@@ -27,6 +29,7 @@ export const validateUser = (id) => {
           }
         })
         .catch((err) => {
+          errors.server = 'Problemas con mongo'
           reject({
             errors: 'server',
             isValid: false
@@ -35,7 +38,7 @@ export const validateUser = (id) => {
     }
     else {
       reject({
-        error: errors,
+        errors: errors,
         isValid: false
       })
     }
