@@ -1494,6 +1494,10 @@ http-signature@~1.1.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
+http@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/http/-/http-0.0.0.tgz#86e6326d29c5d039de9fac584a45689f929f4f72"
+
 hyperquest@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/hyperquest/-/hyperquest-1.2.0.tgz#39e1fef66888dc7ce0dec6c0dd814f6fc8944ad5"

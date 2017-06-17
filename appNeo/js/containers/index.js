@@ -35,11 +35,11 @@ async function existsToken(dispatch){
 }
 
 const NavigatorComponent = ({dispatch}) => {
-  const handlers = existsToken(dispatch)
+  //const handlers = existsToken(dispatch)
   return (
     <Router>
       <Scene key="tutorial" component={Tutorial} hideNavBar={true} />
-      <Scene key="signin" component={Signin} hideNavBar={true} />
+      <Scene key="signin" initial={true} component={Signin} hideNavBar={true} />
       <Scene key="main" hideNavBar={true}>
         <Scene
           key="devicelist"

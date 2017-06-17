@@ -37,7 +37,11 @@ class Device extends Component {
       return (
         <View>
           <Text>Itensity: {msm.intensity}</Text>
-          <Text>Voltage: {msm.voltage}</Text>
+          <Text>Voltage: {msm.voltageTotal}</Text>
+          <Text>Battery 1: {msm.battery.battery1}</Text>
+          <Text>Battery 2: {msm.battery.battery2}</Text>
+          <Text>Battery 3: {msm.battery.battery3}</Text>
+          <Text>Battery 4: {msm.battery.battery4}</Text>
         </View>
       )
     }
@@ -46,7 +50,7 @@ class Device extends Component {
   componentDidMount(){
     setInterval(() => {
       this.props.updateDeviceMeasurement(this.props.data)
-    }, 5000)
+    }, 10000)
   }
 
   render(){

@@ -7,13 +7,13 @@ import moment from 'moment'
 const acquisition = () => {
 	return new Promise((resolve, reject) => {
 		  let msm = {
-		    intensity: 1,
-		    voltageTotal: 2,
+		    intensity: (Math.random() * (14.0000 - 1.0000) + 1.000).toFixed(4),
+		    voltageTotal: (Math.random() * (14.0000 - 1.0000) + 1.000).toFixed(4),
 				battery: {
-					battery1: 1.1,
-					battery2: 1.3,
-					battery3: 1.3,
-					battery4: 1.3
+					battery1: (Math.random() * (14.0000 - 1.0000) + 1.000).toFixed(4),
+					battery2: (Math.random() * (14.0000 - 1.0000) + 1.000).toFixed(4),
+					battery3: (Math.random() * (14.0000 - 1.0000) + 1.000).toFixed(4),
+					battery4: (Math.random() * (14.0000 - 1.0000) + 1.000).toFixed(4)
 				},
 				createAt: moment().format(),
 		  }

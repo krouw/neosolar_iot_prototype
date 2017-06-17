@@ -1,8 +1,9 @@
 import isEmpty from 'lodash/isEmpty'
-import { SET_CURRENT_USER } from '../actions/types'
+import { SET_CURRENT_USER, SET_TOKEN } from '../actions/types'
 
 const initialState = {
   isAuthenticated: false,
+  token: '',
   user: {}
 }
 
@@ -13,6 +14,10 @@ export default (state = initialState, action = {}) => {
               isAuthenticated: !isEmpty(action.user),
               user: action.user,
              })
+     case SET_TOKEN:
+       return Object.assign({}, state, {
+                token: action.token
+              })
     default:
         return state;
   }

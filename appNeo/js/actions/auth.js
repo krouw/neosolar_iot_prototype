@@ -3,7 +3,7 @@ import { ToastAndroid } from 'react-native'
 import { SubmissionError, reset } from 'redux-form'
 import { Actions, ActionConst } from 'react-native-router-flux'
 import { GoogleSignin } from 'react-native-google-signin'
-import { SET_CURRENT_USER, api } from './types'
+import { SET_CURRENT_USER, SET_TOKEN, api } from './types'
 import { setDevices } from './device'
 import { InsertStorage,
          DeleteStorage,
@@ -17,13 +17,21 @@ export function setCurrentUser(user){
   }
 }
 
+export function setToken(token){
+  return {
+    type: SET_TOKEN,
+    token,
+  }
+}
+
 export const SigninServer = data => {
   return dispatch => {
     return axios.post( `${api.uri}/auth/signin`, data)
       .then( res => {
         const token = res.data.token;
         dispatch(setCurrentUser(res.data.user))
-        InsertStorage(STORAGE_KEY_TOKEN, token)
+        dispatch(setToken(token))
+        //InsertStorage(STORAGE_KEY_TOKEN, token)
         setAuthorizationToken(token)
       })
       .then(() => {
@@ -51,7 +59,8 @@ export const SignupServer = data => {
       .then( res => {
         const token = res.data.token;
         dispatch(setCurrentUser(res.data.user))
-        InsertStorage(STORAGE_KEY_TOKEN, token)
+        dispatch(setToken(token))
+        //InsertStorage(STORAGE_KEY_TOKEN, token)
         setAuthorizationToken(token)
       })
       .then(() => {
@@ -84,8 +93,9 @@ export const SigninGoogle = () => {
       axios.post(`${api.uri}/auth/googlenative`, data)
         .then( res => {
           const token = res.data.token;
-          InsertStorage(STORAGE_KEY_TOKEN, token)
+          //InsertStorage(STORAGE_KEY_TOKEN, token)
           setAuthorizationToken(token)
+          dispatch(setToken(token))
           Actions.main({type: ActionConst.RESET})
           dispatch(setCurrentUser(res.data.user))
         })
@@ -108,8 +118,9 @@ export const SigninGoogle = () => {
 
 export const Logout = () => {
   return dispatch => {
-    DeleteStorage(STORAGE_KEY_TOKEN)
+    //DeleteStorage(STORAGE_KEY_TOKEN)
     setAuthorizationToken(false)
+    dispatch(setToken(''))
     GoogleSignin.signOut();
     dispatch(setCurrentUser({}))
     Actions.signin({type: ActionConst.RESET});

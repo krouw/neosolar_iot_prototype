@@ -12,11 +12,6 @@ const configRedis = {
 export const moscaSettings = {
   port: 1883,
   backend: configRedis,
-  http: {
-    port: 3000,
-    bundle: true,
-    static: './'
-  },
   persistence: {
     factory: mosca.persistence.Redis
   }

@@ -84,5 +84,4 @@ export const updateDeviceMeasurement = data => {
           console.log(err);
         })
     }
-  }
 }

@@ -18,6 +18,7 @@ import DeviceListItem from '../../components/DeviceListItem/DeviceListItem'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import DeviceModal from '../../components/DeviceModal/DeviceModal'
 import { getUserDevices } from '../../actions/device'
+import { mqttConnect } from '../../actions/mqtt'
 
 class DeviceList extends Component  {
 
@@ -29,6 +30,16 @@ class DeviceList extends Component  {
       dataSource: []
     }
     this.getUserDevices()
+
+    const mqttConfig = {
+      clientId: this.props.user._id,
+      username: this.props.user._id,
+      password: this.props.token,
+      mqttActive: this.props.mqtt.mqttActive
+    }
+
+    this.props.mqttConnect(mqttConfig)
+
   }
 
   getUserDevices(){
@@ -149,6 +160,8 @@ const styles = StyleSheet.create({
 function mapStateToProps(state){
   return {
     user: state.auth.user,
+    token: state.auth.token,
+    mqtt: state.mqtt,
     devices: state.device.entities,
     isFetching: state.device.isFetchingDevice,
   }
@@ -157,6 +170,7 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getUserDevices: (userData) => dispatch(getUserDevices(userData)),
+    mqttConnect: (config) => dispatch(mqttConnect(config))
   }
 }
 

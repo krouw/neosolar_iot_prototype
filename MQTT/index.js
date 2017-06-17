@@ -1,4 +1,5 @@
 import mosca from 'mosca'
+import http from 'http'
 import mongoose from 'mongoose'
 import { moscaSettings, MONGO } from './config/config'
 import { Authenticate,
@@ -11,6 +12,10 @@ mongoose.Promise = global.Promise; //mongoose uso de promesas es6
 mongoose.connect(database);
 
 var server = new mosca.Server(moscaSettings);
+var httpServer = http.createServer()
+
+server.attachHttpServer(httpServer)
+
 server.on('ready', setup);
 
 server.on('clientConnected', function(client) {
@@ -40,10 +45,14 @@ function send(){
   }, 9000)
 }
 
-//send()
+send()
 
 // fired when the mqtt server is ready
 function setup() {
-	server.authenticate = Authenticate;
+	//server.authenticate = Authenticate;
   console.log('MQTT server is up and running')
 }
+
+httpServer.listen(9001, () => {
+	console.log('HTTP Server run on port 9001');
+});
