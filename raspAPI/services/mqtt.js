@@ -1,6 +1,6 @@
 import mqtt from 'mqtt'
 import { getAuthorizationToken } from '../util/AuthorizationToken'
-import { ID, MQTT } from '../config/config'
+import { ID, MQTT, PERSIST } from '../config/config'
 
 export const publish = (payload) => {
   const auth = getAuthorizationToken()
@@ -18,7 +18,7 @@ export const publish = (payload) => {
        clientId: ID,
    };
 
-   const data = JSON.stringify({ d: payload });
+   const data = JSON.stringify({ data: payload, type: PERSIST });
    console.log('< ================ >\n');
    console.log('Publishing to MQTT service.');
    const client = mqtt.connect(mqtt_hostname, options)

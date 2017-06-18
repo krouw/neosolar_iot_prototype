@@ -24,3 +24,5 @@ export const SECRET = {
 export const MONGO = {
   uri: "mongodb://localhost/apineo"
 }
+
+export const PERSIST = 'PERSIST'

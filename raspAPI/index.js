@@ -7,8 +7,7 @@ import { publish } from './services/mqtt'
 import { getAuthorizationToken, setAuthorizationToken } from './util/AuthorizationToken'
 
 const send = (payload) => {
-  const auth = getAuthorizationToken()
-  datastore(payload)
+  //datastore(payload)
   publish(payload)
 }
 

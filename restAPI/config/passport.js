@@ -20,7 +20,6 @@ module.exports = (passport) => {
    opts.secretOrKey = SECRET.secret;
    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
      var id = jwt_payload.sub
-     console.log(jwt_payload);
      if( jwt_payload.role === ROLE_DEVICE ){
        Device.findOne({_id: id})
         .then((device) => {

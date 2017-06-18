@@ -13,12 +13,16 @@ const MeasurementSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  battery:{
+  battery: {
     type: Object,
     required: true
   },
+  createAt: {
+    type: Date,
+    required: true
+  } ,
   device:{ type: Schema.ObjectId, ref: "Measurement"},
-},{ timestamps: true });
+});
 
 //Quita los atributos de las consultas
 
