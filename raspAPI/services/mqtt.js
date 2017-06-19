@@ -18,6 +18,8 @@ export const publish = (payload) => {
        clientId: ID,
    };
 
+   payload.device = ID
+
    const data = JSON.stringify({ data: payload, type: PERSIST });
    console.log('< ================ >\n');
    console.log('Publishing to MQTT service.');

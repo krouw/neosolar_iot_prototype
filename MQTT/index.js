@@ -6,6 +6,7 @@ import { Authenticate,
 				 AuthorizePublish,
 				 AuthorizeSubscribe } from './auth/auth'
 import { isJSON } from './util/isJSON'
+import { actions } from './actions'
 
 const database  = process.env.MONGO_URL || MONGO.uri
 
@@ -33,13 +34,7 @@ server.on('published', function(packet, client) {
   //console.log('Published', packet.topic, packet.payload.toString());
 	if(isJSON(packet.payload.toString())) {
 		const payload = JSON.parse(packet.payload.toString())
-		switch (payload.type) {
-			case PERSIST:
-				console.log('persist');
-				break;
-			default:
-				console.log('dawdaw');
-		}
+		actions(payload)
 	}
 	else {
 
