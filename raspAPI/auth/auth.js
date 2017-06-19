@@ -1,6 +1,8 @@
 import axios from 'axios'
-import { setAuthorizationToken } from '../util/AuthorizationToken'
 import { SERVER } from '../config/config'
+
+let ACCESS_TOKEN = ''
+let REFRESH_TOKEN = ''
 
 export const auth = (body) => {
   return axios.post(`${SERVER}/auth/device`, body)
@@ -10,4 +12,24 @@ export const auth = (body) => {
             setAuthorizationToken(token, refreshToken)
             return res
           })
+}
+
+export const setAuthorizationToken = (token, refreshToken) => {
+  if(token){
+    axios.defaults.headers.common['Authorization'] = token;
+    ACCESS_TOKEN = token
+    REFRESH_TOKEN = refreshToken
+  }
+  else{
+    delete axios.defaults.headers.common['Authorization'];
+    ACCESS_TOKEN = ''
+    REFRESH_TOKEN = ''
+  }
+}
+
+export const getAuthorizationToken = () => {
+  return {
+    refreshToken: REFRESH_TOKEN,
+    token: ACCESS_TOKEN
+  }
 }

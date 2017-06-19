@@ -1,30 +1,58 @@
 import mqtt from 'mqtt'
-import acquisition from './fakeMeter'
+import acquisition from './sensors/fakeMeter'
+import jwt from 'jsonwebtoken'
+import moment from 'moment'
 import { ID, PASSWORD, SERVER } from './config/config'
 import { datastore } from './datastore'
-import { auth } from './auth/auth'
+import { auth, getAuthorizationToken, setAuthorizationToken } from './auth/auth'
 import { publish } from './services/mqtt'
-import { getAuthorizationToken, setAuthorizationToken } from './util/AuthorizationToken'
 
 const send = (payload) => {
   //datastore(payload)
   publish(payload)
 }
 
+const checkToken = (next) => {
+  const Authorization = getAuthorizationToken()
+  if(Authorization.token){
+    const decoded = jwt.decode(Authorization.token.split(' ')[1])
+
+    if (decoded.exp && (moment.unix(decoded.exp) - moment(Date.now()) < 5000)) {
+      auth({ id: ID, password: PASSWORD })
+        .then((value) => {
+          next()
+        })
+        .catch((err) => {
+          setAuthorizationToken()
+          next(err)
+        })
+    }
+    else {
+      console.log('token no caducado');
+      next()
+    }
+  }
+}
+
 const Main = () => {
   auth({ id: ID, password: PASSWORD })
     .then((value) => {
       console.log('==> AUTH');
-
       setInterval(() => {
-        console.log('==> Acquisition');
-           acquisition()
-            .then(({msm}) => {
-              send(msm)
-            })
-            .catch((err) => {
-              console.log('Error acquisition ' + err);
-            })
+        checkToken((err) => {
+          if (err) {
+            console.log('Error token', err);
+          }
+          else {
+            acquisition()
+             .then(({msm}) => {
+               send(msm)
+             })
+             .catch((err) => {
+               console.log('Error acquisition ' + err);
+             })
+          }
+        })
       }, 10000)
 
     })

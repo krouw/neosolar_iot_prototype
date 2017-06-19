@@ -35,7 +35,7 @@ class AuthController {
               user.refreshToken = refreshToken
               user.save()
                 .then((value) => {
-                  jwt.sign(userData, SECRET.secret, {expiresIn: 10000,}, (err, token) => {
+                  jwt.sign(userData, SECRET.secret, { expiresIn: '1h' }, (err, token) => {
                     if(err){
                       return res
                               .status(500)
@@ -106,7 +106,7 @@ class AuthController {
             user.refreshToken = refreshToken
             user.save()
               .then((value) => {
-                jwt.sign(userData, SECRET.secret, {expiresIn: 10000,}, (err, token) => {
+                jwt.sign(userData, SECRET.secret, { expiresIn: '1h' }, (err, token) => {
                   if(err){
                     return res
                             .status(500)
@@ -180,9 +180,7 @@ class AuthController {
 
   google(req, res){
 
-    const token = jwt.sign(req.user, SECRET.secret, {
-      expiresIn: 10000 //segundos
-    });
+    const token = jwt.sign(req.user, SECRET.secret, { expiresIn: '1h' });
 
     const data = {
       token: `JWT ${token}`,
@@ -215,9 +213,7 @@ class AuthController {
                   google: userid,
                   password: id })
                   .then( userCreate => {
-                    const token = jwt.sign(user, SECRET.secret, {
-                          expiresIn: 10000 //segundos
-                    });
+                    const token = jwt.sign(user, SECRET.secret, { expiresIn: '1h' });
                     return res
                             .status(201)
                             .json({ user: user, token: `JWT ${token}` });
@@ -263,7 +259,7 @@ class AuthController {
                 device.refreshToken = refreshToken
                 device.save()
                   .then((value) => {
-                    jwt.sign(deviceData, SECRET.secret, { expiresIn: 10000 }, (err, token) => {
+                    jwt.sign(deviceData, SECRET.secret, { expiresIn: '1h' }, (err, token) => {
                       if(err){
                         return res
                                 .status(500)
@@ -311,7 +307,7 @@ class AuthController {
     }
 
   }
-  
+
 }
 
 export default AuthController;

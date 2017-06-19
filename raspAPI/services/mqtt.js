@@ -1,5 +1,5 @@
 import mqtt from 'mqtt'
-import { getAuthorizationToken } from '../util/AuthorizationToken'
+import { getAuthorizationToken } from '../auth/auth'
 import { ID, MQTT, PERSIST } from '../config/config'
 
 export const publish = (payload) => {
