@@ -36,9 +36,6 @@ server.on('published', function(packet, client) {
 		const payload = JSON.parse(packet.payload.toString())
 		actions(payload)
 	}
-	else {
-
-	}
 
 });
 
@@ -62,7 +59,7 @@ function setup() {
 	server.authenticate = Authenticate;
 	server.authorizePublish = AuthorizePublish;
 	server.authorizeSubscribe = AuthorizeSubscribe;
-  console.log('MQTT server is up and running')
+  console.log('MQTT server is up and running on port 1883')
 }
 
 httpServer.listen(9001, () => {
