@@ -25,4 +25,4 @@ export const MONGO = {
   uri: "mongodb://localhost/apineo"
 }
 
-export const PERSIST = 'PERSIST'
+export const MEASUREMENT = 'MEASUREMENT'

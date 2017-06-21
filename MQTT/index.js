@@ -1,7 +1,7 @@
 import mosca from 'mosca'
 import http from 'http'
 import mongoose from 'mongoose'
-import { moscaSettings, MONGO, PERSIST } from './config/config'
+import { moscaSettings, MONGO } from './config/config'
 import { Authenticate,
 				 AuthorizePublish,
 				 AuthorizeSubscribe } from './auth/auth'

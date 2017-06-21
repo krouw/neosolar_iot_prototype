@@ -1,9 +1,9 @@
-import { PERSIST } from './config/config'
+import { MEASUREMENT } from './config/config'
 import { createMeasurement, validateMsmCreate } from './queue/measurement'
 
 export function actions(payload) {
   switch (payload.type) {
-    case PERSIST:
+    case MEASUREMENT:
       validateMsmCreate(payload.data)
         .then((value) => {
           createMeasurement(payload.data, (err) => {
