@@ -1,7 +1,7 @@
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
-import { SERVER } from '../config/config'
+import { SERVER, ID, PASSWORD } from '../config/config'
 
 let ACCESS_TOKEN = ''
 
