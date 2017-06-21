@@ -55,6 +55,7 @@ const SignupForm = ({
         name='email'
         label='Email'
         dense={true}
+        keyboardType={'email-address'}
         component={TextField} />
       <Field
         name='password'

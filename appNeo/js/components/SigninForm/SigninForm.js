@@ -46,7 +46,8 @@ const SigninForm = ({
         name='email'
         label='Email'
         dense={true}
-        component={TextField} />
+        component={TextField}
+        keyboardType={'email-address'} />
       <Field
         name='password'
         label='Password'
