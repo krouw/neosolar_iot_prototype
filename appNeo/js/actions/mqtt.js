@@ -3,6 +3,9 @@ import { mqttServer } from '../config/mqtt'
 import { setMeasurement } from './device'
 import { MQTT_CONNECTED, MQTT_SUBSCRIBE, MQTT_MESSAGE, MQTT_CONSUME } from '../actions/types'
 import { ToastAndroid } from 'react-native'
+import { isJSON } from '../util/isJSON'
+
+const MEASUREMENT = 'MEASUREMENT'
 
 let client
 
@@ -16,17 +19,10 @@ const myStorage = {
   },
 };
 
-export function setConnection(){
+export function Connection(value){
   return {
     type: MQTT_CONNECTED,
-    value: true
-  }
-}
-
-export function removeConnection(){
-  return {
-    type: MQTT_CONNECTED,
-    value: false
+    value: value
   }
 }
 
@@ -40,23 +36,28 @@ export const mqttConnect = (config, devices) => {
     client.on('connectionLost', (responseObject) => {
       if (responseObject.errorCode !== 0) {
         console.log(responseObject.errorMessage);
-        dispatch(removeConnection())
+        dispatch(Connection(false))
         client.disconnect()
         ToastAndroid.show('Problemas para acceder al Servidor', ToastAndroid.LONG);
       }
     });
     client.on('messageReceived', (message) => {
-
-      if(message._destinationName.split('/')[1] && message.payloadString){
-        let msm = JSON.parse(message.payloadString)
-        let device = message._destinationName.split('/')[1]
-        dispatch(setMeasurement({ _id: device }, msm.d))
+      if(message.destinationName.split('/')[1] && isJSON(message.payloadString)){
+        const payload = JSON.parse(message.payloadString)
+        switch (payload.type) {
+          case MEASUREMENT:
+            let device = message._destinationName.split('/')[1]
+            dispatch(setMeasurement({ _id: device }, payload.data))
+            break;
+          default:
+            console.log('Sin Acciones');
+        }
       }
     });
 
     client.connect({ userName: config.username, password: config.password })
       .then(() => {
-        dispatch(setConnection())
+        dispatch(Connection(true))
         return
       })
       .then(() => {
