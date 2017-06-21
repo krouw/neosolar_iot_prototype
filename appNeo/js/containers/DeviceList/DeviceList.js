@@ -29,7 +29,6 @@ class DeviceList extends Component  {
       showModal: false,
       dataSource: []
     }
-    this.getUserDevices()
 
     this.mqttConfig = {
       clientId: this.props.user._id,
@@ -45,12 +44,12 @@ class DeviceList extends Component  {
       .then(() => {
         if(!isEmpty(this.props.devices)){
           this.connectMQTT(0)
+          let newState = []
           Object.keys(this.props.devices)
             .map( deviceKey => {
-              const newState = this.state.dataSource;
               newState.push(this.props.devices[deviceKey])
-              this.setState({dataSource: newState})
             })
+          this.setState({dataSource: newState})
         }
         return
       })
@@ -68,6 +67,14 @@ class DeviceList extends Component  {
     if(!nextProps.mqtt.mqttActive && this.props.devices){
       this.connectMQTT(30000)
     }
+  }
+
+  componentWillMount(){
+    this.getUserDevices()
+  }
+
+  stateModal(value) {
+    this.setState({showModal: value})
   }
 
   content(){
@@ -90,6 +97,7 @@ class DeviceList extends Component  {
     else{
       return (
         <ListView
+          enableEmptySections={true}
           style={styles.deviceList}
           dataSource={this.ds.cloneWithRows(this.state.dataSource)}
           renderRow={(rowData) => <DeviceListItem data={rowData} />}
@@ -117,7 +125,7 @@ class DeviceList extends Component  {
           title="Agregar Spot"
           visible={this.state.showModal}
           onAccept={() => {}}
-          onDecline={() => { this.setState({showModal: false})}} />
+          onDecline={() => this.stateModal(false) } />
         <SearchBar />
         <View style={[styles.content]}>
           { this.content() }
@@ -125,7 +133,7 @@ class DeviceList extends Component  {
             position="right"
             degrees={0}
             buttonColor="rgba(231,76,60,1)"
-            onPress={() => this.setState({showModal: true})}
+            onPress={() => this.stateModal(true) }
           />
         </View>
       </View>
