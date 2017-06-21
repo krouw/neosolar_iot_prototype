@@ -194,44 +194,100 @@ class AuthController {
   googleNative(req, res){
 
     validateGoogle(req.body)
-      .then(({errors, isValid, userid}) => {
-        if(isValid){
-          User.findOne({ 'google.id' : userid.id })
-            .then( user => {
-              if(user){
-                const token = jwt.sign(user, SECRET.secret, {
-                      expiresIn: 10000 //segundos
-                });
-                return res
-                        .status(200)
-                        .json({ user: user,
-                                token: `JWT ${token}` });
-              }
-              else{
-                User.create({
-                  email: res.body.email,
-                  google: userid,
-                  password: id })
-                  .then( userCreate => {
-                    const token = jwt.sign(user, SECRET.secret, { expiresIn: '1h' });
-                    return res
-                            .status(201)
-                            .json({ user: user, token: `JWT ${token}` });
-                  })
-                  .catch( err => {
-                    return res
-                            .status(400)
-                            .json({ status: 'Error',
-                                    errors: {email: 'Este Email ya está siendo utilizado'} })
-                  })
-              }
-            })
-        }
-        else {
-          return res.status(400).json({errors: errors, status: 'Error'})
-        }
-      })
+      .then(({ user }) => {
+        User.findOne({ 'google.id' : user.sub })
+          .then( userFound => {
+            if(userFound){
+              var refreshToken = randtoken.uid(256)
+              userFound.refreshToken = refreshToken
+              userFound.save()
+                .then((saveUser) => {
+                  const userData = {
+                    sub: saveUser._id,
+                    email: saveUser.email,
+                    role: saveUser.role
+                  }
+                  jwt.sign(userData, SECRET.secret, { expiresIn: '1h' }, (err, token) => {
+                    if(err){
+                      return res
+                              .status(500)
+                              .json({ status: 'Error',
+                                      errors: { _error: 'Problemas con el servidor' } })
+                    }
+                    else {
+                      return res
+                              .status(200)
+                              .json({ status: 'OK',
+                                      token: `JWT ${token}`,
+                                      refreshToken: refreshToken,
+                                      user: saveUser });
+                    }
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return res
+                          .status(500)
+                          .json({ status: 'Error',
+                                  errors: { _error: 'Problemas con el servidor' } })
+                })
 
+            }
+            else{
+              User.create({
+                email: user.email,
+                google: { id: user.sub },
+                password: user.sub })
+                .then( userCreate => {
+                  var refreshToken = randtoken.uid(256)
+                  userCreate.refreshToken = refreshToken
+                  userCreate.save()
+                    .then((saveUser) => {
+                      const userData = {
+                        sub: saveUser._id,
+                        email: saveUser.email,
+                        role: saveUser.role
+                      }
+                      jwt.sign(userData, SECRET.secret, { expiresIn: '1h' }, (err, token) => {
+                        if(err){
+                          return res
+                                  .status(500)
+                                  .json({ status: 'Error',
+                                          errors: { _error: 'Problemas con el servidor' } })
+                        }
+                        else {
+                          return res
+                                  .status(200)
+                                  .json({ status: 'OK',
+                                          token: `JWT ${token}`,
+                                          refreshToken: refreshToken,
+                                          user: saveUser });
+                        }
+                      });
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      return res
+                              .status(500)
+                              .json({ status: 'Error',
+                                      errors: { _error: 'Problemas con el servidor' } })
+                    })
+                })
+                .catch( err => {
+                  return res
+                          .status(400)
+                          .json({ status: 'Error',
+                                  errors: { email: 'Este Email ya está siendo utilizado' } })
+                })
+            }
+          })
+      })
+      .catch(({errors, status}) => {
+        return res
+                .status(status)
+                .json({ status: 'Error',
+                        errors: errors })
+      })
   }
 
   deviceSignin(req, res) {

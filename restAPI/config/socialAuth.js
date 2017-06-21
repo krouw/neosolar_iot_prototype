@@ -1,4 +1,5 @@
 import GoogleAuth from 'google-auth-library'
+import isEmpty from 'lodash/isEmpty'
 
 const socialAuth  = {
   "googleAuth" : {
@@ -14,33 +15,32 @@ const validateByGoole = (errors, data) => {
 
     const auth = new GoogleAuth;
     const client = new auth.OAuth2(socialAuth.clientID, '', '');
-
     if(!isEmpty(errors)){
       return resolve({
-        errors,
-        isValid: isEmpty(errors)
+        errors: errors,
+        status: 400
       })
     }
     else{
       client.verifyIdToken(data.idToken, socialAuth.clientID, (err, login) => {
-        let errors = {}
         if(err){
-          errors.google = 'Problemas de validación con Google'
-          return resolve({
-            errors,
-            isValid: isEmpty(errors)
+          errors._error = 'Problemas de validación con Google'
+          return reject({
+            errors: errors,
+            status: 500
           })
         }
-        const payload = login.getPayload();
-        return resolve({
-          userid: {id: payload['sub']},
-          isValid: isEmpty(errors),
-          errors,
-        });
+        else {
+          const payload = login.getPayload();
+          return resolve({
+            user: payload
+          });
+        }
+
       })
     }
   })
   return promise;
 }
 
-export { socialAuth, validateByGoole } 
+export { socialAuth, validateByGoole }

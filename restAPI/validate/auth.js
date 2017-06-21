@@ -89,11 +89,15 @@ const validateGoogle = (body) => {
   }
 
   return validateByGoole(errors, body)
-          .then(({errors, isValid, userid}) => {
+          .then(({user}) => {
+            return {
+              user: user
+            }
+          })
+          .catch(({errors, status}) => {
             return {
               errors: errors,
-              isValid: isEmpty(errors),
-              userid: userid,
+              status: status
             }
           })
 }
