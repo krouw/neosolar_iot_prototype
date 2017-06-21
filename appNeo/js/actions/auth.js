@@ -93,11 +93,13 @@ export const SigninGoogle = () => {
       axios.post(`${api.uri}/auth/googlenative`, data)
         .then( res => {
           const token = res.data.token;
-          //InsertStorage(STORAGE_KEY_TOKEN, token)
+          console.log(res.data);
           setAuthorizationToken(token)
           dispatch(setToken(token))
-          Actions.main({type: ActionConst.RESET})
           dispatch(setCurrentUser(res.data.user))
+        })
+        .then(() => {
+          Actions.main({type: ActionConst.RESET})
         })
         .catch((err) => {
           let errors = err.response.data.errors;
