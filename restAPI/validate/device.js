@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { SECRET } from '../config/config'
 import Device from '../models/device'
+import randtoken from 'rand-token'
 
 const validateDeviceCreate = (body) => {
   let errors = {};
@@ -45,6 +46,7 @@ const validateDeviceCreate = (body) => {
 
   return new Promise( (resolve, reject) => {
       if(isEmpty(errors)){
+        result.id = randtoken.uid(6)
         resolve({
           device: result
         })

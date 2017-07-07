@@ -7,6 +7,10 @@ import { ROLE_DEVICE } from '../config/roles'
 const Schema = mongoose.Schema
 
 const DeviceSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true,
+  },
   name: {
     type:  String,
     required: true,
