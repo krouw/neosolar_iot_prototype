@@ -246,7 +246,7 @@ class UserController {
         User.findById(req.params.idUser)
           .then( user => {
             if (user) {
-              user.devices.push(req.body.id);
+              user.devices.push(device._id);
               user.save()
                 .then( updateUser => {
                   device.users.push(updateUser._id);
@@ -428,7 +428,7 @@ class UserController {
           return res
                   .status(404)
                   .json({ status: 'Not Found',
-                          errors: { refreshToken: 'Este recurso no Existe.' } })  
+                          errors: { refreshToken: 'Este recurso no Existe.' } })
         }
       })
       .catch((err) => {

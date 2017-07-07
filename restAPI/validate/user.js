@@ -47,7 +47,7 @@ const validateUserCreate = (body, user) => {
       if(isEmpty(errors)){
         User.findOne({ 'email' : body.email })
           .then( user => {
-            if(user){
+            if(isEmpty(user)){
               errors.email = 'Este email está siendo utilizado por un usuario'
               reject({
                 errors: errors,
@@ -158,9 +158,6 @@ const validateUserDevice = (body, params) =>{
   if(isEmpty(body.id)){
     errors.id_device = 'Campo Requerido';
   }
-  else if(!mongoose.Types.ObjectId.isValid(body.id)){
-    errors.id_device = 'Campo Inválido.'
-  }
 
   if(isEmpty(body.password)){
     errors.password = 'Campo Requerido';
@@ -171,9 +168,9 @@ const validateUserDevice = (body, params) =>{
 
   return new Promise( (resolve, reject) => {
       if(isEmpty(errors)){
-        Device.findById(body.id)
+        Device.findOne({ id: body.id })
           .then((device) => {
-            if(device){
+            if(!isEmpty(device)){
               bcrypt.compare(body.password, device.password)
               .then((validatePassword) => {
                 if(validatePassword == false){
@@ -189,14 +186,25 @@ const validateUserDevice = (body, params) =>{
                   })
                 }
               })
+              .catch((err) => {
+                console.log(err);
+              })
             }
-            else{
+            else {
               errors.device = 'Recurso no Encontrado.'
               return reject({
                 errors: errors,
                 status: 404,
               })
             }
+          })
+          .catch((err) => {
+            console.log(err);
+            errors.device = 'Recurso no Encontrado.'
+            return reject({
+              errors: errors,
+              status: 404,
+            })
           })
       }
       else{
@@ -247,7 +255,7 @@ const validateUserDeviceUpdate = (params, body) => {
         Device
           .findById(params.idDevice)
           .then((device) => {
-            if(device){
+            if(isEmpty(device)){
               const checkUser = device.users.filter( user => {
                   let aux = user.toString()
                   return aux == params.idUser
@@ -330,7 +338,7 @@ const validateUserDevDelete = (params) => {
     if(isEmpty(errors)){
       User.findById(params.idUser)
         .then( user => {
-          if(user){
+          if(isEmpty(user)){
             let isDevice = undefined;
             const newDevices = user.devices.filter( device => {
                 let aux = device.toString()
@@ -421,7 +429,7 @@ const validateRefreshTokenUser = (body) => {
 
       User.findById(body.id)
         .then((user) => {
-          if(user){
+          if(isEmpty(user)){
             if(user.refreshToken === body.refreshToken){
               const userData = {
                 sub: user._id,
