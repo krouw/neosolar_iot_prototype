@@ -110,6 +110,7 @@ export const SigninGoogle = () => {
     })
     .catch((err) => {
       if(err){
+        console.log(err);
         ToastAndroid.show('No se ha podido establecer conexión con Google', ToastAndroid.LONG);
       }
     })

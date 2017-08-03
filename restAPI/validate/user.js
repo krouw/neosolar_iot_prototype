@@ -155,7 +155,7 @@ const validateUserDevice = (body, params) =>{
     errors.id_user = 'Campo Inválido.';
   }
 
-  if(isEmpty(body.id)){
+  if(isEmpty(body.device)){
     errors.id_device = 'Campo Requerido';
   }
 
@@ -168,7 +168,7 @@ const validateUserDevice = (body, params) =>{
 
   return new Promise( (resolve, reject) => {
       if(isEmpty(errors)){
-        Device.findOne({ id: body.id })
+        Device.findOne({ id: body.device })
           .then((device) => {
             if(!isEmpty(device)){
               bcrypt.compare(body.password, device.password)

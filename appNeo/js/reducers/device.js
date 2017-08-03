@@ -1,7 +1,8 @@
 import { SET_DEVICE,
          SET_MEASUREMENT,
-         START_FETCHING_DEVICES,
-         START_FETCHING_MEASUREMENT } from '../actions/types'
+         FETCHING_DEVICES,
+         START_FETCHING_MEASUREMENT,
+         START_FETCHING_ADD_DEVICES, } from '../actions/types'
 
 const initialState = {
   entities: {},
@@ -11,6 +12,7 @@ const initialState = {
 
 export default (state = initialState, action = {}) => {
   switch (action.type) {
+
     case SET_DEVICE:
       if(action.device){
         const newDevice = Object.assign({}, state.entities)
@@ -26,14 +28,22 @@ export default (state = initialState, action = {}) => {
             isFetchingDevice: false
           })
       }
-    case START_FETCHING_DEVICES:
+
+    case FETCHING_DEVICES:
       return Object.assign({}, state, {
-          isFetchingDevice: true
+          isFetchingDevice: action.fetchingDevices
         })
+
     case START_FETCHING_MEASUREMENT:
       return Object.assign({}, state, {
           isFetchingMeasurement: true
         })
+
+    case START_FETCHING_ADD_DEVICES:
+      return Object.assign({}, state, {
+        isFetchingAddDevice: true
+      })
+
     case SET_MEASUREMENT:
       const newDevices = Object.assign({}, state.entities)
       newDevices[action.device._id].measurement = action.msm
@@ -41,6 +51,7 @@ export default (state = initialState, action = {}) => {
           entities: newDevices,
           isFetchingMeasurement: false
         })
+
     default:
         return state;
   }

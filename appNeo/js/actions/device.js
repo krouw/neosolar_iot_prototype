@@ -1,7 +1,11 @@
 import axios from 'axios'
+import { SubmissionError, reset } from 'redux-form'
+import { ToastAndroid } from 'react-native'
 import { SET_DEVICE,
          SET_MEASUREMENT,
-         START_FETCHING_DEVICES, START_FETCHING_MEASUREMENT, api } from './types'
+         FETCHING_DEVICES,
+         START_FETCHING_ADD_DEVICES,
+         START_FETCHING_MEASUREMENT, api } from './types'
 
 export const setDevice = (device) => {
   return {
@@ -18,9 +22,10 @@ export const setMeasurement = (device, msm) => {
   }
 }
 
-export const startFetchingDevices = () => {
+export const FetchingDevices = (state) => {
     return {
-      type: START_FETCHING_DEVICES,
+      type: FETCHING_DEVICES,
+      fetchingDevices: state
     }
 };
 
@@ -30,14 +35,43 @@ export const startFetchingMeasurement = () => {
     }
 };
 
+export const startFetchingAddDevice = () => {
+  return {
+    type: START_FETCHING_ADD_DEVICES,
+  }
+}
+
+export const addUserDevice = (user, data) => {
+  return dispatch => {
+    dispatch(startFetchingAddDevice())
+    return axios.post(`${api.uri}/user/${user._id}/device/`, data)
+            .then((value) => {
+              console.log(value);
+            })
+            .catch((err) => {
+              console.log(err.response);
+              if(!err.response){
+                ToastAndroid.show('No se ha podido establecer conexión con el Servidor', ToastAndroid.LONG);
+              }
+              if(err.response){
+                if(err.response.status === 400 || err.response.status === 404 || err.response.status === 403){
+                  throw new SubmissionError(err.response.data.errors)
+                }
+                if(err.response.status === 500){
+                  ToastAndroid.show(err.response.data.errors._error, ToastAndroid.LONG);
+                }
+              }
+            })
+  }
+}
 
 export const getUserDevices = data => {
   return dispatch => {
-    dispatch(startFetchingDevices())
+    dispatch(FetchingDevices(true))
     return axios.get(`${api.uri}/user/${data._id}/device/`)
             .then((value) => {
               if(value.data.data.devices.length <= 0){
-                dispatch(setDevice())
+                return
               }
               else{
                 value.data.data.devices.forEach( device => {
@@ -45,8 +79,12 @@ export const getUserDevices = data => {
                 })
               }
             })
+            .then(() => {
+              dispatch(FetchingDevices(false))
+            })
             .catch((err) => {
               console.log(err.response);
+              dispatch(FetchingDevices(false))
             })
   }
 }

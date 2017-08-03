@@ -5,6 +5,7 @@ import { View,
          TextInput,
          ListView,
          ActivityIndicator,
+         Animated,
          TouchableWithoutFeedback } from 'react-native'
 import { MKButton } from 'react-native-material-kit'
 import { Logout } from '../../actions/auth'
@@ -27,7 +28,12 @@ class DeviceList extends Component  {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       showModal: false,
-      dataSource: []
+      dataSource: [ {name:'prid haps', state:'activo'},
+                    {name:'prid haps', state:'activo'},
+                    {name:'prid haps', state:'activo'},
+                    {name:'prid haps', state:'activo'},
+                    {name:'prid haps', state:'activo'},
+                  ]
     }
 
     this.mqttConfig = {
@@ -36,6 +42,8 @@ class DeviceList extends Component  {
       password: this.props.token,
       mqttActive: this.props.mqtt.mqttActive,
     }
+
+    this.skeletonAnimated = []
 
   }
 
@@ -49,7 +57,10 @@ class DeviceList extends Component  {
             .map( deviceKey => {
               newState.push(this.props.devices[deviceKey])
             })
-          this.setState({dataSource: newState})
+          this.setState({ dataSource: newState })
+        }
+        else{
+          this.setState({ dataSource: [] })
         }
         return
       })
@@ -70,39 +81,70 @@ class DeviceList extends Component  {
   }
 
   componentWillMount(){
-    this.getUserDevices()
+    //this.getUserDevices()
+  }
+
+  componentDidMount(){
+    this.runAnimated()
   }
 
   stateModal(value) {
     this.setState({showModal: value})
   }
 
+  runAnimated() {
+    console.log(this.skeletonAnimated);
+    if (Array.isArray(this.skeletonAnimated) && this.skeletonAnimated.length > 0) {
+      const threeRowAnimated = Animated.parallel(
+        this.skeletonAnimated.map(animate => {
+          if (animate && animate.getAnimated) {
+            return animate.getAnimated();
+          }
+          return null;
+        }),
+        {
+          stopTogether: false,
+        },
+      );
+      console.log(threeRowAnimated);
+      threeRowAnimated.start()
+      //Animated.sequence(threeRowAnimated).start()
+      //Animated.loop(threeRowAnimated).start();
+    }
+  }
+
+  addSkeletonAnimated(ref){
+    this.skeletonAnimated.push(ref)
+  }
+
+  renderRow(data){
+    return (
+      <DeviceListItem
+          key={data._id}
+          data={data}
+          addSkeleton={ (ref) => this.addSkeletonAnimated(ref)}
+          skeleton={!this.props.isFetching} />
+    )
+  }
+
   content(){
-    if(this.props.isFetching){
-      return (
-        <View style={{flex:1,justifyContent: 'center',
-          alignItems: 'center',}}>
-          <ActivityIndicator
-            color="red"
-            size={48} />
-        </View>
-      )
-    }
-    else if(isEmpty(this.props.devices)){
-      return ( <View style={{flex:1,justifyContent: 'center',
-        alignItems: 'center',}}>
-        <Text> No hay dispositivos </Text>
-      </View>)
-    }
-    else{
+    if(this.props.isFetching || !isEmpty(this.state.dataSource)){
       return (
         <ListView
           enableEmptySections={true}
           style={styles.deviceList}
           dataSource={this.ds.cloneWithRows(this.state.dataSource)}
-          renderRow={(rowData) => <DeviceListItem data={rowData} />}
+          renderRow={(rowData) => this.renderRow(rowData) }
           renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator}></View> }
         />
+      )
+    }
+    else if(isEmpty(this.props.devices)){
+      return (
+        <View style={{flex:1,justifyContent: 'center',
+        alignItems: 'center',}}>
+          <Text> No hay dispositivos </Text>
+        </View>
       )
     }
   }
@@ -111,6 +153,7 @@ class DeviceList extends Component  {
     const AccentIconButton = MKButton.accentColoredFlatButton()
       .withOnPress(() => Actions.profile({type: ActionConst.PUSH}))
       .build();
+    this.skeletonAnimated = []
     return(
       <View style={styles.container}>
         <View style={[styles.header]}>
@@ -125,6 +168,7 @@ class DeviceList extends Component  {
           title="Agregar Spot"
           visible={this.state.showModal}
           onAccept={() => {}}
+          user={this.props.user}
           onDecline={() => this.stateModal(false) } />
         <SearchBar />
         <View style={[styles.content]}>
