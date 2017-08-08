@@ -1,29 +1,35 @@
 import React, { Component } from 'react'
-import { Provider, connect } from 'react-redux'
-import store from './config/store'
+import { View, Text } from 'react-native'
 
+//Store
+import { Provider } from 'react-redux'
+import store from './store/configureStore'
+
+//SplashScreen
 import SplashScreen from 'react-native-splash-screen'
 import TimerMixin from 'react-timer-mixin'
 import reactMixin from 'react-mixin'
 
-import NavigatorComponent from './containers/'
+//Modules
+import RouterApp from './containers/Router'
 
-export default class App extends Component {
+class App extends Component {
 
   componentDidMount() {
-      this.setTimeout(() => {
-        SplashScreen.hide();
-      }, 1000)
+    this.setTimeout( () => {
+      SplashScreen.hide()
+    }, 1000)
   }
 
   render() {
-
     return (
       <Provider store={store}>
-        <NavigatorComponent />
+        <RouterApp />
       </Provider>
-    );
+    )
   }
+
 }
 
 reactMixin.onClass(App, TimerMixin)
+export default App
