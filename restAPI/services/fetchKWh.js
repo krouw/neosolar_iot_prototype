@@ -8,9 +8,10 @@ export const fetchKWh = () => {
 		  const $ = cheerio.load(res.data)
 		  const content = $('BODY > DIV').toArray()
       const data = content[0].children[4].children[3].children[1].children[0].data.split('$')
-      const number = data[1].split(',')
+      const numbers = data[1].split(',')
+			const measure = `${numbers[0]}.${numbers[1]}`
       resolve({
-				value: parseInt(number[0])
+				value: parseFloat(measure)
 			})
 		})
 		.catch ( err => {
