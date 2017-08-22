@@ -315,7 +315,7 @@ class AuthController {
                 device.refreshToken = refreshToken
                 device.save()
                   .then((value) => {
-                    jwt.sign(deviceData, SECRET.secret, { expiresIn: '1h' }, (err, token) => {
+                    jwt.sign(deviceData, SECRET.secret, { expiresIn: '30s' }, (err, token) => {
                       if(err){
                         return res
                                 .status(500)

@@ -6,7 +6,7 @@
   "jsnext:main": "index.mjs",
   "browser": "",
   "scripts": {
-    "start": "nodemon --watch ./ --exec babel-node index.js",
+    "start": "nodemon --watch ./ --exec babel-node index1.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "krouw && roinflames",
@@ -24,6 +24,7 @@
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-es2015-rollup": "^3.0.0",
+    "babel-preset-es2017": "^6.24.1",
     "babel-preset-latest": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "del": "^3.0.0",

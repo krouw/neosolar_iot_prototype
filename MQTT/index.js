@@ -39,6 +39,10 @@ server.on('published', function(packet, client) {
 
 });
 
+server.on("error", (err) => {
+    console.log(err);
+});
+
 var message = {
   topic: 'device/#',
   payload: 'Todos los devices', // or a Buffer

@@ -3,43 +3,47 @@ import { validateDevice, validateDevicePublish } from './device'
 import { validateUser, validateUserSubs } from './user'
 import { SECRET } from '../config/config'
 import { ROLE_CLIENT, ROLE_MANAGER, ROLE_ADMIN, ROLE_DEVICE } from '../config/roles'
-
+import isSting from 'lodash/isString'
 
 // Accepts the connection if the username and password are valid
 const Authenticate = function(client, username, password, cb) {
-
-  const token = password.toString().split(' ')
-  jwt.verify(token[1], SECRET.secret, (err, decoded) => {
-    if(err) {
-      cb(null, false)
-    }
-    else {
-      if(decoded.role === ROLE_DEVICE) {
-        validateDevice(decoded.sub)
-          .then(({device, isValid}) => {
-            client.user = username
-            cb(null, isValid)
-          })
-          .catch(({errors, isValid}) => {
-            cb(null, isValid)
-          })
+  if( client && isSting(username.toString()) && isSting(password.toString()) ) {
+    const token = password.toString().split(' ')
+    jwt.verify(token[1], SECRET.secret, (err, decoded) => {
+      if(err) {
+        cb('No Autorizado', false)
       }
-      else if ( decoded.role === ROLE_CLIENT ||
-                decoded.role === ROLE_MANAGER ||
-                decoded.role === ROLE_ADMIN ){
-
-          validateUser(decoded.sub)
+      else {
+        if(decoded.role === ROLE_DEVICE) {
+          validateDevice(decoded.sub)
             .then(({device, isValid}) => {
               client.user = username
               cb(null, isValid)
             })
             .catch(({errors, isValid}) => {
-              console.log(errors);
-              cb(null, isValid)
+              cb('Disposito No Encontrado', isValid)
             })
+        }
+        else if ( decoded.role === ROLE_CLIENT ||
+                  decoded.role === ROLE_MANAGER ||
+                  decoded.role === ROLE_ADMIN ){
+
+            validateUser(decoded.sub)
+              .then(({device, isValid}) => {
+                client.user = username
+                cb(null, isValid)
+              })
+              .catch(({errors, isValid}) => {
+                console.log(errors);
+                cb('Usuario No Encontrado', isValid)
+              })
+        }
       }
-    }
-  })
+    })
+  }
+  else {
+    cb('Campos Inválidos', false)
+  }
 
 }
 
