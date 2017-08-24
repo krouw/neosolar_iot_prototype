@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import Device from '../models/device';
 import Measurement from '../models/measurement';
 import randtoken from 'rand-token'
+import moment from 'moment'
 import { validateDeviceCreate,
          validateDeviceUpdate,
          validateMsmCreate,
@@ -243,6 +244,72 @@ class DeviceController {
               .json({ status: 'Error',
                       errors: { id_device: 'Campo Inválido.' } });
     }
+  }
+
+  getDevMsmQuery(req, res){
+
+
+    let errors = {}
+    let initial = '',
+          finish = '';
+
+    if( !mongoose.Types.ObjectId.isValid(req.params.idDevice) ) {
+      errors.id_device = 'Campo Inválido'
+    }
+
+    if( moment( req.params.InitialDate ).isValid() && moment( req.params.FinishDate ).isValid() ) {
+      initial =  moment( req.params.InitialDate )
+      finish = moment( req.params.FinishDate )
+      if(! moment( initial ).isBefore( finish ) ) {
+        errors.date = 'La fecha final es menor a la inicial.'
+      }
+    }
+    else {
+      errors.date = 'Fechas Inválidas'
+    }
+
+    if( isEmpty(errors) ) {
+      Device.findById(req.params.idDevice)
+        .then( device => {
+          if(device){
+            Measurement.find({ device: req.params.idDevice, createdAt: { $gte: new Date(initial), $lte: new Date(finish)  }  })
+            .sort({ createdAt: 'asc' })
+            .then((msm) => {
+              return res
+                      .status(200)
+                      .json({ status: 'OK',
+                              data: { device: device, measurement: msm} })
+            })
+            .catch((err) => {
+              return res
+                      .status(500)
+                      .json({ status: 'Error',
+                              errors: { _error: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+            })
+          }
+          else{
+            return res
+                    .status(404)
+                    .json({ status: 'Not Found',
+                            errors: { device: 'Este recurso no Existe.' } })
+          }
+        })
+        .catch( (err) => {
+          return res
+                  .status(500)
+                  .json({ status: 'Error',
+                          errors: { _error: 'Lo Sentimos, no hemos podido responder tu solicitud' } })
+        })
+    }
+    else{
+      return res
+              .status(400)
+              .json({ status: 'Error',
+                      errors: errors });
+    }
+
+
+
   }
 
   createDevMsm(req, res){

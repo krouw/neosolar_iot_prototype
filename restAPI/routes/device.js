@@ -36,6 +36,7 @@ router.delete('/:idDevice', deviceRoles.can('AdminManager') ,(req, res) => devic
 
 router.get('/:idDevice/measurement', deviceRoles.can('access device msm')  ,(req, res) => device.getAllDevMsm(req, res));
 router.get('/:idDevice/measurement/now', deviceRoles.can('access device msm now') ,(req, res) => device.getDevMsmNow(req, res));
+router.get('/:idDevice/measurement/:InitialDate/:FinishDate', ( req, res ) => device.getDevMsmQuery( req, res ) )
 router.post('/:idDevice/measurement/', deviceRoles.can('access device msm') ,(req, res) => device.createDevMsm(req, res));
 
 //refreshToken
