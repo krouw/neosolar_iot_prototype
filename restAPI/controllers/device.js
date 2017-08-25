@@ -313,6 +313,7 @@ class DeviceController {
   }
 
   createDevMsm(req, res){
+    console.log(req.body);
     validateMsmCreate(req.body, req.params)
       .then(({device}) => {
         Measurement.create({

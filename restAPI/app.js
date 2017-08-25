@@ -7,6 +7,7 @@ import kue from 'kue'
 import { createFecthKWh } from './queue/indicator'
 import { MONGO } from './config/config'
 import routesBinder from './libs/Route'
+import { passportStrategy } from './config/passport'
 const app = express()
 
 const database  = process.env.MONGO_URL || MONGO.uri
@@ -29,7 +30,7 @@ function bootstrap() {
   //bodyParser json y form
 app.use(logger('dev'))
 app.use(passport.initialize())
-require('./config/passport')(passport);
+passportStrategy(passport)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use('/kue', kue.app)

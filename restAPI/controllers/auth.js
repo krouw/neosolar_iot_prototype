@@ -12,8 +12,7 @@ import { SECRET } from '../config/config';
 import { validateSignIn,
          validateSingUp,
          validateGoogle,
-         validateDevice,
-         validateRefreshToken } from '../validate/auth'
+         validateDevice, } from '../validate/auth'
 
 class AuthController {
 

@@ -11,7 +11,7 @@ import Device from '../models/device'
 // load the auth variables
 import { socialAuth } from './socialAuth'
 
-module.exports = (passport) => {
+export const passportStrategy = (passport) => {
 
     // code for login (use('local-login', new LocalStategy))
     var opts = {};
