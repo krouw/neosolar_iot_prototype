@@ -3,10 +3,21 @@ import { INDICATOR_KWH } from '../config/config'
 
 const Schema = mongoose.Schema
 
+/*
+*  INDICATOR   ID
+*  pricekWh:  1
+*
+*
+*/
+
 const IndicatorSchema = new mongoose.Schema({
-  type: {
+  id: {
+    type: Number,
+    enum: [ INDICATOR_KWH.id, ]
+  },
+  name: {
     type: String,
-    enum: [ INDICATOR_KWH ],
+    enum: [ INDICATOR_KWH.name ],
     required: true
   },
   value: {

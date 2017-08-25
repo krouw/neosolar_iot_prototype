@@ -3,9 +3,14 @@ import isEmpty from 'lodash/isEmpty';
 import isNumber from 'lodash/isNumber';
 import Indicator from '../models/indicator'
 
-export const createIndicator = (type, value) => {
+class IndicatorController {
 
+  create( id, name, value ) {
     let errors = {}
+
+    if(!isNumber(id) && id != 1) {
+      errors.id = 'Campo Requerido'
+    }
 
     if(isEmpty(type)) {
       errors.type = 'Campo Requerido'
@@ -17,7 +22,7 @@ export const createIndicator = (type, value) => {
 
 
     if(isEmpty(errors)) {
-      Indicator.create({ type: type, value: value })
+      Indicator.create({ id:id, name: name, value: value })
         .then((indicator) => {
           console.log(indicator);
         })
@@ -29,5 +34,9 @@ export const createIndicator = (type, value) => {
     else {
       console.log(errors);
     }
+  }
 
 }
+
+
+export default IndicatorController

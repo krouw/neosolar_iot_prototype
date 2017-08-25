@@ -23,7 +23,7 @@ function bootstrap() {
   })
 }
 
-//bootstrap()
+bootstrap()
 
 //Middlewares
 
