@@ -17,5 +17,5 @@ const routes = [{
 ];
 
 export default (app) => {
-  routes.forEach((router) => app.use(router.path, router.file));
+  routes.forEach( ( router ) => app.use( router.path, router.file ) );
 };
