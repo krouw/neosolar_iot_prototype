@@ -16,7 +16,7 @@ const MeasurementSchema = new mongoose.Schema({
     type: Object,
     required: true
   },
-  createAt: {
+  createdAt: {
     type: Date,
     required: true
   } ,

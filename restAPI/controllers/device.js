@@ -321,7 +321,7 @@ class DeviceController {
           voltageTotal: req.body.voltageTotal,
           battery: req.body.battery,
           device: req.params.idDevice,
-          createAt: req.body.createAt,
+          createdAt: req.body.createdAt,
         })
         .then((msm) => {
           return res
@@ -330,6 +330,7 @@ class DeviceController {
                           data: { device: device, measurement: msm } })
         })
         .catch((err) => {
+          console.log(err);
           return res
                   .status(500)
                   .json({ status: 'Errors',
