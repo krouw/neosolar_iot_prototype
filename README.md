@@ -8,7 +8,7 @@
 
 ##### Funcionalidades
 + Getaway Raspi 3 -> Comunicación Serial desde Arduino y envío de datos a la nube mediante MQTT.
-+ NodeJS RESTFul API (Express/ JWT/ PassportJS/ Connect-Roles).
++ NodeJS RESTFul API (Express/ JWT/ PassportJS/ Connect-Roles/ Mongoose).
 + MQTT Broker (Mosca).
 + Aplicación Móvil React Native con MQTT over WebSocket para notificaciones en tiempo real.
 + Seguridad basada en JSON Wen Tokens.
