@@ -12,3 +12,4 @@
 + MQTT Broker (Mosca).
 + Aplicación Móvil React Native con MQTT over WebSocket para notificaciones en tiempo real.
 + Seguridad basada en JSON Wen Tokens.
++ Diseños Prototipos SketchApp
